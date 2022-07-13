@@ -63,7 +63,7 @@ class TopicHandler:
                         tmp["cc_status"] = img["cc_status"]
                         tmp["image_ready"] = 1
                         tmp["position"] = img["position"]
-                        
+                        print(img)
                         self.mongodb.images_collection.update_one({"_id":img["id"]},{"$set":tmp})
                     
                     self.mongodb.listings_collection.update_one(where,{"$set":{

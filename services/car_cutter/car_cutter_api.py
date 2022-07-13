@@ -82,7 +82,7 @@ class CarCutter:
             print(f'deleted existing file')
             file_path.unlink()
         
-        time.sleep(2)
+        time.sleep(1)
         
         with open(file_path,"wb") as f:
             f.write(content)
@@ -202,27 +202,18 @@ class CarCutter:
         for i in exterior:
             tmp = i.copy()
             tmp["position"] = index
-            
-            # if self.get_result(tmp["url"],tmp["path"]) == False:
-            #     continue
-            
             processed_images.append(tmp)
             index += 1
+            print(i)
         
         processed_images = self.download_multiple_images(processed_images)
         
         for i in interior:
             tmp = i.copy()
             tmp["position"] = index
-            
-            # if self.get_result(tmp["url"],tmp["path"]) == False:
-            #     continue
-            
             processed_images.append(tmp)
             index += 1
-        
-        
-        
+            print(i)
         return processed_images,len(unique_angles_found)
 
 

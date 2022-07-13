@@ -111,7 +111,7 @@ class ImageDownloader:
         
         with ThreadPoolExecutor(max_workers=30) as executor:
             for position,url in enumerate(urls):
-                threads.append(executor.submit(self.download_image,url,websiteId,sourceId,position,websiteDir,listingDir))
+                threads.append(executor.submit(self.download_image,url,websiteId,sourceId,url["position"],websiteDir,listingDir))
         
             for task in as_completed(threads):
                 data = task.result()

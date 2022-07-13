@@ -55,8 +55,8 @@ class MarketCheckFieldMaper:
             {'key':'pred_body_style','value':'predictedBodyStyle'},
             {'key':'dealer_forecourt_response','value':'dealerForecourtResponse'},
             {'key':'forecourt_price','value':'dealerForecourtPrice'},
-            {'key':'forecourt_110','value':'forecourt_110'}
-            
+            {'key':'forecourt_110','value':'forecourt_110'},
+            {'key':'mm_price','value':'price'}            
             ]
         
     def map(self,data):
