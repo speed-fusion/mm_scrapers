@@ -12,6 +12,7 @@ class MongoDatabase:
         client = pymongo.MongoClient(connection_uri)
         self.db = client[self.database]
         
+        
         # market check
         self.listings_collection = self.db["listings"]
         
