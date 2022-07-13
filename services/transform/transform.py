@@ -195,9 +195,9 @@ class MarketCheckTransform:
         
         final["title"] = generate_title(make,model,trim)
         
-        final["transmission_code"] = self.transmission_codes.get(transmission,4)
+        final["transmission_code"] = self.transmission_codes.get(final["transmission"],4)
         
-        final["fuel_code"] = self.fuel_codes.get(fuel,4)
+        final["fuel_code"] = self.fuel_codes.get(final["fuel"],4)
         
         if source_price != None:
             final["source_mrp"] = final["source_price"] + final["admin_fee"]

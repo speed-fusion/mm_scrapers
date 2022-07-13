@@ -29,10 +29,10 @@ class AutoTraderConstants(Enum):
 
 class MarketCheckConstants(Enum):
     WEBSITE_ID = 18
-    ACCOUNT_ID = 24899
-    PLAN_ID = 27
-    FEATURED_ID = 27
-    PRIORITY = 110
+    ACCOUNT_ID = 24898
+    PLAN_ID = 26
+    FEATURED_ID = 26
+    PRIORITY = 109
 
 class Topics(Enum):
     LOGS = "motormarket.scraper.logs"

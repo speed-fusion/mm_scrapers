@@ -46,6 +46,7 @@ class MarketCheckFieldMaper:
             {'key':'source_url','value':'product_url'},
             {'key':'make','value':'orignalMake'},
             {'key':'model','value':'orignalModel'},
+            {'key':'model','value':'model_org'},
             {'key':'predicted_make','value':'predictedMake'},
             {'key':'predicted_model','value':'predictedModel'},
             {'key':'registration','value':'orignalRegistration'},
@@ -56,7 +57,10 @@ class MarketCheckFieldMaper:
             {'key':'dealer_forecourt_response','value':'dealerForecourtResponse'},
             {'key':'forecourt_price','value':'dealerForecourtPrice'},
             {'key':'forecourt_110','value':'forecourt_110'},
-            {'key':'mm_price','value':'price'}            
+            {'key':'mm_price','value':'price'},
+            {'key':'registration','value':'product_website_id'},
+            {'key':'ltv_status','value':'ltvStatus'},
+            {'key':'video_id','value':'video_id'}            
             ]
         
     def map(self,data):
