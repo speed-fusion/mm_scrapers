@@ -1,0 +1,33 @@
+version: '3.1'
+
+services:
+  mysql_db:
+    image: mysql:5.7.35
+    
+    command: --default-authentication-plugin=mysql_native_password
+    
+    restart: always
+
+    volumes:
+      - ./data:/var/lib/mysql
+      - ./log:/var/log/mysql
+      - ./config:/etc/mysql
+
+    env_file:
+      - .prod.env
+    
+    ports:
+      - 3306:3306
+      
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:4.9.7
+
+    restart: always
+    
+    ports:
+      - 8080:80
+    
+    environment:
+      - PMA_ARBITRARY=0
+      - PMA_HOST=mysql_db
+      - PMA_PORT=3306
