@@ -52,13 +52,13 @@ class TopicHandler:
                 
                 self.mc_calculation.calculate_source_mrp(data)
                 
-                self.mc_calculation.calculate_margin(data)
+                # self.mc_calculation.calculate_margin(data)
                 
-                self.mc_calculation.calculate_motor_market_price(data)
-                
-                self.mc_calculation.calculate_pcp_apr(data)
+                # self.mc_calculation.calculate_motor_market_price(data)
                 
                 self.mc_calculation.calculate_ltv(data)
+                
+                self.mc_calculation.calculate_pcp_apr(data)
                 
                 self.mc_calculation.calculate_category_id(data)
                 

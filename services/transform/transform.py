@@ -86,6 +86,41 @@ class MarketCheckTransform:
             return self.built_code[chars]
 
         return None
+    def char_to_int(self,value):
+        digits = ""
+        
+        for char in str(value):
+            if char.isnumeric() == True:
+                digits += char
+        try:
+            return int(digits)
+        except:
+            return None
+        
+    
+    def calc_emission_scheme(self,raw_fuel_type,euro_status):
+        
+        euro_digit = self.char_to_int(euro_digit)
+        
+        if raw_fuel_type == None or euro_status == None or euro_digit == None:
+            return None
+        
+        fuel_type = str(fuel_type).lower().strip()
+
+        if "petrol" in fuel_type:
+            if euro_digit >= 4:
+                return 1
+            else:
+                return 0
+        elif "diesel" in fuel_type:
+            if euro_digit >= 6:
+                return 1
+            else:
+                return 0
+        elif "electric" in fuel_type:
+            return 2
+        else:
+            return 3
     
     def transform(self,data,listing_id):
         
@@ -183,8 +218,8 @@ class MarketCheckTransform:
         vehicle_type = raw.get("vehicle_type",None)
         final["vehicle_type"] = clean_string(vehicle_type)
         
-        emission_scheme = raw.get("emission_scheme",0)
-        final["emission_scheme"] = emission_scheme
+        
+        final["emission_scheme"] = self.calc_emission_scheme(raw["fuel_type"],raw["euro_status"])
         
         transmission = raw.get("transmission",None)
         final["transmission"] = clean_string(transmission)
@@ -209,6 +244,7 @@ class MarketCheckTransform:
     def upsert_images(self,listing_id,images):
         for index,img in enumerate(images):
             url = img["url"]
+            
             id = generate_sha1(url)
             
             where = {"_id":id}

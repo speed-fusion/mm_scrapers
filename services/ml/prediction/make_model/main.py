@@ -59,7 +59,7 @@ class TopicHandler:
                     
                     pred_data["make_model_prediction"] = True
                     
-                    print(pred_data)
+                    pred_data["title"] = f'{pred_data["predicted_make"]} {pred_data["predicted_model"]}'
                     
                     self.mongodb.listings_collection.update_one(
                         where,

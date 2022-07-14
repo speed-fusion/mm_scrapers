@@ -8,12 +8,12 @@ class MarketCheckValidation:
         engine_cc = data["engine_cylinders_cc"]
         built = data["built"]
         mileage = data["mileage"]
-        dealer_id = data["dealer_id"]
         registration = data["registration"]
+        scraped = data["scraped"]
+        imported = data["imported"]
+        
         status,message = self.price_validation(source_mrp)
-        
         log = {}
-        
         if status == False:
             log["error_message"] = message
             return False,log
@@ -36,6 +36,16 @@ class MarketCheckValidation:
             return False,log
         
         status,message = self.registration_validation(registration)
+        if status == False:
+            log["error_message"] = message
+            return False,log
+        
+        status,message = self.scraped_validation(scraped)
+        if status == False:
+            log["error_message"] = message
+            return False,log
+        
+        status,message = self.imported_validation(imported)
         if status == False:
             log["error_message"] = message
             return False,log
@@ -105,6 +115,25 @@ class MarketCheckValidation:
             return True,None
         else:
             return False,f'mileage({mileage}) is more than maxMileage({maxMileage})'
+    
+    def scraped_validation(self,scraped):
+        
+        if scraped == None:
+            return False,"scraped column value not available"
+        
+        if scraped == True:
+            return False,f'value of scraped column is True.'
+        
+        return True,None
+    
+    def imported_validation(self,imported):
+        if imported == None:
+            return False,"imported column value is not available"
+
+        if imported == True:
+            return False,f'value of imported column is True'
+
+        return True,None
         
     # def isBlackListedDealer(self,dealerId):
         

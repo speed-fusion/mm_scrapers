@@ -18,6 +18,8 @@ from video_id import VideoId
 
 from category_id import CategoryId
 
+from new_ltv_calc import MarketCheckLtvCalculationRules
+
 class MarketCheckCalculation:
     
     def __init__(self) -> None:
@@ -34,6 +36,8 @@ class MarketCheckCalculation:
         self.dealer_forecourt = DealerForecourt(self.mysql_db)
         
         self.video_id = VideoId()
+        
+        self.mc_calc_rules = MarketCheckLtvCalculationRules()
         
     
     def update_admin_fee(self,data):
@@ -57,22 +61,22 @@ class MarketCheckCalculation:
         data["source_mrp"] = source_price + admin_fee
     
     
-    def calculate_margin(self,data):
-        fixed_margin = 1299
-        data["margin"] = fixed_margin
+    # def calculate_margin(self,data):
+    #     fixed_margin = 1299
+    #     data["margin"] = fixed_margin
     
-    def calculate_motor_market_price(self,data):
+    # def calculate_motor_market_price(self,data):
         
-        custom_price_enabled = data.get("custom_price_enabled",False)
+    #     custom_price_enabled = data.get("custom_price_enabled",False)
         
-        if custom_price_enabled == True:
-            custom_price = data["custom_price"]
-            data["mm_price"] = custom_price
-            source_mrp = data["source_mrp"]
-            data["margin"] = custom_price - source_mrp
-            return
+    #     if custom_price_enabled == True:
+    #         custom_price = data["custom_price"]
+    #         data["mm_price"] = custom_price
+    #         source_mrp = data["source_mrp"]
+    #         data["margin"] = custom_price - source_mrp
+    #         return
         
-        data["mm_price"] = data["source_mrp"] + data["margin"]
+    #     data["mm_price"] = data["source_mrp"] + data["margin"]
     
     def calculate_pcp_apr(self,data):
         
@@ -90,11 +94,7 @@ class MarketCheckCalculation:
     
     def calculate_ltv(self,data):
         
-        mm_price = data["mm_price"]
-        
         source_mrp = data["source_mrp"]
-        
-        correct_registration = data["correct_registration"]
         
         registration = data["registration"]
         
@@ -104,25 +104,51 @@ class MarketCheckCalculation:
         
         ltv = {}
         
-        if source_mrp < 10000:
-            if correct_registration == True:
-                forecourt_price,response = self.dealer_forecourt.get_dealerforecourt_price(registration,mileage,website_id)
-                if forecourt_price == None:
-                    data["ltv_status"] = 0
-                    data["dealer_forecourt_response"] = json.dumps(response)
-                    ltv.update(self.mc_ltv.getNullValues())
-                else:
-                    ltv = self.mc_ltv.calculate(mm_price,forecourt_price)
-                    data["forecourt_price"] = forecourt_price
-                    data["ltv_status"] = 1
-            else:
+        if source_mrp < 11999:
+            
+            forecourt_price,response = self.dealer_forecourt.get_dealerforecourt_price(registration,mileage,website_id)
+            
+            if forecourt_price == None:
+                
                 data["ltv_status"] = 0
+                
+                data["dealer_forecourt_response"] = json.dumps(response)
+                
                 ltv.update(self.mc_ltv.getNullValues())
+                
+                return False
+            else:
+                
+                ltv_res = self.mc_calc_rules.calculate(source_mrp,forecourt_price)
+                
+                if ltv_res["status"] == False:
+                    return False
+                
+                mm_price = ltv_res["mm_price"]
+                
+                margin = ltv_res["margin"]
+                
+                data["mm_price"] = mm_price
+                
+                data["margin"] = margin
+                
+                ltv = self.mc_ltv.calculate(mm_price,forecourt_price)
+                
+                data["forecourt_price"] = forecourt_price
+                
+                data["ltv_status"] = 1
         else:
             ltv = self.mc_ltv.getDefaultValues()
+            
             data["ltv_status"] = 2
         
         data["ltv"] = ltv
+        
+        return True
+        
+        
+        
+        
     
     def calculate_category_id(self,data):
         make = data["make"]
@@ -149,9 +175,8 @@ class MarketCheckCalculation:
         if videoId != None:
             data["video_id"] = videoId
     
-    
     def car_cutter_extra_margin(self,data):
-        if data["source_mrp"] > 10000:
+        if data["source_mrp"] > 11999:
             extra_margin = 200
             data["cc_extra_margin"] = extra_margin
             data["margin"] = data["margin"] + extra_margin

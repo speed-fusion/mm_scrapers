@@ -45,7 +45,8 @@ class TopicHandler:
             
             if website_id == 18:
                 mysql_listing_id = data["mysql_listing_id"]
-                images = list(self.mongodb.images_collection.find({"listing_id":listing_id,"is_car_image":True,"image_ready":1,"mysql_photo_id":None}).sort("position",pymongo.ASCENDING))
+                
+                images = list(self.mongodb.images_collection.find({"listing_id":listing_id,"is_car_image":True,"image_ready":1}).sort("position",pymongo.ASCENDING))
                 
                 if len(images) == 0:
                     continue
@@ -56,7 +57,7 @@ class TopicHandler:
                 
                 self.mysqldb.connect()
                 
-                self.mysqldb.recCustomQuery(f'UPDATE fl_listings SET Main_photo="{thumb_image_path}",car_cutter={data["cc_status"]},cc_total_img={data["cc_total_img"]},Status="active",mm_product_url="{mm_url}" WHERE ID={mysql_listing_id} AND Status NOT IN("manual_expire","pending")')
+                self.mysqldb.recCustomQuery(f'UPDATE fl_listings SET Main_photo="{thumb_image_path}",car_cutter={data["cc_status"]},cc_total_img={data["cc_total_img"]},Status="active",mm_product_url="{mm_url}" WHERE ID={mysql_listing_id} AND Status NOT IN("manual_expire","pending","sold")')
                 
                 for item in images:
                     tmp = {}

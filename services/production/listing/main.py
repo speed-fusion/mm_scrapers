@@ -51,13 +51,14 @@ class TopicHandler:
                 pass
             
             if website_id == 18:
+                
                 mapped_data = self.mc_mapper.map(data)
                 
                 mapped_data["Status"] = "to_parse"
                 
                 self.mysqldb.connect()
                 try:
-                    result = self.mysqldb.recCustomQuery(f'SELECT ID,Status From fl_listings WHERE registration="{mapped_data["registration"]}"')
+                    result = self.mysqldb.recCustomQuery(f'SELECT ID,Status,Website_ID From fl_listings WHERE registration="{mapped_data["registration"]}"')
                     
                     if len(result) == 0:
                         mapped_data["create_ts"] = {"func":"now()"}
@@ -80,13 +81,20 @@ class TopicHandler:
                     else:
                         status = result[0]["Status"]
                         
-                        if status in ["manual_expire","to_parse","pending","sold"]:
-                            continue
+                        update_at = {"ID":result[0]["ID"]}
                         
-                        if status == "expired":
-                            mapped_data["Status"] = "active"
-                            self.mysqldb.recUpdate("fl_listing",mapped_data,{"ID":result[0]["ID"]})
-                            continue
+                        if result["Website_ID"] == 17:
+                            if status in ["to_parse","active","pending"]:
+                                mapped_data["status"] = "to_parse"
+                                self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
+                        else:
+                            if status in ["manual_expire","to_parse","pending","sold"]:
+                                continue
+                            
+                            if status == "expired":
+                                mapped_data["Status"] = "active"
+                                self.mysqldb.recUpdate("fl_listing",mapped_data,update_at)
+                                continue
                         
                 except Exception as e:
                     print(f'error : {str(e)}')   

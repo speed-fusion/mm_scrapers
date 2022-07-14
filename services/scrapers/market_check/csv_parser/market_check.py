@@ -103,15 +103,18 @@ class MarketCheck:
                 tmp["dealer_name"] = row_dict["seller_name"]
                 tmp["dealer_number"] = row_dict["seller_phone"]
                 tmp["dealer_location"] = row_dict["postal_code"]
-                
                 tmp["cab_type"] = None
                 tmp["seats"] = None
                 tmp["write_off_category"] = None
-                tmp["doors"] = None
+                tmp["doors"] = row_dict["doors"]
+                tmp["interior_color"] = row_dict["interior_color"]
+                tmp["exterior_color"] = row_dict["exterior_color"]
                 tmp["price_indicator"] = None
                 tmp["admin_fee"] = "0"
                 tmp["vehicle_type"] = "car"
-                
+                tmp["euro_status"] = row_dict["euro_status"]
+                tmp["imported"] = row_dict["imported"]
+                tmp["scrapped"] = row_dict["scrapped"]
                 
                 tmp["location"] = json.dumps({
                     "street":row_dict["street"],

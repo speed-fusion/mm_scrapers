@@ -60,7 +60,12 @@ class MarketCheckFieldMaper:
             {'key':'mm_price','value':'price'},
             {'key':'registration','value':'product_website_id'},
             {'key':'ltv_status','value':'ltvStatus'},
-            {'key':'video_id','value':'video_id'}            
+            {'key':'video_id','value':'video_id'},
+            {'key':'website_id','value':'Website_ID'},
+            {'key':'plan_id','value':'Plan_ID'},
+            {'key':'account_id','value':'Account_ID'},
+            {'key':'exterior_color','value':'exterior_color'},
+            {'key':'interior_color','value':'interior_color'}            
             ]
         
     def map(self,data):
