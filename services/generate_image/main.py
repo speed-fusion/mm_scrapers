@@ -30,40 +30,44 @@ class TopicHandler:
         while True:
             
             message =  self.consumer.consume_message()
-            
-            website_id = message["website_id"]
-            
-            listing_id = message["listing_id"]
-            
-            where = {"_id":listing_id}
-            
-            data = self.mongodb.listings_collection.find_one(where)
-            
-            if data == None:
-                # add code to report this incident
-                continue
-            
-            
-            if website_id == 17:
-                pass
-            
-            if website_id == 18:
+            try:
                 
-                mysql_listing_id = data["mysql_listing_id"]
+                website_id = message["website_id"]
                 
-                images = list(self.mongodb.images_collection.find({"listing_id":listing_id,"is_car_image":True,"image_ready":1}).sort("position",pymongo.ASCENDING))
+                listing_id = message["listing_id"]
                 
-                result = self.image_generator.processListing(images,website_id,mysql_listing_id)
+                where = {"_id":listing_id}
                 
-                for item in result:
+                data = self.mongodb.listings_collection.find_one(where)
+                
+                if data == None:
+                    # add code to report this incident
+                    continue
+                
+                
+                if website_id == 17:
+                    pass
+                
+                if website_id == 18:
                     
-                    tmp = {}
-                    tmp["image_generation_status"] = item["status"]
-                    tmp["org"] = item["org"]
-                    tmp["large"] = item["large"]
-                    tmp["thumb"] = item["thumb"]
-                    self.mongodb.images_collection.update_one({"_id":item["id"]},{"$set":tmp})
-            
+                    mysql_listing_id = data["mysql_listing_id"]
+                    
+                    images = list(self.mongodb.images_collection.find({"listing_id":listing_id,"is_car_image":True,"image_ready":1}).sort("position",pymongo.ASCENDING))
+                    
+                    result = self.image_generator.processListing(images,website_id,mysql_listing_id)
+                    
+                    for item in result:
+                        
+                        tmp = {}
+                        tmp["image_generation_status"] = item["status"]
+                        tmp["org"] = item["org"]
+                        tmp["large"] = item["large"]
+                        tmp["thumb"] = item["thumb"]
+                        self.mongodb.images_collection.update_one({"_id":item["id"]},{"$set":tmp})
+                        
+            except Exception as e:
+                print(f'reprocessing.... : {str(e)}')
+                
             self.producer.produce_message(message)
 
 
