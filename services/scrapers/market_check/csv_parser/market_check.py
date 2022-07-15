@@ -150,7 +150,10 @@ class MarketCheck:
                 print(row_dict)
     
     def parse_csv(self,filepath):
-        df = pd.read_csv(filepath,nrows=500)
+        
+        df = pd.read_csv(filepath)
+        
+        df = df[df.dealer_id == 10024965]
         
         dealers = self.parse_dealers(df)
         
