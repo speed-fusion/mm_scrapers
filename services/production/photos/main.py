@@ -85,8 +85,8 @@ class TopicHandler:
                     
                     try:
                         
-                        self.mysqldb.recDelete("fl_listing_photos",{"Listing_ID":mysql_listing_id})
-                        time.sleep(2)
+                        self.mysqldb.recUpdate("fl_listing_photos",{"Listing_ID":mysql_listing_id},{"Status":"approval"})
+                        # time.sleep(2)
                         id = self.mysqldb.recInsert("fl_listing_photos",tmp)
                         
                         self.mongodb.images_collection.update_one({"_id":item["_id"]},{
