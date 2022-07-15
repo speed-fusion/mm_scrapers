@@ -56,8 +56,8 @@ class MarketCheckLtvCalculationRules:
                 }
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
     
-    ltv_calc = LtvCalculationRules()
+#     ltv_calc = LtvCalculationRules()
     
-    print(ltv_calc.calculate(8655,9950))
+#     print(ltv_calc.calculate(8655,9950))

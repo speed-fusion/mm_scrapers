@@ -104,43 +104,42 @@ class MarketCheckCalculation:
         
         ltv = {}
         
-        if source_mrp < 11999:
-            
-            forecourt_price,response = self.dealer_forecourt.get_dealerforecourt_price(registration,mileage,website_id)
-            
-            if forecourt_price == None:
-                
-                data["ltv_status"] = 0
-                
-                data["dealer_forecourt_response"] = json.dumps(response)
-                
-                ltv.update(self.mc_ltv.getNullValues())
-                
-                return False
-            else:
-                
-                ltv_res = self.mc_calc_rules.calculate(source_mrp,forecourt_price)
-                
-                if ltv_res["status"] == False:
-                    return False
-                
-                mm_price = ltv_res["mm_price"]
-                
-                margin = ltv_res["margin"]
-                
-                data["mm_price"] = mm_price
-                
-                data["margin"] = margin
-                
-                ltv = self.mc_ltv.calculate(mm_price,forecourt_price)
-                
-                data["forecourt_price"] = forecourt_price
-                
-                data["ltv_status"] = 1
-        else:
+        forecourt_price,response = self.dealer_forecourt.get_dealerforecourt_price(registration,mileage,website_id)
+        
+        if source_mrp > 11999:
             ltv = self.mc_ltv.getDefaultValues()
             
             data["ltv_status"] = 2
+        
+        if forecourt_price == None:
+            
+            data["ltv_status"] = 0
+            
+            data["dealer_forecourt_response"] = json.dumps(response)
+            
+            ltv.update(self.mc_ltv.getNullValues())
+            
+            return False
+        else:
+            
+            ltv_res = self.mc_calc_rules.calculate(source_mrp,forecourt_price)
+            
+            if ltv_res["status"] == False:
+                return False
+            
+            mm_price = ltv_res["mm_price"]
+            
+            margin = ltv_res["margin"]
+            
+            data["mm_price"] = mm_price
+            
+            data["margin"] = margin
+            
+            ltv = self.mc_ltv.calculate(mm_price,forecourt_price)
+            
+            data["forecourt_price"] = forecourt_price
+            
+            data["ltv_status"] = 1
         
         data["ltv"] = ltv
         
