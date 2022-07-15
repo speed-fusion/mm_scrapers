@@ -60,7 +60,7 @@ class TopicHandler:
                 
                 self.mysqldb.connect()
                 try:
-                    result = self.mysqldb.recCustomQuery(f'SELECT ID,Status,Website_ID From fl_listings WHERE registration="{mapped_data["registration"]}"')
+                    result = self.mysqldb.recCustomQuery(f'SELECT ID,Status,Website_ID,mm_product_url From fl_listings WHERE registration="{mapped_data["registration"]}"')
                     
                     if len(result) == 0:
                         mapped_data["create_ts"] = {"func":"now()"}
@@ -88,6 +88,8 @@ class TopicHandler:
                         if result[0]["Website_ID"] == 17:
                             if status in ["to_parse","active","pending"]:
                                 mapped_data["status"] = "to_parse"
+                                mapped_data["mysql_listing_id"] = result[0]["ID"]
+                                mapped_data["mm_url"] = result[0]["mm_product_url"]
                                 self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
                         else:
                             if status in ["manual_expire","to_parse","pending","sold"]:
