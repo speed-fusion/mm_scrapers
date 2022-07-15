@@ -40,9 +40,9 @@ class MarketCheckLtvCalculationRules:
             
             percent_source_price = (percentage/100) * source_price
             
-            provisional_mm_price = float(source_price + percent_source_price)
+            provisional_mm_price =int(source_price + percent_source_price)
             
-            ltv_percentage = int(provisional_mm_price / float(forecourt_value * 100))
+            ltv_percentage = (provisional_mm_price / forecourt_value) * 100
             
             if ltv_percentage >= 120:
                 return {
@@ -104,8 +104,8 @@ class MarketCheckLtvCalculationRules:
                 }
 
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
     
-#     ltv_calc = LtvCalculationRules()
+    ltv_calc = LtvCalculationRules()
     
-#     print(ltv_calc.calculate(8655,9950))
+    print(ltv_calc.calculate(5357,4870))
