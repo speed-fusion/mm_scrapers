@@ -112,7 +112,7 @@ class MarketCheckCalculation:
             if ltv_resp["forecourt_call"] == True:
                 response = ltv_resp["response"]
                 data["dealer_forecourt_response"] = response
-                data["forecourt_price"] = ltv_resp["forecourt_value"]
+                data["forecourt_price"] = ltv_resp["forecourt_price"]
             data["mm_price"] = mm_price
             data["margin"] = margin
             data["ltv_percentage"] = ltv_percentage
