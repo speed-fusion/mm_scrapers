@@ -100,7 +100,7 @@ class MarketCheckTransform:
     
     def calc_emission_scheme(self,raw_fuel_type,euro_status):
         
-        euro_digit = self.char_to_int(euro_digit)
+        euro_digit = self.char_to_int(euro_status)
         
         if raw_fuel_type == None or euro_status == None or euro_digit == None:
             return None
