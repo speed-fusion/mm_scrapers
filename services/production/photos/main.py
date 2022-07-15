@@ -82,10 +82,12 @@ class TopicHandler:
                     
                     tmp["approved_from_dashboard"] = 1
                     
+                    tmp["old_image"] = 0
+                    
                     
                     try:
                         
-                        self.mysqldb.recUpdate("fl_listing_photos",{"Status":"approval"},{"Listing_ID":mysql_listing_id})
+                        self.mysqldb.recDelete("fl_listing_photos",{"Listing_ID":mysql_listing_id,"old_image":1})
                         # time.sleep(2)
                         id = self.mysqldb.recInsert("fl_listing_photos",tmp)
                         
