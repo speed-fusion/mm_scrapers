@@ -94,6 +94,7 @@ class MarketCheck:
                 tmp["trim"] = row_dict["variant"]
                 tmp["body_style"] = row_dict["body_type"]
                 tmp["fuel"] = row_dict["fuel_type"]
+                tmp["fuel_type"] = row_dict["fuel_type"]
                 tmp["transmission"] = row_dict["transmission"]
                 tmp["doors"] = row_dict["doors"]
                 tmp["registration"] = row_dict["vehicle_registration_mark"]
