@@ -50,6 +50,7 @@ class MarketCheckLtvCalculationRules:
                     "forecourt_call":True,
                     "mm_price":None,
                     "margin":None,
+                    "forecourt_price":forecourt_value,
                     "ltv":{},
                     "response": json.dumps(response),
                     "ltv_status":0
@@ -68,6 +69,7 @@ class MarketCheckLtvCalculationRules:
                     "status":True,
                     "forecourt_call":True,
                     "mm_price":int(mm_price),
+                    "forecourt_price":forecourt_value,
                     "margin":int(margin),
                     "response": json.dumps(response),
                     "ltv":self.old_ltv.calculate(mm_price,forecourt_value),
