@@ -9,6 +9,8 @@ from mysql_database import MysqlDatabase
 
 from MMUrlGenerator import MMUrlGenerator
 
+import traceback
+
 from mapping import MarketCheckFieldMaper
 class TopicHandler:
     def __init__(self):
@@ -97,7 +99,8 @@ class TopicHandler:
                                 continue
                         
                 except Exception as e:
-                    print(f'error : {str(e)}')   
+                    print(f'error : {str(e)}')
+                    print(traceback.print_exc())
                 self.mysqldb.disconnect()
                 
                 
