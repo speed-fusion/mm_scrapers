@@ -144,6 +144,13 @@ services:
 
     network_mode : host
 
+    deploy:
+        mode: replicated
+        replicas: 5
+        resources:
+          limits:
+            cpus: '2'
+
     restart: always
 
   generate_image:
