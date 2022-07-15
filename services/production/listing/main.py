@@ -85,7 +85,7 @@ class TopicHandler:
                         
                         update_at = {"ID":result[0]["ID"]}
                         
-                        if result["Website_ID"] == 17:
+                        if result[0]["Website_ID"] == 17:
                             if status in ["to_parse","active","pending"]:
                                 mapped_data["status"] = "to_parse"
                                 self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
