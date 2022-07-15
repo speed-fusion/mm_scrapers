@@ -105,7 +105,7 @@ class MarketCheckTransform:
         if raw_fuel_type == None or euro_status == None or euro_digit == None:
             return None
         
-        fuel_type = str(fuel_type).lower().strip()
+        fuel_type = str(raw_fuel_type).lower().strip()
 
         if "petrol" in fuel_type:
             if euro_digit >= 4:
