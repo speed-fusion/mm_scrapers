@@ -51,8 +51,6 @@ class ImageGenerator:
         return img
     
     def generateImages(self,websiteId,listingId,imageId,imagePath,imageUrl,position,processedImages):
-        ret = {}
-        ret["status"] = True
         processedImages["id"] = imageId
         processedImages["url"] = imageUrl
         processedImages["position"] = position
@@ -61,13 +59,15 @@ class ImageGenerator:
         ftp = ftpHandler()
         
         try:
-            
             rawImage = self.read_image(imagePath)
+            
             orgImagePath = f'S{websiteId}/ad{listingId}/org_{imageId}.jpg'
+            
             tmp = {}
             tmp["path"] = orgImagePath
             tmp["type"] = "org"
             tmp["size"] = None
+            
             processedImages["org"] = tmp
             
             for size in self.sizes:
@@ -107,12 +107,10 @@ class ImageGenerator:
         
         except Exception as e:
             print(f'error : {str(e)}')
-            ftp.disconnect()
-            ret["status"] = False
             
         ftp.disconnect()
-        ret["data"] = processedImages
-        return ret
+        
+        return processedImages
         
     def processListing(self,images,websiteId,listingId):
         processedImages = []
@@ -155,7 +153,7 @@ class ImageGenerator:
             for task in as_completed(threads):
                 data = task.result()
                 if data["status"] == True:
-                    processedImages.append(data["data"])
+                    processedImages.append(data)
         
         return processedImages
 
