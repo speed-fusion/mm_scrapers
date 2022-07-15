@@ -65,7 +65,10 @@ class MarketCheckFieldMaper:
             {'key':'plan_id','value':'Plan_ID'},
             {'key':'account_id','value':'Account_ID'},
             {'key':'exterior_color','value':'exterior_color'},
-            {'key':'interior_color','value':'interior_color'}            
+            {'key':'interior_color','value':'interior_color'},
+            {'key':'dealer_number','value':'dealer_number'},
+            {'key':'source_price','value':'cal_price_from_file'},
+            {'key':'registration','value':'product_website_id'}          
             ]
         
     def map(self,data):

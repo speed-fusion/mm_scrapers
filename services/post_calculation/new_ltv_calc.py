@@ -25,7 +25,7 @@ class MarketCheckLtvCalculationRules:
                 #  need to log this event
             
             if ltv < 110:
-                max_margin = forecourt_value * 1.10
+                max_margin = float(forecourt_value) * 1.10
                 margin = max_margin - provisional_mm_price
             else:
                 margin = 0
@@ -34,13 +34,14 @@ class MarketCheckLtvCalculationRules:
             
             return  {
                     "status":True,
-                    "mm_price":round(mm_price,1),
-                    "margin":round(margin,1)
+                    "mm_price":int(mm_price),
+                    "margin":int(margin)
                 }
         
         else:
             percentage = 11
-            percent_source_price = (percentage/100) * source_price
+            
+            percent_source_price = float(percentage/100) * source_price
             
             max_margin = 3000
             
@@ -53,8 +54,8 @@ class MarketCheckLtvCalculationRules:
             
             return  {
                     "status":True,
-                    "mm_price":round(mm_price,1),
-                    "margin":round(margin,1)
+                    "mm_price":int(mm_price),
+                    "margin":int(margin,1)
                 }
 
 
