@@ -119,7 +119,7 @@ class MarketCheckValidation:
     def scraped_validation(self,scrapped):
         
         if scrapped == None:
-            return False,"scraped column value not available"
+            return True,"scraped column value not available"
         
         if scrapped == True:
             return False,f'value of scraped column is True.'
@@ -128,7 +128,7 @@ class MarketCheckValidation:
     
     def imported_validation(self,imported):
         if imported == None:
-            return False,"imported column value is not available"
+            return True,"imported column value is not available"
 
         if imported == True:
             return False,f'value of imported column is True'

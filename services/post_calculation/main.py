@@ -57,6 +57,7 @@ class TopicHandler:
                 # self.mc_calculation.calculate_motor_market_price(data)
                 
                 if self.mc_calculation.calculate_ltv(data) == False:
+                    
                     continue
                 
                 self.mc_calculation.calculate_pcp_apr(data)

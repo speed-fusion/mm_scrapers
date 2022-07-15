@@ -24,7 +24,6 @@ class MarketCheckCalculation:
     
     def __init__(self) -> None:
         self.mysql_db = MysqlDatabase()
-        
         self.category_id_calc = CategoryId(self.mysql_db)
         
         self.mc_admin_fee = MarketCheckAdminFee()
@@ -33,7 +32,7 @@ class MarketCheckCalculation:
         
         self.mc_ltv = LtvCalculationRules()
         
-        self.dealer_forecourt = DealerForecourt(self.mysql_db)
+        
         
         self.video_id = VideoId()
         
@@ -102,46 +101,68 @@ class MarketCheckCalculation:
         
         website_id = data["website_id"]
         
-        ltv = {}
+        ltv_resp = self.mc_calc_rules.calculate(source_mrp,registration,mileage,website_id)
         
-        forecourt_price,response = self.dealer_forecourt.get_dealerforecourt_price(registration,mileage,website_id)
-        
-        if source_mrp > 11999:
-            ltv = self.mc_ltv.getDefaultValues()
-            
-            data["ltv_status"] = 2
-        
-        if forecourt_price == None:
-            
-            data["ltv_status"] = 0
-            
-            data["dealer_forecourt_response"] = json.dumps(response)
-            
-            ltv.update(self.mc_ltv.getNullValues())
-            
-            return False
-        else:
-            
-            ltv_res = self.mc_calc_rules.calculate(source_mrp,forecourt_price)
-            
-            if ltv_res["status"] == False:
-                return False
-            
-            mm_price = ltv_res["mm_price"]
-            
-            margin = ltv_res["margin"]
-            
+        if ltv_resp["status"] == True:
+            mm_price = ltv_resp["mm_price"]
+            margin = ltv_resp["margin"]
+            ltv_percentage = ltv_resp["ltv_percentage"]
+            old_ltv_values = ltv_resp["ltv"]
+            ltv_status =ltv_resp["ltv_status"]
+            if ltv_resp["forecourt_call"] == True:
+                response = ltv_resp["response"]
+                data["forecourt_response"] = response
             data["mm_price"] = mm_price
-            
             data["margin"] = margin
-            
-            ltv = self.mc_ltv.calculate(mm_price,forecourt_price)
-            
-            data["forecourt_price"] = forecourt_price
-            
-            data["ltv_status"] = 1
+            data["ltv_percentage"] = ltv_percentage
+            data["ltv"] = old_ltv_values
+            data["ltv_status"] = ltv_status
+            return True
+        else:
+            return False
         
-        data["ltv"] = ltv
+        # ltv = {}
+        
+        # if source_mrp < 11999:
+            
+        #     forecourt_price,response = self.dealer_forecourt.get_dealerforecourt_price(registration,mileage,website_id)
+
+        #     if forecourt_price == None:
+                
+        #         data["ltv_status"] = 0
+                
+        #         data["dealer_forecourt_response"] = json.dumps(response)
+                
+        #         ltv.update(self.mc_ltv.getNullValues())
+                
+        #         return False
+            
+        #     else:
+                
+        #         ltv_res = self.mc_calc_rules.calculate(source_mrp,forecourt_price)
+                
+        #         if ltv_res["status"] == False:
+        #             return False
+                
+        #         mm_price = ltv_res["mm_price"]
+                
+        #         margin = ltv_res["margin"]
+                
+        #         data["mm_price"] = mm_price
+                
+        #         data["margin"] = margin
+                
+        #         ltv = self.mc_ltv.calculate(mm_price,forecourt_price)
+                
+        #         data["forecourt_price"] = forecourt_price
+                
+        #         data["ltv_status"] = 1
+        # else:
+        #     ltv = self.mc_ltv.getDefaultValues()
+            
+        #     data["ltv_status"] = 2
+        
+        # data["ltv"] = ltv
         
         return True
         

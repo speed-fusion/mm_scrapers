@@ -1,30 +1,62 @@
+import json
+import sys
+
+sys.path.append("/libs")
+
+from mysql_database import MysqlDatabase
+
+from dealer_forecourt import DealerForecourt
+
+from ltv import LtvCalculationRules
+
 class MarketCheckLtvCalculationRules:
     
     def __init__(self) -> None:
-        pass
+        self.mysql_db = MysqlDatabase()
+        self.dealer_forecourt = DealerForecourt(self.mysql_db)
+        self.old_ltv = LtvCalculationRules()
     
-    def calculate(self,source_price,forecourt_value):
-        
-        print(f'forecourt_value -> {forecourt_value} , source_price -> {source_price}')
+    def calculate(self,source_price,registration,mileage,website_id):
         
         if source_price < 11999:
+            
+            forecourt_value,response = self.dealer_forecourt.get_dealerforecourt_price(registration,mileage,website_id)
+            
+            print(f'forecourt_value -> {forecourt_value} , source_price -> {source_price}')
+    
+            if forecourt_value == None:
+                
+                return {
+                    "status":False,
+                    "forecourt_call":True,
+                    "mm_price":None,
+                    "margin":None,
+                    "ltv":self.old_ltv.getNullValues(),
+                    "response":json.dumps(response),
+                    "ltv_status":0
+                }
+            
             percentage = 12
             
             percent_source_price = (percentage/100) * source_price
             
             provisional_mm_price = float(source_price + percent_source_price)
             
-            ltv = round(provisional_mm_price / float(forecourt_value * 100),1)
+            ltv_percentage = round(provisional_mm_price / float(forecourt_value * 100),1)
             
-            if ltv >= 120:
+            if ltv_percentage >= 120:
                 return {
                     "status":False,
+                    "forecourt_call":True,
                     "mm_price":None,
-                    "margin":None
+                    "margin":None,
+                    "ltv":{},
+                    "response": json.dumps(response),
+                    "ltv_status":0
                 }
                 #  need to log this event
             
-            if ltv < 110:
+            if ltv_percentage < 110:
                 max_margin = float(forecourt_value) * 1.10
                 margin = max_margin - provisional_mm_price
             else:
@@ -34,12 +66,19 @@ class MarketCheckLtvCalculationRules:
             
             return  {
                     "status":True,
+                    "forecourt_call":True,
                     "mm_price":int(mm_price),
-                    "margin":int(margin)
+                    "margin":int(margin),
+                    "response": json.dumps(response),
+                    "ltv":self.old_ltv.calculate(mm_price,forecourt_value),
+                    "ltv_percentage":ltv_percentage,
+                    "ltv_status":1
                 }
         
         else:
             percentage = 11
+            
+            ltv_percentage = 69
             
             percent_source_price = float(percentage/100) * source_price
             
@@ -54,8 +93,12 @@ class MarketCheckLtvCalculationRules:
             
             return  {
                     "status":True,
+                    "forecourt_call":False,
                     "mm_price":int(mm_price),
-                    "margin":int(margin,1)
+                    "margin":int(margin),
+                    "ltv":self.old_ltv.getDefaultValues(),
+                    "ltv_percentage":ltv_percentage,
+                    "ltv_status":None
                 }
 
 
