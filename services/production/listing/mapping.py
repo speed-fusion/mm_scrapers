@@ -93,5 +93,6 @@ class MarketCheckFieldMaper:
             pcp_apr = data["pcp_apr"]
             for key in pcp_apr:
                 tmp[key] = pcp_apr[key]
-        
+        if not "emission_scheme" in tmp:
+            tmp["emission_scheme"] = 99
         return tmp
