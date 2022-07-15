@@ -5,6 +5,8 @@ class MarketCheckLtvCalculationRules:
     
     def calculate(self,source_price,forecourt_value):
         
+        print(f'forecourt_value -> {forecourt_value} , source_price -> {source_price}')
+        
         if source_price < 11999:
             percentage = 12
             
