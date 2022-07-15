@@ -88,8 +88,17 @@ class TopicHandler:
                         
                         if result[0]["Website_ID"] == 17:
                             if status in ["to_parse","active","pending"]:
+                                data_tmp = data.copy()
+                                
+                                if "ltv" in data_tmp:
+                                    data_tmp["ltv"] = {}
+                                    
+                                mapped_data = self.mc_mapper.map(data_tmp)
+                                
                                 mapped_data["status"] = "to_parse"
+                                
                                 self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
+                                
                                 self.mongodb.listings_collection.update_one(where,{"$set":{
                                     "mm_url":result[0]["mm_product_url"],
                                     "mysql_listing_id": result[0]["ID"]
