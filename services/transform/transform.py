@@ -1,4 +1,5 @@
 import sys
+import uuid
 
 from numpy import char
 
@@ -245,7 +246,7 @@ class MarketCheckTransform:
         for index,img in enumerate(images):
             url = img["url"]
             
-            id = generate_sha1(url)
+            id = str(uuid.uuid4())
             
             where = {"_id":id}
             
