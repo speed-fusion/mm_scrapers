@@ -28,7 +28,9 @@ class TopicHandler:
         
         t1 = datetime.now()
         self.marketcheck.upsert_dealers(dealers)
+        
         listings = self.marketcheck.upsert_listings(listings)
+        
         t2 = datetime.now()
         
         print(f'total time : {(t2 - t1).seconds}')
