@@ -89,9 +89,11 @@ class TopicHandler:
                         if result[0]["Website_ID"] == 17:
                             if status in ["to_parse","active","pending"]:
                                 mapped_data["status"] = "to_parse"
-                                mapped_data["mm_url"] = result[0]["mm_product_url"]
                                 self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
-                                mapped_data["mysql_listing_id"] = result[0]["ID"]
+                                self.mongodb.listings_collection.update_one(where,{"$set":{
+                                    "mm_url":result[0]["mm_product_url"],
+                                    "mysql_listing_id": result[0]["ID"]
+                                }})
                         else:
                             if status in ["manual_expire","pending","sold"]:
                                 continue
