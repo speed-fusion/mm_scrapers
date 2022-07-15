@@ -98,7 +98,7 @@ class DealerForecourt:
                     
                 else:
                     print("getting data from db : data is  available in database")
-                    DealerForecourt = rows[0]["DealerForecourt"]
+                    DealerForecourt = int(rows[0]["DealerForecourt"])
                     self.database_call_count = self.database_call_count + 1
             else:
                 print("new api call for price : data is not available in database")
