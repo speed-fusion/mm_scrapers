@@ -44,6 +44,9 @@ class TopicHandler:
             
             
             if website_id == 18:
+                if not "mysql_listing_id" in data:
+                    continue
+                
                 mysql_listing_id = data["mysql_listing_id"]
                 
                 images = list(self.mongodb.images_collection.find({"listing_id":listing_id,"is_car_image":True,"image_ready":1}).sort("position",pymongo.ASCENDING))
