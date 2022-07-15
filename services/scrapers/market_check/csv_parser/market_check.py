@@ -13,7 +13,7 @@ from pathlib import Path
 import shutil
 import pandas as pd
 import numpy as np
-
+from clean_dealers import CleanDealers
 
 
 class MarketCheck:
@@ -44,6 +44,8 @@ class MarketCheck:
         
         self.mongodb = MongoDatabase()
         
+        self.clean_dealers = CleanDealers
+        
     def parse_dealers(self,df:pd.DataFrame):
         columns = ["dealer_id","seller_name","fca_status","fca_reference_no","seller_phone","street","city","county","postal_code","latitude","longitude","country"]
         dealer_df = df.where(pd.notnull(df), None)[columns]
@@ -73,6 +75,16 @@ class MarketCheck:
             return int(tmp * 1000)
         except:
             return None
+    
+    def is_clean_dealer(self,dealer_id):
+        try:
+            d_id = int(dealer_id)
+            if d_id in self.clean_dealers:
+                return True
+            else:
+                return False
+        except:
+            return False
     
     def parse_listings(self,df:pd.DataFrame):
         
@@ -154,7 +166,7 @@ class MarketCheck:
         
         df = pd.read_csv(filepath)
         
-        df = df[df.dealer_id == 10038922]
+        df = df[df.dealer_id.apply(lambda x:self.is_clean_dealer(x))]
         
         dealers = self.parse_dealers(df)
         
