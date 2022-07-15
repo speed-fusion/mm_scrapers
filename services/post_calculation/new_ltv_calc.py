@@ -20,7 +20,7 @@ class MarketCheckLtvCalculationRules:
         
         if source_price < 11999:
             
-            forecourt_value,response = self.dealer_forecourt.get_dealerforecourt_price(registration,mileage,website_id)
+            forecourt_value,forecourt_response = self.dealer_forecourt.get_dealerforecourt_price(registration,mileage,website_id)
             
             print(f'forecourt_value -> {forecourt_value} , source_price -> {source_price}')
     
@@ -32,7 +32,7 @@ class MarketCheckLtvCalculationRules:
                     "mm_price":None,
                     "margin":None,
                     "ltv":self.old_ltv.getNullValues(),
-                    "response":json.dumps(response),
+                    "response":json.dumps(forecourt_response),
                     "ltv_status":0
                 }
             
@@ -52,7 +52,7 @@ class MarketCheckLtvCalculationRules:
                     "margin":None,
                     "forecourt_price":forecourt_value,
                     "ltv":{},
-                    "response": json.dumps(response),
+                    "response": json.dumps(forecourt_response),
                     "ltv_status":0
                 }
                 #  need to log this event
@@ -71,7 +71,7 @@ class MarketCheckLtvCalculationRules:
                     "mm_price":int(mm_price),
                     "forecourt_price":forecourt_value,
                     "margin":int(margin),
-                    "response": json.dumps(response),
+                    "response": json.dumps(forecourt_response),
                     "ltv":self.old_ltv.calculate(mm_price,forecourt_value),
                     "ltv_percentage":ltv_percentage,
                     "ltv_status":1
