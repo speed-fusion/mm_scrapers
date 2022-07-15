@@ -10,9 +10,9 @@ class MarketCheckLtvCalculationRules:
             
             percent_source_price = (percentage/100) * source_price
             
-            provisional_mm_price = source_price + percent_source_price
+            provisional_mm_price = float(source_price + percent_source_price)
             
-            ltv = round(provisional_mm_price / (forecourt_value * 100),1)
+            ltv = round(provisional_mm_price / float(forecourt_value * 100),1)
             
             if ltv >= 120:
                 return {
