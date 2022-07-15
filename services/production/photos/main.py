@@ -85,7 +85,7 @@ class TopicHandler:
                     
                     try:
                         
-                        self.mysqldb.recUpdate("fl_listing_photos",{"Listing_ID":mysql_listing_id},{"Status":"approval"})
+                        self.mysqldb.recUpdate("fl_listing_photos",{"Status":"approval"},{"Listing_ID":mysql_listing_id})
                         # time.sleep(2)
                         id = self.mysqldb.recInsert("fl_listing_photos",tmp)
                         
