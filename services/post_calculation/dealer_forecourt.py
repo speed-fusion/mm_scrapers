@@ -94,7 +94,7 @@ class DealerForecourt:
                         "ukvehicledata_ValuationData", data, {"id": rows[0]["id"]}
                     )
                     
-                    self.upsert_dealer_forecourt_mongodb(reg_no,mileage,website_id,data)
+                    self.upsert_dealer_forecourt_mongodb(reg_no,mileage,price,new_call)
                     
                 else:
                     print("getting data from db : data is  available in database")
@@ -118,7 +118,7 @@ class DealerForecourt:
                 data["Website_ID"] = website_id
                 DealerForecourt = int(float(price))
                 self.db.recInsert("ukvehicledata_ValuationData", data)
-                self.upsert_dealer_forecourt_mongodb(reg_no,mileage,website_id,price,new_call)
+                self.upsert_dealer_forecourt_mongodb(reg_no,mileage,price,new_call)
                 
         except Exception as e:
             print(f'error - dealerForecourt.py : {str(e)}')
