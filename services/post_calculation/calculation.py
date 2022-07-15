@@ -115,7 +115,7 @@ class MarketCheckCalculation:
                 data["forecourt_price"] = ltv_resp["forecourt_price"]
             data["mm_price"] = mm_price
             data["margin"] = margin
-            data["ltv_percentage"] = ltv_percentage
+            data["ltv_percentage"] = round(ltv_percentage,1)
             data["ltv"] = old_ltv_values
             data["ltv_status"] = ltv_status
             return True
