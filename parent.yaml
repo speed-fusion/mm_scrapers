@@ -68,7 +68,7 @@ services:
     restart: always
     
     ports:
-      - 6650:6650
+      - 6655:6650
       - 8080:8080
     
     command: "bin/pulsar standalone -nss"

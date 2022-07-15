@@ -42,7 +42,7 @@ class MarketCheckLtvCalculationRules:
             
             provisional_mm_price = float(source_price + percent_source_price)
             
-            ltv_percentage = round(provisional_mm_price / float(forecourt_value * 100),1)
+            ltv_percentage = int(provisional_mm_price / float(forecourt_value * 100))
             
             if ltv_percentage >= 120:
                 return {
