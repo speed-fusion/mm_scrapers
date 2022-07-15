@@ -79,7 +79,10 @@ class MarketCheckFieldMaper:
         for key in data:
             for item in self.insert_field_map:
                 if item["key"] == key:
-                    tmp[item["value"]] = data[key]
+                    if item["value"] == "price":
+                        tmp[item["value"]] = str(int(data[key]))
+                    else:
+                        tmp[item["value"]] = data[key]
         
         if "ltv" in data:
             ltv = data["ltv"]
