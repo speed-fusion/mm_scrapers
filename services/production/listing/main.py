@@ -93,7 +93,7 @@ class TopicHandler:
                                 mapped_data["mm_url"] = result[0]["mm_product_url"]
                                 self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
                         else:
-                            if status in ["manual_expire","to_parse","pending","sold"]:
+                            if status in ["manual_expire","pending","sold"]:
                                 continue
                             
                             if status in ["active"]:
@@ -104,6 +104,10 @@ class TopicHandler:
                                 mapped_data["Status"] = "active"
                                 self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
                                 continue
+                            
+                            if status == "to_parse":
+                                pass
+                            
                         
                 except Exception as e:
                     print(f'error : {str(e)}')
