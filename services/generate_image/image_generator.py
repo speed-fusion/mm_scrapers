@@ -59,15 +59,13 @@ class ImageGenerator:
         ftp = ftpHandler()
         
         try:
+            
             rawImage = self.read_image(imagePath)
-            
             orgImagePath = f'S{websiteId}/ad{listingId}/org_{imageId}.jpg'
-            
             tmp = {}
             tmp["path"] = orgImagePath
             tmp["type"] = "org"
             tmp["size"] = None
-            
             processedImages["org"] = tmp
             
             for size in self.sizes:
@@ -107,10 +105,12 @@ class ImageGenerator:
         
         except Exception as e:
             print(f'error : {str(e)}')
+            ftp.disconnect()
+            return False,processedImages
             
         ftp.disconnect()
         
-        return processedImages
+        return True,processedImages
         
     def processListing(self,images,websiteId,listingId):
         processedImages = []
@@ -151,9 +151,9 @@ class ImageGenerator:
                 threads.append(executor.submit(self.generateImages,websiteId,listingId,imageId,imagePath,imageUrl,position,item))
         
             for task in as_completed(threads):
-                data = task.result()
-                
-                processedImages.append(data)
+                status,data = task.result()
+                if status == True:
+                    processedImages.append(data)
         
         return processedImages
 
