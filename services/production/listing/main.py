@@ -80,6 +80,7 @@ class TopicHandler:
                                 "mm_url":mm_url
                             }
                         })
+                        
                     else:
                         status = result[0]["Status"]
                         
@@ -93,6 +94,10 @@ class TopicHandler:
                                 self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
                         else:
                             if status in ["manual_expire","to_parse","pending","sold"]:
+                                continue
+                            
+                            if status in ["active"]:
+                                self.mysqldb.recUpdate("fl_listing",mapped_data,update_at)
                                 continue
                             
                             if status == "expired":

@@ -85,6 +85,7 @@ class TopicHandler:
                     
                     try:
                         
+                        self.mysqldb.recDelete("fl_listing_photos",{"Listing_ID":mysql_listing_id})
                         id = self.mysqldb.recInsert("fl_listing_photos",tmp)
                         
                         self.mongodb.images_collection.update_one({"_id":item["_id"]},{
