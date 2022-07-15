@@ -79,6 +79,8 @@ class MarketCheckValidation:
         
     def engine_cylinders_cc_validation(self,cc):
         
+        return True,None
+        
         if cc == None:
             return False,"engine cc is empty."
         

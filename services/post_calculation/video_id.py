@@ -32,3 +32,10 @@ class VideoId:
                     videoId = vidData["video_id"]
                     break
         return videoId
+
+
+# if __name__ == "__main__":
+    
+#     vi = VideoId()
+    
+#     print(vi.get_video_id("Mercedes-Benz","Cla-Class",2018))
