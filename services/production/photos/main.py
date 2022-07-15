@@ -6,7 +6,7 @@ from pulsar_manager import PulsarManager
 import pymongo
 from mongo_database import MongoDatabase
 from mysql_database import MysqlDatabase
-
+import time
 class TopicHandler:
     def __init__(self):
         print("transform topic handler init")
@@ -86,6 +86,7 @@ class TopicHandler:
                     try:
                         
                         self.mysqldb.recDelete("fl_listing_photos",{"Listing_ID":mysql_listing_id})
+                        time.sleep(2)
                         id = self.mysqldb.recInsert("fl_listing_photos",tmp)
                         
                         self.mongodb.images_collection.update_one({"_id":item["_id"]},{
