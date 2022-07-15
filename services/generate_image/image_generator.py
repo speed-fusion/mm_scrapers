@@ -51,6 +51,8 @@ class ImageGenerator:
         return img
     
     def generateImages(self,websiteId,listingId,imageId,imagePath,imageUrl,position,processedImages):
+        ret = {}
+        ret["status"] = True
         processedImages["id"] = imageId
         processedImages["url"] = imageUrl
         processedImages["position"] = position
@@ -106,11 +108,11 @@ class ImageGenerator:
         except Exception as e:
             print(f'error : {str(e)}')
             ftp.disconnect()
-            return False,processedImages
+            ret["status"] = False
             
         ftp.disconnect()
-        
-        return True,processedImages
+        ret["data"] = processedImages
+        return ret
         
     def processListing(self,images,websiteId,listingId):
         processedImages = []
@@ -151,9 +153,9 @@ class ImageGenerator:
                 threads.append(executor.submit(self.generateImages,websiteId,listingId,imageId,imagePath,imageUrl,position,item))
         
             for task in as_completed(threads):
-                status,data = task.result()
-                if status == True:
-                    processedImages.append(data)
+                data = task.result()
+                if data["status"] == True:
+                    processedImages.append(data["data"])
         
         return processedImages
 
