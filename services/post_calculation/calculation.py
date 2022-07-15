@@ -101,7 +101,15 @@ class MarketCheckCalculation:
         
         website_id = data["website_id"]
         
-        ltv_resp = self.mc_calc_rules.calculate(source_mrp,registration,mileage,website_id)
+        make = data["predicted_make"]
+        
+        model = data["predicted_model"]
+        
+        engine_cc = data.get("engine_cylinders_cc",None)
+        
+        listing_id = data["_id"]
+
+        ltv_resp = self.mc_calc_rules.calculate(source_mrp,registration,mileage,website_id,make,model,engine_cc,listing_id)
         
         if ltv_resp["status"] == True:
             mm_price = ltv_resp["mm_price"]

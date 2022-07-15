@@ -63,6 +63,7 @@ class TopicHandler:
                     result = self.mysqldb.recCustomQuery(f'SELECT ID,Status,Website_ID,mm_product_url From fl_listings WHERE registration="{mapped_data["registration"]}"')
                     
                     if len(result) == 0:
+                        
                         mapped_data["create_ts"] = {"func":"now()"}
                         mapped_data["updated_at"] = {"func":"now()"}
                         

@@ -1,7 +1,10 @@
 import json
 import sys
 
+
 sys.path.append("/libs")
+
+from helper import get_current_datetime
 
 from mysql_database import MysqlDatabase
 
@@ -9,14 +12,27 @@ from dealer_forecourt import DealerForecourt
 
 from ltv import LtvCalculationRules
 
+from old_margin_calculation import OldMarginCalculation
+
+from mongo_database import MongoDatabase
+
 class MarketCheckLtvCalculationRules:
     
     def __init__(self) -> None:
         self.mysql_db = MysqlDatabase()
         self.dealer_forecourt = DealerForecourt(self.mysql_db)
         self.old_ltv = LtvCalculationRules()
+        self.old_margin_calc = OldMarginCalculation()
+        self.mongodb = MongoDatabase()
     
-    def calculate(self,source_price,registration,mileage,website_id):
+    
+    def calculate_old_margin(self,make,model,engine_cc):
+        
+        margin = self.old_margin_calc.calculateMargin(make,model,engine_cc)
+        
+        return margin
+    
+    def calculate(self,source_price,registration,mileage,website_id,make,model,engine_cc,listing_id):
         
         if source_price < 11999:
             
@@ -25,6 +41,20 @@ class MarketCheckLtvCalculationRules:
             print(f'forecourt_value -> {forecourt_value} , source_price -> {source_price}')
     
             if forecourt_value == None:
+                event_data = {}
+                event_data["_id"] = f'{registration}_forecourt_value_not_available'
+                event_data["name"] = "forecourt_value_not_available"
+                event_data["make"] = make
+                event_data["model"] = model
+                event_data["registration"] = registration
+                event_data["mileage"] = mileage
+                event_data["listing_id"] = listing_id
+                event_data["created_at"] = get_current_datetime()
+                
+                try:
+                    self.mongodb.report_event_collection.insert_one(event_data)
+                except Exception as e:
+                    print(f'error : {str(e)}')
                 
                 return {
                     "status":False,
@@ -45,6 +75,25 @@ class MarketCheckLtvCalculationRules:
             ltv_percentage = (provisional_mm_price / forecourt_value) * 100
             
             if ltv_percentage >= 120:
+                
+                event_data = {}
+                event_data["_id"] = f'{registration}_ltv_percentage_>=120'
+                event_data["name"] = "ltv_percentage_>=120"
+                event_data["make"] = make
+                event_data["model"] = model
+                event_data["registration"] = registration
+                event_data["mileage"] = mileage
+                event_data["listing_id"] = listing_id
+                event_data["ltv_percentage"] = ltv_percentage
+                event_data["provisional_mm_price"] = provisional_mm_price
+                event_data["forecourt_value"] = forecourt_value
+                event_data["created_at"] = get_current_datetime()
+                
+                try:
+                    self.mongodb.report_event_collection.insert_one(event_data)
+                except Exception as e:
+                    print(f'error : {str(e)}')
+                
                 return {
                     "status":False,
                     "forecourt_call":True,
@@ -55,7 +104,7 @@ class MarketCheckLtvCalculationRules:
                     "response": json.dumps(forecourt_response),
                     "ltv_status":0
                 }
-                #  need to log this event
+                
             
             if ltv_percentage < 110:
                 max_margin = float(forecourt_value) * 1.10
@@ -65,6 +114,13 @@ class MarketCheckLtvCalculationRules:
             
             mm_price = provisional_mm_price + margin
             
+            if engine_cc != None:
+                old_margin = self.calculate_old_margin(make,model,engine_cc)
+                old_mm_price = source_price + old_margin
+                final_ltv = self.old_ltv.calculate(old_mm_price,forecourt_value)
+            else:
+                final_ltv = self.old_ltv.calculate(mm_price,forecourt_value)
+            
             return  {
                     "status":True,
                     "forecourt_call":True,
@@ -72,7 +128,7 @@ class MarketCheckLtvCalculationRules:
                     "forecourt_price":forecourt_value,
                     "margin":int(margin),
                     "response": json.dumps(forecourt_response),
-                    "ltv":self.old_ltv.calculate(mm_price,forecourt_value),
+                    "ltv":final_ltv,
                     "ltv_percentage":ltv_percentage,
                     "ltv_status":1
                 }

@@ -23,6 +23,8 @@ class MongoDatabase:
         self.valuation_data = self.db["valuation-data"]
         
         self.listing_event_collection = self.db["listing-events"]
+        
+        self.report_event_collection = self.db["report-events"]
     
     def insert_event(self,collection,data):
         now = get_current_datetime()
