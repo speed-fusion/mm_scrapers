@@ -97,12 +97,12 @@ class TopicHandler:
                                 continue
                             
                             if status in ["active"]:
-                                self.mysqldb.recUpdate("fl_listing",mapped_data,update_at)
+                                self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
                                 continue
                             
                             if status == "expired":
                                 mapped_data["Status"] = "active"
-                                self.mysqldb.recUpdate("fl_listing",mapped_data,update_at)
+                                self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
                                 continue
                         
                 except Exception as e:
