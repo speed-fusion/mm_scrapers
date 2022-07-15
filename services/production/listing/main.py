@@ -109,6 +109,7 @@ class TopicHandler:
                                 continue
                             
                             if status in ["active"]:
+                                mapped_data["Status"] = status
                                 self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
                                 continue
                             
