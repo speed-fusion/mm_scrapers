@@ -154,7 +154,7 @@ class MarketCheck:
         
         df = pd.read_csv(filepath)
         
-        df = df[df.dealer_id == 10024965]
+        df = df[df.dealer_id == 10038922]
         
         dealers = self.parse_dealers(df)
         
