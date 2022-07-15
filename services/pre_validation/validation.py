@@ -9,7 +9,7 @@ class MarketCheckValidation:
         built = data["built"]
         mileage = data["mileage"]
         registration = data["registration"]
-        scraped = data["scraped"]
+        scrapped = data["scrapped"]
         imported = data["imported"]
         
         status,message = self.price_validation(source_mrp)
@@ -40,7 +40,7 @@ class MarketCheckValidation:
             log["error_message"] = message
             return False,log
         
-        status,message = self.scraped_validation(scraped)
+        status,message = self.scraped_validation(scrapped)
         if status == False:
             log["error_message"] = message
             return False,log
@@ -116,12 +116,12 @@ class MarketCheckValidation:
         else:
             return False,f'mileage({mileage}) is more than maxMileage({maxMileage})'
     
-    def scraped_validation(self,scraped):
+    def scraped_validation(self,scrapped):
         
-        if scraped == None:
+        if scrapped == None:
             return False,"scraped column value not available"
         
-        if scraped == True:
+        if scrapped == True:
             return False,f'value of scraped column is True.'
         
         return True,None
