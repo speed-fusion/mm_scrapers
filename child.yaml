@@ -74,6 +74,13 @@ services:
 
     env_file:
       - .prod.env
+    
+    deploy:
+        mode: replicated
+        replicas: 3
+        resources:
+          limits:
+            cpus: '4'
 
     network_mode : host
 

@@ -47,4 +47,10 @@ class LtvCalculationRules:
         for item in self.personalized_percentage:
             tmp[item["name"]] = None
         return tmp
-    
+
+
+if __name__ == "__main__":
+    ltv = LtvCalculationRules()
+    mm_price = 13398
+    forecourt = 12180
+    print(ltv.calculate(mm_price,forecourt))
