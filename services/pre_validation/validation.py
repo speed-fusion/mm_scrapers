@@ -72,10 +72,7 @@ class MarketCheckValidation:
         
         minPrice = 4700
         
-        if price <= maxPrice:
-            return True,None
-        
-        if price >= minPrice:
+        if price <= maxPrice and price >= minPrice:
             return True,None
         
         return False,f'price({price}) is more than max price({maxPrice}) or price is less than min price({minPrice})'
