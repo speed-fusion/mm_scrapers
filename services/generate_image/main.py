@@ -55,31 +55,31 @@ class TopicHandler:
                     "status":"active"
                 }))
 
-                if len(images) == 0:
-                    continue
+                if len(images) > 0:
                 
-                result = self.image_generator.processListing(images,website_id,mysql_listing_id)
-                
-                for item in result:
+                    result = self.image_generator.processListing(images,website_id,mysql_listing_id)
                     
-                    tmp = {}
-                    tmp["org"] = item["org"]
-                    tmp["large"] = item["large"]
-                    tmp["thumb"] = item["thumb"]
-                    tmp["image_generated"] = item["status"]
+                    for item in result:
+                        
+                        tmp = {}
+                        tmp["org"] = item["org"]
+                        tmp["large"] = item["large"]
+                        tmp["thumb"] = item["thumb"]
+                        tmp["image_generated"] = item["status"]
+                        
+                        if item["status"] == False:
+                            tmp["status"] ="expired"
+                            tmp["message"] = "image generation failed"
+                        
+                        self.mongodb.images_collection.update_one({"_id":item["id"]},{"$set":tmp})
+                else:
+                    message = {
+                        "listing_id":listing_id,
+                        "website_id":website_id,
+                        }
                     
-                    if item["status"] == False:
-                        tmp["status"] ="expired"
-                        tmp["message"] = "image generation failed"
-                    
-                    self.mongodb.images_collection.update_one({"_id":item["id"]},{"$set":tmp})
-                
-                message = {
-                    "listing_id":listing_id,
-                    "website_id":website_id,
-                    }
-                
-                self.producer.produce_message(message)
+                    self.producer.produce_message(message)
+                    time.sleep(4)
 
 
 if __name__ == "__main__":
