@@ -1,5 +1,7 @@
 import sys
 
+import pymongo
+
 sys.path.append("/libs")
 
 from datetime import timedelta
@@ -43,7 +45,7 @@ class TopicHandler:
                 },
             }
             
-            images = [i["url"] for i in list(self.mongodb.images_collection.find(img_where).limit(30))]
+            images = [i["url"] for i in list(self.mongodb.images_collection.find(img_where).sort("updated_at",pymongo.ASCENDING).limit(30))]
             
             if len(images) > 0:
                 submit_res = self.car_cutter.check_status(images)
