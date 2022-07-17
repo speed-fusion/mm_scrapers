@@ -225,7 +225,7 @@ class CarCutter:
                 downloadedImages.append({
                     "where":{"_id":data["_id"]},
                     "what":{
-                        "car_cutter_downloaded":True
+                        "$set":{"car_cutter_downloaded":True}
                     }
                 })
                 
