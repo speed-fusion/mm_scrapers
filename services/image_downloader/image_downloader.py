@@ -3,6 +3,7 @@ import hashlib
 from pathlib import Path
 import os
 import requests
+import traceback
 
 class ImageDownloader:
     def __init__(self) -> None:
@@ -18,6 +19,8 @@ class ImageDownloader:
         self.max_retry = 10
         
         self.datacenterProxy = os.environ.get("DATACENTER_PROXY",None)
+        
+        print(f'proxy : {self.datacenterProxy}')
         
         self.proxy = {
             "http":self.datacenterProxy,
@@ -49,6 +52,7 @@ class ImageDownloader:
                 break
             except Exception as e:
                 print(f'failed to download image : {url}')
+                print(traceback.print_exc())
                 
         
         if response == None:
