@@ -14,6 +14,8 @@ from car_cutter_helper import generate_sha1_hash
 
 from helper import get_current_datetime
 
+import time
+
 class TopicHandler:
     def __init__(self):
         print("transform topic handler init")
@@ -34,7 +36,7 @@ class TopicHandler:
                 "car_cutter_ready":False,
                 "status":"active",
                 "status_check_count":{
-                    "$lt":100
+                    "$lt":200
                 },
                 "status_checked_at":{
                     "$lt":x_seconds_ago
@@ -42,8 +44,6 @@ class TopicHandler:
             }
             
             images = [i["url"] for i in list(self.mongodb.images_collection.find(img_where).limit(30))]
-            
-            print(f'total images : {len(images)}')
             
             if len(images) > 0:
                 submit_res = self.car_cutter.check_status(images)
@@ -78,7 +78,9 @@ class TopicHandler:
                         img_db_update["download_failed_count"] = 0
                         self.mongodb.images_collection.update_one({"_id":id},{"$set":img_db_update})
                     else:
-                        self.mongodb.images_collection.update_one({"_id":id},{"$inc":{"status_check_count":1}})                    
+                        self.mongodb.images_collection.update_one({"_id":id},{"$inc":{"status_check_count":1}})
+            else:
+                time.sleep(10)                  
 
 if __name__ == "__main__":
     topic_handler = TopicHandler()
