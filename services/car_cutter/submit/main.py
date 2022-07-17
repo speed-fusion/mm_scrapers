@@ -72,7 +72,7 @@ class TopicHandler:
                         })
                     
                     self.mongodb.listings_collection.update_one({"_id":listing_id},{"$set":{
-                        "cc_total_images":cc_total_images
+                        "cc_total_img":cc_total_images
                     }})
                     
                     self.mongodb.images_collection.update_many({"listing_id":listing_id,"car_cutter_classified":False},{
