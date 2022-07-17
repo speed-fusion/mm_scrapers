@@ -71,7 +71,7 @@ class TopicHandler:
                 
                 self.mysqldb.connect()
                 
-                self.mysqldb.recCustomQuery(f'UPDATE fl_listings SET Main_photo="{thumb_image_path}",car_cutter={data["cc_status"]},cc_total_img={data["cc_total_img"]},Status="active",mm_product_url="{mm_url}" WHERE ID={mysql_listing_id} AND Status NOT IN("manual_expire","pending","sold")')
+                self.mysqldb.recCustomQuery(f'UPDATE fl_listings SET Main_photo="{thumb_image_path}",car_cutter=1,cc_total_img={data["cc_total_img"]},Status="active",mm_product_url="{mm_url}" WHERE ID={mysql_listing_id} AND Status NOT IN("manual_expire","pending","sold")')
                 
                 self.delete_existing_image_entries(mysql_listing_id)
                 
