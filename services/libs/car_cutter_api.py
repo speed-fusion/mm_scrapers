@@ -114,7 +114,14 @@ class CarCutter:
                             "message":"maximum interior image limit reached."
                         }
                     })
-        
+            else:
+                all_images.append({
+                        "_id":id,
+                        "data":{
+                            "status":"expired",
+                            "message":"unknown class"
+                        }
+                    })
         index = 0
         
         for img in exterior:

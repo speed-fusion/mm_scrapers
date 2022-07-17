@@ -73,7 +73,8 @@ class TopicHandler:
                         continue
                     
                     image_update = {}
-                    is_car = self.image_classifier.is_car_image(item["path"])
+                    # is_car = self.image_classifier.is_car_image(item["path"])
+                    is_car = True
                     image_update["is_car"] = is_car
                     image_update["image_classify"] = True
                     if is_car == False:
