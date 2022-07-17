@@ -34,7 +34,7 @@ class TopicHandler:
                 "car_cutter_ready":False,
                 "status":"active",
                 "status_check_count":{
-                    "$lt":10
+                    "$lt":100
                 },
                 "status_checked_at":{
                     "$lt":x_seconds_ago
@@ -42,7 +42,9 @@ class TopicHandler:
             }
             
             images = [i["url"] for i in list(self.mongodb.images_collection.find(img_where).limit(30))]
+            
             print(f'total images : {len(images)}')
+            
             if len(images) > 0:
                 submit_res = self.car_cutter.check_status(images)
                 
