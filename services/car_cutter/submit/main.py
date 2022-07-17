@@ -59,11 +59,12 @@ class TopicHandler:
                 }
                 
                 images = [i["url"] for i in list(self.mongodb.images_collection.find(img_where))]
-                
+                print(f'total images :{len(images)}')
                 if len(images) > 0:
                     cc_total_images,processed_images = self.car_cutter.submit_images(images)
                     
-                    for item in processed_images:                   
+                    for item in processed_images:
+                        print(item)                   
                         self.mongodb.images_collection.update_one({"_id":item["_id"]},{
                             "$set":item["data"]
                         })
