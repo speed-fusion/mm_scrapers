@@ -8,6 +8,8 @@ from image_generator import ImageGenerator
 
 from pulsar_manager import PulsarManager
 
+import time
+
 class TopicHandler:
     def __init__(self):
         print("transform topic handler init")
@@ -34,6 +36,10 @@ class TopicHandler:
                 
                 if active_count != image_downloaded_count:
                     print(f'skipping : {listing_id} , active_count : {active_count} , image_downloaded_count : {image_downloaded_count}')
+                    continue
+                
+                if active_count == 0 and image_downloaded_count == 0:
+                    time.sleep(5)
                     continue
                 
                 data = self.mongodb.listings_collection.find_one({"_id":listing_id})
