@@ -9,7 +9,7 @@ from mongo_database import MongoDatabase
 
 from car_cutter_api import CarCutter
 
-from car_cutter_helper import generate_sha1_hash
+from helper import get_current_datetime
 
 class TopicHandler:
     def __init__(self):
@@ -64,7 +64,9 @@ class TopicHandler:
                     cc_total_images,processed_images = self.car_cutter.submit_images(images)
                     
                     for item in processed_images:
-                        print(item)                   
+                        print(item)
+                        item["status_check_count"] = 0
+                        item["status_checked_at"] = get_current_datetime()   
                         self.mongodb.images_collection.update_one({"_id":item["_id"]},{
                             "$set":item["data"]
                         })

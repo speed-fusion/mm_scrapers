@@ -77,6 +77,8 @@ class TopicHandler:
                     is_car = True
                     image_update["is_car"] = is_car
                     image_update["image_classify"] = True
+ 
+                    
                     if is_car == False:
                         image_update["status"] = "expired"
                     else:
