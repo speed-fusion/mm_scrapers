@@ -151,10 +151,16 @@ class CarCutter:
         headers = {
         'Authorization': f'Bearer {self.api_key}'
         }
+        json_response = None
         
-        response = requests.request("GET", url, headers=headers)
-
-        json_response = response.json()
+        for i in range(0,self.max_retry):
+            try:
+                response = requests.request("GET", url, headers=headers)
+                json_response = response.json()
+                json_response["data"]["images"]
+                break
+            except:
+                pass
         
         return json_response
     
