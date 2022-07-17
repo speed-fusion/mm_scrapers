@@ -50,12 +50,17 @@ class CarCutter:
         json_response = None
         
         for i in range(0,self.max_retry):
-            response = requests.request("POST", url, headers=headers, data=payload)
-            if response.status_code == 200:
-                json_response = response.json()
-                break
+            try:
+                response = requests.request("POST", url, headers=headers, data=payload)
+                if response.status_code == 200:
+                    json_response = response.json()
+                    json_response["data"]["images"]
+                    break
+            except:
+                pass
         
-        print(json_response)
+        if json_response == None:
+            json_response = {"data":{"images":[]}}
         
         
         all_images = []
