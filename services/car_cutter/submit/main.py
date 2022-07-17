@@ -7,6 +7,8 @@ from pulsar_manager import PulsarManager
 
 from mongo_database import MongoDatabase
 
+from mysql_database import MysqlDatabase
+
 from car_cutter_api import CarCutter
 
 from helper import get_current_datetime
@@ -22,6 +24,8 @@ class TopicHandler:
         self.mongodb = MongoDatabase()
         
         self.car_cutter = CarCutter()
+        
+        self.mysqldb = MysqlDatabase()
     
     
     def main(self):
@@ -62,6 +66,13 @@ class TopicHandler:
                 print(f'total images :{len(images)}')
                 if len(images) > 0:
                     cc_total_images,processed_images = self.car_cutter.submit_images(images)
+                    
+                    if len(processed_images) == 0:
+                        self.mysqldb.connect()
+                        self.mysqldb.recUpdate("fl_listings",{"Status":"expired","why":"car cutter returned zero image in submit endpoint"},{"ID":data["mysql_listing_id"]})
+                        self.mysqldb.disconnect()
+                        self.mongodb.images_collection.delete_many({"listing_id":listing_id})
+                        continue                    
                     
                     for item in processed_images:
                         print(item)
