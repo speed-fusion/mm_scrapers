@@ -59,7 +59,9 @@ class CarCutter:
         
         
         all_images = []
-        
+        unique_angles_found = {}
+        exterior = []
+        interior = []
         for item in json_response["data"]["images"]:
             url = item["image"]
             id = generate_sha1_hash(url)
@@ -84,10 +86,6 @@ class CarCutter:
                     "status_checked_at":get_current_datetime()
                 }
             }
-            
-            unique_angles_found = {}
-            exterior = []
-            interior = []
             
             if "exterior" in angle:
                 if angle in self.background_remove_angles:
