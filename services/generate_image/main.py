@@ -24,7 +24,7 @@ class TopicHandler:
     
     def main(self):
         print("listening for new messages")
-        while True:
+        for i in range(0,5):
             
             
             all_listings = list(self.mongodb.images_collection.distinct("listing_id"))
@@ -53,6 +53,8 @@ class TopicHandler:
                     "status":"active"
                 }))
 
+                if len(images) == 0:
+                    continue
                 
                 result = self.image_generator.processListing(images,website_id,mysql_listing_id)
                 
