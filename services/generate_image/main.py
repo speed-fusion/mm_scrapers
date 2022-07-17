@@ -62,14 +62,14 @@ class TopicHandler:
                     for item in result:
                         
                         tmp = {}
-                        tmp["org"] = item["org"]
-                        tmp["large"] = item["large"]
-                        tmp["thumb"] = item["thumb"]
-                        tmp["image_generated"] = item["status"]
-                        
                         if item["status"] == False:
                             tmp["status"] ="expired"
                             tmp["message"] = "image generation failed"
+                        else:
+                            tmp["org"] = item["org"]
+                            tmp["large"] = item["large"]
+                            tmp["thumb"] = item["thumb"]
+                            tmp["image_generated"] = item["status"]
                         
                         self.mongodb.images_collection.update_one({"_id":item["id"]},{"$set":tmp})
                 else:
