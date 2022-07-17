@@ -58,55 +58,58 @@ class ImageGenerator:
         
         ftp = ftpHandler()
         
-        try:
-            rawImage = self.read_image(imagePath)
-            
-            orgImagePath = f'S{websiteId}/ad{listingId}/org_{imageId}.jpg'
-            
-            tmp = {}
-            tmp["path"] = orgImagePath
-            tmp["type"] = "org"
-            tmp["size"] = None
-            
-            processedImages["org"] = tmp
-            
-            for size in self.sizes:
+        for counter in range(0,3):
+            try:
+                rawImage = self.read_image(imagePath)
+                
+                orgImagePath = f'S{websiteId}/ad{listingId}/org_{imageId}.jpg'
+                
                 tmp = {}
-                imagePathTmp = f'S{websiteId}/ad{listingId}/{size["name"]}_{imageId}.jpg'
-                tmp['path'] = imagePathTmp
-                tmp['type'] = size["name"]
-                tmp["size"] = size
-                processedImages[size["name"]] = tmp
+                tmp["path"] = orgImagePath
+                tmp["type"] = "org"
+                tmp["size"] = None
                 
-            
-            
-            # org_image_path = self.files_dir.joinpath(orgImagePath)
-            
-            
-            
-            
-            t_img,orgImage = self.convert_image(rawImage)
-            ftp.uploadFile(orgImagePath,orgImage)
-            
-                # upload image in server through ftp
-                # t_img.save(org_image_path)
+                processedImages["org"] = tmp
                 
-            
-            for size in self.sizes:
-                imagePathTmp = f'S{websiteId}/ad{listingId}/{size["name"]}_{imageId}.jpg'
-                # img_path_tmp = self.files_dir.joinpath(imagePathTmp)
-                # if img_path_tmp.exists() == False:
-                t_img,buff = self.convert_image(rawImage,size)
+                for size in self.sizes:
+                    tmp = {}
+                    imagePathTmp = f'S{websiteId}/ad{listingId}/{size["name"]}_{imageId}.jpg'
+                    tmp['path'] = imagePathTmp
+                    tmp['type'] = size["name"]
+                    tmp["size"] = size
+                    processedImages[size["name"]] = tmp
                     
-                ftp.uploadFile(imagePathTmp,buff)
-                    # t_img.save(img_path_tmp)
+                
+                
+                # org_image_path = self.files_dir.joinpath(orgImagePath)
+                
+                
+                
+                
+                t_img,orgImage = self.convert_image(rawImage)
+                ftp.uploadFile(orgImagePath,orgImage)
+                
+                    # upload image in server through ftp
+                    # t_img.save(org_image_path)
+                    
+                
+                for size in self.sizes:
+                    imagePathTmp = f'S{websiteId}/ad{listingId}/{size["name"]}_{imageId}.jpg'
+                    # img_path_tmp = self.files_dir.joinpath(imagePathTmp)
+                    # if img_path_tmp.exists() == False:
+                    t_img,buff = self.convert_image(rawImage,size)
+                        
+                    ftp.uploadFile(imagePathTmp,buff)
+                        # t_img.save(img_path_tmp)
+                
+                processedImages["status"] = True
+                
+                ftp.disconnect()
+                return processedImages
+                
             
-            processedImages["status"] = True
-            
-            return processedImages
-        
-        except Exception as e:
-            print(f'error : {str(e)}')
+            except Exception as e:
+                print(f'error : {str(e)}')
             
         ftp.disconnect()
         
@@ -152,8 +155,7 @@ class ImageGenerator:
         
             for task in as_completed(threads):
                 data = task.result()
-                if data["status"] == True:
-                    processedImages.append(data)
+                processedImages.append(data)
         
         return processedImages
 

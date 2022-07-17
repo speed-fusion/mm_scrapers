@@ -165,6 +165,9 @@ class MarketCheckTransform:
         
         if final["registration"] != None:
             final["registration"] = final["registration"].replace(" ","").strip().upper()
+            final["reg_prediction_status"] = 0
+            final["correct_registration"] = True
+            final["predicted_registration"] = final["registration"]
         
         built = raw.get("built",None)
         final["built"] = clean_int(built)
@@ -225,8 +228,6 @@ class MarketCheckTransform:
         final["transmission"] = clean_string(transmission)
         
         final["images"] = raw.get("images",[])
-        
-        self.upsert_images(listing_id,final["images"])
         
         final["title"] = generate_title(make,model,trim)
         

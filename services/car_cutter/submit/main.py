@@ -1,4 +1,5 @@
 import sys
+from unittest import result
 
 sys.path.append("/libs")
 
@@ -6,7 +7,9 @@ from pulsar_manager import PulsarManager
 
 from mongo_database import MongoDatabase
 
-from predictor import Predictor
+from car_cutter_api import CarCutter
+
+from car_cutter_helper import generate_sha1_hash
 
 class TopicHandler:
     def __init__(self):
@@ -14,13 +17,12 @@ class TopicHandler:
         
         pulsar_manager = PulsarManager()
         
-        self.consumer = pulsar_manager.create_consumer(pulsar_manager.topics.LISTING_PREDICT_MAKE_MODEL)
-        
-        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.LISTING_POST_CALCULATION)
+        self.consumer = pulsar_manager.create_consumer(pulsar_manager.topics.CAR_CUTTER_SUBMIT)
         
         self.mongodb = MongoDatabase()
         
-        self.predictor = Predictor()
+        self.car_cutter = CarCutter()
+    
     
     def main(self):
         print("listening for new messages")
@@ -47,34 +49,30 @@ class TopicHandler:
             if website_id == 17:
                 pass
             
-            
             if website_id == 18:
                 
-                make_model_prediction = data.get("make_model_prediction",False)
+                img_where = {
+                    "listing_id":listing_id,
+                    "is_car":True,
+                    "car_cutter_classified":False,
+                    "status":"active"
+                }
                 
-                if make_model_prediction == False:
-                    title = data["title"]
+                images = [i["url"] for i in list(self.mongodb.images_collection.find(img_where))]
+                
+                if len(images) > 0:
+                    cc_total_images,processed_images = self.car_cutter.submit_images(images)
                     
-                    pred_data = self.predictor.predict(title)
+                    for item in processed_images:                   
+                        self.mongodb.images_collection.update_one({"_id":item["_id"]},{
+                            "$set":item["data"]
+                        })
                     
-                    pred_data["make_model_prediction"] = True
-                    
-                    pred_data["title"] = f'{pred_data["predicted_make"]} {pred_data["predicted_model"]}'
-                    
-                    self.mongodb.listings_collection.update_one(
-                        where,
-                        {
-                            "$set":pred_data
-                        }
-                    )
-                    
-                    data.update(pred_data)
-                    
-                    message["data"] = data
-            
-            self.producer.produce_message(message)
-            
-        
+                    self.mongodb.listings_collection.update_one({"_id":listing_id},{"$set":{
+                        "cc_total_images":cc_total_images
+                    }})
+
+
 if __name__ == "__main__":
     topic_handler = TopicHandler()
     topic_handler.main()

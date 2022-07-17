@@ -20,7 +20,7 @@ class TopicHandler:
         
         self.consumer = pulsar_manager.create_consumer(pulsar_manager.topics.LISTINGS_UPSERT_PROD_DB)
         
-        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.CAR_CUTTER)
+        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.DOWNLOAD_IMAGE)
         
         self.mongodb = MongoDatabase()
         
@@ -83,11 +83,19 @@ class TopicHandler:
                         })
                         
                     else:
-                        status = result[0]["Status"]
+                        mysql_entry = result[0]
                         
-                        update_at = {"ID":result[0]["ID"]}
+                        if not "mysql_listing_id" in data or not "mm_url" in data:
+                            self.mongodb.listings_collection.update_one(where,{"$set":{
+                                "mm_url":mysql_entry["mm_product_url"],
+                                "mysql_listing_id":mysql_entry["ID"]
+                            }})
+                            
+                        status = mysql_entry["Status"]
                         
-                        if result[0]["Website_ID"] == 17:
+                        update_at = {"ID":mysql_entry["ID"]}
+                        
+                        if mysql_entry["Website_ID"] == 17:
                             if status in ["to_parse","active","pending"]:
                                 data_tmp = data.copy()
                                 
@@ -100,11 +108,7 @@ class TopicHandler:
                                 
                                 self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
                                 
-                                self.mongodb.listings_collection.update_one(where,{"$set":{
-                                    "mm_url":result[0]["mm_product_url"],
-                                    "mysql_listing_id": result[0]["ID"]
-                                }})
-                        else:
+                        elif mysql_entry["Website_ID"] == 18:
                             if status in ["manual_expire","pending","sold"]:
                                 continue
                             
@@ -120,13 +124,14 @@ class TopicHandler:
                             
                             if status == "to_parse":
                                 pass
-                            
+                        else:
+                            continue
+                        
                         
                 except Exception as e:
                     print(f'error : {str(e)}')
                     print(traceback.print_exc())
                 self.mysqldb.disconnect()
-                
                 
             self.producer.produce_message(message)  
             

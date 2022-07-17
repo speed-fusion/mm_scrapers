@@ -1,4 +1,5 @@
 import hashlib
+import shutil
 import uuid
 from datetime import datetime
 def generate_unique_uuid():
@@ -45,5 +46,9 @@ def generate_sha1(data):
     h = hashlib.sha1()
     h.update(str(data).encode("utf-8"))
     return h.hexdigest()
-    
-    
+
+def delete_directory(path):
+    try:
+        shutil.rmtree(str(path))
+    except Exception as e:
+        print(f'error : {str(e)}')

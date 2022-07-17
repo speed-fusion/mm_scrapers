@@ -11,6 +11,7 @@ class MarketCheckValidation:
         registration = data["registration"]
         scrapped = data["scrapped"]
         imported = data["imported"]
+        images = data["images"]
         
         status,message = self.price_validation(source_mrp)
         log = {}
@@ -50,7 +51,23 @@ class MarketCheckValidation:
             log["error_message"] = message
             return False,log
         
+        status,message = self.image_validation(images)
+        if status == False:
+            log["error_message"] = message
+            return False,log
+        
         return True,{"error_message":""}
+    
+    
+    def image_validation(self,images):
+        
+        if images == None:
+            return False,"no image available."
+        
+        if len(images) == 0:
+            return False,"zero images"
+        
+        return True,None
     
     def registration_validation(self,registration):
         

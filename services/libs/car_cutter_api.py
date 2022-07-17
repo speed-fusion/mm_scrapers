@@ -3,6 +3,7 @@ import time
 import requests
 from car_cutter_helper import load_images,generate_sha1_hash
 from concurrent.futures import ThreadPoolExecutor,as_completed
+from helper import get_current_datetime
 
 from imageDownloader import ImageDownloader
 
@@ -58,7 +59,76 @@ class CarCutter:
                 json_response = response.json()
                 break
         
-        return json_response
+        all_images = []
+        
+        for item in json_response["data"]["images"]:
+            url = item["image"]
+            id = generate_sha1_hash(url)
+            
+            if item["quality"] != 'ok':
+                all_images.append({
+                    "_id":id,
+                    "data":{
+                        "status":"expired",
+                        "message":"image quality is bad (car cutter)"
+                    }
+                })
+                continue
+            
+            angle = "_".join(item["angle"]).lower()
+            
+            img_item = {
+                "_id":id,
+                "data":{
+                    "car_cutter_classified":True,
+                    "car_cutter_class":angle,
+                    "status_checked_at":get_current_datetime()
+                }
+            }
+            
+            unique_angles_found = {}
+            exterior = []
+            interior = []
+            
+            if "exterior" in angle:
+                if angle in self.background_remove_angles:
+                    if "front" in angle:
+                        unique_angles_found[angle] = 1
+                        img_item["data"]["car_cutter_ready"] = False
+                        exterior.insert(0,img_item)
+                    elif "rear" in angle:
+                        unique_angles_found[angle] = 1
+                        img_item["data"]["car_cutter_ready"] = False
+                        exterior.append(img_item)
+                else:
+                    pass
+            elif "interior" in angle:
+                if len(interior) <= self.max_images - 4:
+                    img_item["data"]["car_cutter_ready"] = True
+                    img_item["data"]["car_cutter_downloaded"] = True 
+                    interior.append(img_item)
+                else:
+                    all_images.append({
+                        "_id":id,
+                        "data":{
+                            "status":"expired",
+                            "message":"maximum interior image limit reached."
+                        }
+                    })
+        
+        index = 0
+        
+        for img in exterior:
+            img["data"]["position"] = index
+            index += 1
+            all_images.append(img)
+        
+        for img in interior:
+            img["data"]["position"] = index
+            index += 1
+            all_images.append(img)
+            
+        return len(unique_angles_found),all_images
     
     def generate_query_param(self,key,images):
         q = ""
@@ -66,7 +136,6 @@ class CarCutter:
         for i in images:
             if i != None:
                 q += f'{key}={i}&'
-                
         return q.strip("&")
     
     def check_status(self,images):
@@ -78,7 +147,7 @@ class CarCutter:
         headers = {
         'Authorization': f'Bearer {self.api_key}'
         }
-
+        
         response = requests.request("GET", url, headers=headers)
 
         json_response = response.json()
@@ -138,10 +207,23 @@ class CarCutter:
                 status,data = task.result()
                 
                 if status == False:
-                    print(f'failed to donwload image : {data["url"]}')
+                    print(f'failed to download image : {data["url"]}')
+                    downloadedImages.append({
+                        "where":{"_id":data["_id"]},
+                        "what":{
+                            "$inc":{
+                                "download_failed_count":1
+                            }
+                        }
+                    })
                     continue
                 
-                downloadedImages.append(data)
+                downloadedImages.append({
+                    "where":{"_id":data["_id"]},
+                    "what":{
+                        "car_cutter_downloaded":True
+                    }
+                })
                 
         return downloadedImages
     

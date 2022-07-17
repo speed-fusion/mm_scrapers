@@ -1,3 +1,4 @@
+from pathlib import Path
 import sys
 
 sys.path.append("/libs")
@@ -6,7 +7,9 @@ from pulsar_manager import PulsarManager
 import pymongo
 from mongo_database import MongoDatabase
 from mysql_database import MysqlDatabase
-import time
+
+from helper import delete_directory
+
 class TopicHandler:
     def __init__(self):
         print("transform topic handler init")
@@ -18,7 +21,14 @@ class TopicHandler:
         self.mongodb = MongoDatabase()
         
         self.mysqldb = MysqlDatabase()
+        
+        self.media_dir = Path("/media")
     
+    def delete_existing_image_entries(self,listing_id):
+        # current_image_entries = self.mysqldb.recCustomQuery(f'SELECT ID FROM fl_listing_photos WHERE Listing_ID={listing_id}')
+        # for item in current_image_entries:
+        #     self.mysqldb.recDelete("fl_listing_photos",{"ID":item["ID"]})
+        self.mysqldb.recDelete("fl_listing_photos",{"Listing_ID":listing_id})
     
     def main(self):
         print("listening for new messages")
@@ -49,9 +59,10 @@ class TopicHandler:
                 
                 mysql_listing_id = data["mysql_listing_id"]
                 
-                images = list(self.mongodb.images_collection.find({"listing_id":listing_id,"is_car_image":True,"image_ready":1}).sort("position",pymongo.ASCENDING))
+                images = list(self.mongodb.images_collection.find({"listing_id":listing_id,"image_generated":True,"status":"active"}).sort("position",pymongo.ASCENDING))
                 
                 if len(images) == 0:
+                    # keep it in to_parse so we will know when such event occurs.
                     continue
                 
                 thumb_image_path = images[0]["thumb"]["path"]
@@ -61,6 +72,8 @@ class TopicHandler:
                 self.mysqldb.connect()
                 
                 self.mysqldb.recCustomQuery(f'UPDATE fl_listings SET Main_photo="{thumb_image_path}",car_cutter={data["cc_status"]},cc_total_img={data["cc_total_img"]},Status="active",mm_product_url="{mm_url}" WHERE ID={mysql_listing_id} AND Status NOT IN("manual_expire","pending","sold")')
+                
+                self.delete_existing_image_entries(mysql_listing_id)
                 
                 for item in images:
                     tmp = {}
@@ -87,24 +100,24 @@ class TopicHandler:
                     
                     tmp["old_image"] = 0
                     
+                    self.mysqldb.recInsert("fl_listing_photos",tmp)
                     
-                    try:
-                        
-                        self.mysqldb.recDelete("fl_listing_photos",{"Listing_ID":mysql_listing_id,"old_image":1})
-                        # time.sleep(2)
-                        id = self.mysqldb.recInsert("fl_listing_photos",tmp)
-                        
-                        self.mongodb.images_collection.update_one({"_id":item["_id"]},{
-                            "$set":{
-                                "mysql_photo_id":id
-                            }
-                        })
-                        
-                    except Exception as e:
-                        print(f'error : {str(e)}')
-                
                 self.mysqldb.disconnect()
-        
+                
+                self.delete_mongo_image_data(listing_id)
+                self.delete_images_from_server(website_id,listing_id)
+    
+    def delete_mongo_image_data(self,id):
+        self.mongodb.images_collection.delete_many({
+            "listing_id":id
+        })
+    
+    def delete_images_from_server(self,website_id,listing_id):
+        website_dir = self.media_dir.joinpath(f'S{website_id}')
+        listing_dir = website_dir.joinpath(listing_id)
+        delete_directory(listing_dir)
+    
+    
 if __name__ == "__main__":
     topic_handler = TopicHandler()
     topic_handler.main()

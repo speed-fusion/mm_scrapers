@@ -1,111 +1,77 @@
 import sys
 
-import pymongo
-
 sys.path.append("/libs")
-
-from pulsar_manager import PulsarManager
 
 from mongo_database import MongoDatabase
 
 from image_generator import ImageGenerator
 
+from pulsar_manager import PulsarManager
+
 class TopicHandler:
     def __init__(self):
         print("transform topic handler init")
         
-        pulsar_manager = PulsarManager()
-        
-        self.consumer = pulsar_manager.create_consumer(pulsar_manager.topics.GENERATE_IMAGE)
-        
-        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.FL_LISTING_PHOTOS_INSERT)
-        
         self.mongodb = MongoDatabase()
         
         self.image_generator = ImageGenerator()
-    
+        
+        pulsar_manager = PulsarManager()
+        
+        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.FL_LISTING_PHOTOS_INSERT)
     
     def main(self):
         print("listening for new messages")
         while True:
             
-            message =  self.consumer.consume_message()
-            try:
+            
+            all_listings = list(self.mongodb.images_collection.distinct("listing_id"))
+            
+            for listing_id in all_listings:
                 
-                website_id = message["website_id"]
+                active_count = self.mongodb.images_collection.count_documents({"status":"active","listing_id":listing_id})
+                image_downloaded_count = self.mongodb.images_collection.count_documents({"status":"active","listing_id":listing_id,"car_cutter_downloaded":True})
                 
-                listing_id = message["listing_id"]
-                
-                where = {"_id":listing_id}
-                
-                data = self.mongodb.listings_collection.find_one(where)
-                
-                if data == None:
-                    # add code to report this incident
+                if active_count != image_downloaded_count:
+                    print(f'skipping : {listing_id} , active_count : {active_count} , image_downloaded_count : {image_downloaded_count}')
                     continue
                 
+                data = self.mongodb.listings_collection.find_one({"_id":listing_id})
                 
-                if website_id == 17:
-                    pass
+                website_id = data["website_id"]
+                mysql_listing_id = data["mysql_listing_id"]
                 
-                if website_id == 18:
-                    
-                    mysql_listing_id = data["mysql_listing_id"]
-                    
-                    images = list(self.mongodb.images_collection.find({"listing_id":listing_id,"is_car_image":True,"image_ready":1}).sort("position",pymongo.ASCENDING))
-                    
-                    result = self.image_generator.processListing(images,website_id,mysql_listing_id)
-                    
-                    for item in result:
-                        
-                        tmp = {}
-                        tmp["image_generation_status"] = item["status"]
-                        tmp["org"] = item["org"]
-                        tmp["large"] = item["large"]
-                        tmp["thumb"] = item["thumb"]
-                        self.mongodb.images_collection.update_one({"_id":item["id"]},{"$set":tmp})
-                        
-            except Exception as e:
-                print(f'reprocessing.... : {str(e)}')
+                images = list(self.mongodb.images_collection.find({
+                    "car_cutter_downloaded":True,
+                    "image_generated":False,
+                    "status":"active"
+                }))
+
                 
-            self.producer.produce_message(message)
+                result = self.image_generator.processListing(images,website_id,mysql_listing_id)
+                
+                for item in result:
+                    
+                    tmp = {}
+                    tmp["org"] = item["org"]
+                    tmp["large"] = item["large"]
+                    tmp["thumb"] = item["thumb"]
+                    tmp["image_generated"] = item["status"]
+                    
+                    if item["status"] == False:
+                        tmp["status"] ="expired"
+                        tmp["message"] = "image generation failed"
+                    
+                    self.mongodb.images_collection.update_one({"_id":item["id"]},{"$set":tmp})
+                
+                message = {
+                    "listing_id":listing_id,
+                    "website_id":website_id,
+                    }
+                
+                self.producer.produce_message(message)
 
 
 if __name__ == "__main__":
     topic_handler = TopicHandler()
     topic_handler.main()
-
-
-     # tmp = {}
-                    
-                    # tmp["Listing_ID"] = mysql_listing_id
-                    
-                    # tmp["Position"] = item["position"]
-                    
-                    # tmp["Photo"] = item["large"]["path"]
-                    
-                    # tmp["Thumbnail"] = item["thumb"]["path"]
-            
-                    # tmp["Original"] = item["org"]["path"]
-                    
-                    # tmp["Status"] = "active"
-                    
-                    # tmp["Type"] = "picture"
-                    
-                    # tmp["create_ts"] = {"func":"now()"}
-                    
-                    # tmp["delete_banner_flag"] = 0
-                    
-                    # tmp["approved_from_dashboard"] = 1
-                    
-                    
-                    # try:
-                        
-                    #     self.mysqldb.recInsert("fl_listing_photos",tmp)
-                    
-                    # except Exception as e:
-                    #     print(f'error : {str(e)}')
-                
-                # self.mysqldb
-                
-                # self.mysqldb.disconnect()

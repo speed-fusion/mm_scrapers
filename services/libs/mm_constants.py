@@ -59,7 +59,9 @@ class Topics(Enum):
     
     LISTING_PREDICT_SEAT= f'motormarket{PIPELINE_NAME}.scraper.listing.predict.seat'
     
-    LISTING_PREDICT_CAR_IMAGE= f'motormarket{PIPELINE_NAME}.scraper.listing.predict.car.image'
+    CLASSIFY_IMAGE= f'motormarket{PIPELINE_NAME}.scraper.listing.predict.car.image'
+    
+    DOWNLOAD_IMAGE= f'motormarket{PIPELINE_NAME}.scraper.listing.download.image'
     
     FL_LISTING_PHOTOS_INSERT = f'motormarket{PIPELINE_NAME}.database.fllistingphotos.insert'
     
@@ -68,6 +70,8 @@ class Topics(Enum):
     GENERATE_IMAGE = f'motormarket{PIPELINE_NAME}.listing.generate.image'
     
     CAR_CUTTER = f'motormarket{PIPELINE_NAME}.listing.replace.background.image'
+    
+    CAR_CUTTER_SUBMIT = f'motormarket{PIPELINE_NAME}.listing.car.cutter.submit'
     
     AUTOTRADER_LISTING_SCRAPER = f'motormarket{PIPELINE_NAME}.scraper.autotrader.listing.scrape'
     

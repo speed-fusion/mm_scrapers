@@ -39,18 +39,18 @@ services:
     
     restart: always
   
-  post_validation:
-    build: ./services/post_validation
+  # post_validation:
+  #   build: ./services/post_validation
 
-    volumes:
-      - ./services/libs:/libs
+  #   volumes:
+  #     - ./services/libs:/libs
 
-    env_file:
-      - .prod.env
+  #   env_file:
+  #     - .prod.env
     
-    network_mode : host
+  #   network_mode : host
 
-    restart: always
+  #   restart: always
   
   make_model_prediction:
     build: ./services/ml/prediction/make_model
@@ -75,31 +75,31 @@ services:
     env_file:
       - .prod.env
     
-    deploy:
-        mode: replicated
-        replicas: 3
-        resources:
-          limits:
-            cpus: '4'
+    # deploy:
+    #     mode: replicated
+    #     replicas: 3
+    #     resources:
+    #       limits:
+    #         cpus: '4'
 
     network_mode : host
 
     restart: always
 
-  registration_prediction:
-    build: ./services/ml/prediction/registration
+  # registration_prediction:
+  #   build: ./services/ml/prediction/registration
 
-    volumes:
-      - ./services/libs:/libs
-      - ./media:/media
-      - ./services/ml/prediction/registration/model:/usr/src/app/model
+  #   volumes:
+  #     - ./services/libs:/libs
+  #     - ./media:/media
+  #     - ./services/ml/prediction/registration/model:/usr/src/app/model
 
-    env_file:
-      - .prod.env
+  #   env_file:
+  #     - .prod.env
 
-    network_mode : host
+  #   network_mode : host
     
-    restart: always
+  #   restart: always
   
   post_calculation:
     build: ./services/post_calculation
@@ -131,6 +131,7 @@ services:
 
     volumes:
       - ./services/libs:/libs
+      - ./media:/media
 
     env_file:
       - .prod.env
@@ -139,8 +140,53 @@ services:
 
     restart: always
 
-  car_cutter:
-    build: ./services/car_cutter
+  # car_cutter:
+  #   build: ./services/car_cutter
+
+  #   volumes:
+  #     - ./services/libs:/libs
+  #     - ./media:/media
+
+  #   env_file:
+  #     - .prod.env
+
+  #   network_mode : host
+
+  #   deploy:
+  #       mode: replicated
+  #       replicas: 5
+  #       resources:
+  #         limits:
+  #           cpus: '2'
+
+  car_cutter_submit:
+    build: ./services/car_cutter/submit
+
+    volumes:
+      - ./services/libs:/libs
+
+    env_file:
+      - .prod.env
+
+    network_mode : host
+
+    restart: always
+
+  car_cutter_status_checker:
+    build: ./services/car_cutter/status_checker
+
+    volumes:
+      - ./services/libs:/libs
+
+    env_file:
+      - .prod.env
+
+    network_mode : host
+
+    restart: always
+
+  car_cutter_downloader:
+    build: ./services/car_cutter/downloader
 
     volumes:
       - ./services/libs:/libs
@@ -150,13 +196,6 @@ services:
       - .prod.env
 
     network_mode : host
-
-    deploy:
-        mode: replicated
-        replicas: 5
-        resources:
-          limits:
-            cpus: '2'
 
     restart: always
 

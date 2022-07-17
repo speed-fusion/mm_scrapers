@@ -1,14 +1,12 @@
 import sys
 
-import pymongo
-
 sys.path.append("/libs")
 
 from pulsar_manager import PulsarManager
 
 from mongo_database import MongoDatabase
 
-from predictor import Predictor
+from image_classifier import ImageClassifier
 
 class TopicHandler:
     def __init__(self):
@@ -16,13 +14,13 @@ class TopicHandler:
         
         pulsar_manager = PulsarManager()
         
-        self.consumer = pulsar_manager.create_consumer(pulsar_manager.topics.LISTING_PREDICT_CAR_IMAGE)
+        self.consumer = pulsar_manager.create_consumer(pulsar_manager.topics.CLASSIFY_IMAGE)
         
-        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.LISTING_POST_VALIDATION)
+        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.CAR_CUTTER_SUBMIT)
         
         self.mongodb = MongoDatabase()
         
-        self.predictor = Predictor()
+        self.image_classifier = ImageClassifier()
     
     def main(self):
         print("listening for new messages")
@@ -53,23 +51,39 @@ class TopicHandler:
                 
                 where = {
                     "listing_id":listing_id,
-                    "car_image_prediction":None
+                    "image_classify":None,
+                    "status":"active"
                 }
                 
-                pending_images = list(self.mongodb.images_collection.find(where).sort("position",pymongo.ASCENDING))
+                pending_images = list(self.mongodb.images_collection.find(where))
                 
-                if len(pending_images) > 0:
-                    pred_data = self.predictor.predict(pending_images,website_id,listing_id)
-                    
-                    for img in pred_data:
-                        
-                        where = {"_id":img["image_id"]}
-                        
-                        img["data"]["car_image_prediction"] = 1
-                        
-                        self.mongodb.images_collection.update_one(where,{
-                            "$set":img["data"]
+                max_images = 20
+                
+                total_images = 0
+                for item in pending_images:
+                    image_where = {"_id":item["_id"]}
+                    if total_images >= max_images:
+                        self.mongodb.images_collection.update_one(image_where,{
+                            "$set":{
+                                "status":"expired",
+                                "message":"max image limit reached."
+                            }
                         })
+                        
+                        continue
+                    
+                    image_update = {}
+                    is_car = self.image_classifier.is_car_image(item["path"])
+                    image_update["is_car"] = is_car
+                    image_update["image_classify"] = True
+                    if is_car == False:
+                        image_update["status"] = "expired"
+                    else:
+                        total_images += 1
+                    
+                    self.mongodb.images_collection.update_one(image_where,{
+                        "$set":image_update
+                    })
             
             self.producer.produce_message(message)
             

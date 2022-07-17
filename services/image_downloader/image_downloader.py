@@ -24,101 +24,76 @@ class ImageDownloader:
             "https":self.datacenterProxy
         }
         
-        self.headers  = {
-        'authority': 'm.atcdn.co.uk',
-        'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="99", "Google Chrome";v="99"',
-        'sec-ch-ua-mobile': '?0',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36',
-        'sec-ch-ua-platform': '"Windows"',
-        'accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-        'sec-fetch-site': 'cross-site',
-        'sec-fetch-mode': 'no-cors',
-        'sec-fetch-dest': 'image',
-        'referer': 'https://www.autotrader.co.uk/',
-        'accept-language': 'en-US,en;q=0.9,ca;q=0.8,cs;q=0.7,fr;q=0.6,hi;q=0.5'
+    def download_image(self,url,file_path,id):
+        
+        if file_path.exists() == True:
+            print(f'image already exists : {url}')
+            return {
+                "status":True,
+                "data":{
+                    "_id":id,
+                    "url":url,
+                    "path":str(file_path),
+                    "status":"active"
+                }
+            }
+        response = None
+        
+        for retry in range(0,self.max_retry):
+            try:
+                response = requests.get(
+                    url = url,
+                    headers = self.headers,
+                    proxies=self.proxy
+                )
+                
+                break
+            except Exception as e:
+                print(f'failed to download image : {url}')
+                
+        
+        if response == None:
+            print(f'failed to download image : {url}')
+            return {
+            "status":False,
+            "data":{
+                "_id":id,
+                "url":url,
+                "path":str(file_path),
+                "status":"active"
+                }
+            }
+        
+        file_path.write_bytes(response.content)
+        
+        print(f'image downloaded : {url}')
+        return {
+            "status":True,
+            "data":{
+                "_id":id,
+                "url":url,
+                "path":str(file_path),
+                "status":"active"
+            }
         }
         
-    def download_image(self,url,image_id,listing_dir,position):
-        
-        file_path = listing_dir.joinpath(f'{image_id}.png')
-        
-        if file_path.exists():
-            return {
-                "image_id":image_id,
-                "data":{
-                    "image_download_status":1,
-                    "path":str(file_path),
-                    },
-                "url":url,
-                "position":position
-                }
-        
-        try:
-            
-            for retry in range(0,self.max_retry):
-                try:
-                    response = requests.get(
-                        url = url,
-                        headers = self.headers,
-                        proxies=self.proxy
-                    )
-                    break
-                except Exception as e:
-                    print(f'error downloading image : {str(e)}')
-                    
-            
-            file_path.write_bytes(response.content)
-            
-            
-            return {
-                    "image_id":image_id,
-                    "data":{
-                        "image_download_status":1,
-                        "path":str(file_path),
-                        },
-                    "url":url,
-                    "position":position
-                    }
-            
-        except Exception as e:
-            print(f'error : {str(e)}')
-        
-        return {
-                "image_id":image_id,
-                "data":{
-                    "image_download_status":2,
-                    "path":None
-                },
-                "url":url,
-                "position":position,
-            }
-    
-    def download_multiple_images(self,urls,website_id,listing_id):
+    def download_multiple_images(self,items):
         
         downloadedImages = []
         
         threads = []
         
-        website_dir = self.media.joinpath(str(website_id))
-        
-        if not website_dir.exists():
-            website_dir.mkdir()
-        
-        listing_dir = website_dir.joinpath(listing_id)
-        
-        if not listing_dir.exists():
-            listing_dir.mkdir()
-        
         with ThreadPoolExecutor(max_workers=30) as executor:
-            for position,item in enumerate(urls):
+            for position,item in enumerate(items):
                 url = item["url"]
-                image_id = item["_id"]
-                position = item["position"]
-                threads.append(executor.submit(self.download_image,url,image_id,listing_dir,position))
+                path = item["path"]
+                id = item["id"]
+                threads.append(executor.submit(self.download_image,url,path,id))
         
             for task in as_completed(threads):
                 data = task.result()
-                downloadedImages.append(data)
+                if data["status"] == True:
+                    downloadedImages.append(data["data"])
                 
         return downloadedImages
 
