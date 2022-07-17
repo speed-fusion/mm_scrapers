@@ -43,7 +43,6 @@ class ImageDownloader:
             try:
                 response = requests.get(
                     url = url,
-                    headers = self.headers,
                     proxies=self.proxy
                 )
                 
