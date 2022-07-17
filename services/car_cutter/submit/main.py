@@ -66,7 +66,8 @@ class TopicHandler:
                     for item in processed_images:
                         print(item)
                         item["data"]["status_check_count"] = 0
-                        item["data"]["status_checked_at"] = get_current_datetime()   
+                        item["data"]["status_checked_at"] = get_current_datetime()
+                        item["data"]["image_generated"] = False 
                         self.mongodb.images_collection.update_one({"_id":item["_id"]},{
                             "$set":item["data"]
                         })
