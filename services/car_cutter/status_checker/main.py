@@ -42,7 +42,7 @@ class TopicHandler:
             }
             
             images = [i["url"] for i in list(self.mongodb.images_collection.find(img_where))]
-            
+            print(f'total images : {len(images)}')
             if len(images) > 0:
                 submit_res = self.car_cutter.check_status(images)
                 
@@ -75,7 +75,7 @@ class TopicHandler:
                         img_db_update["car_cutter_ready"] = True
                     else:
                         img_db_update["$inc"] = {"status_check_count":1}
-                    
+                    print(img_db_update)
                     self.mongodb.images_collection.update_one({"_id":id},{"$set":img_db_update})
 
 if __name__ == "__main__":
