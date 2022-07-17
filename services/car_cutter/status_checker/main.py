@@ -34,14 +34,14 @@ class TopicHandler:
                 "car_cutter_ready":False,
                 "status":"active",
                 "status_check_count":{
-                    "$lt":60
+                    "$lt":10
                 },
                 "status_checked_at":{
                     "$lt":x_seconds_ago
                 },
             }
             
-            images = [i["url"] for i in list(self.mongodb.images_collection.find(img_where))]
+            images = [i["url"] for i in list(self.mongodb.images_collection.find(img_where).limit(30))]
             print(f'total images : {len(images)}')
             if len(images) > 0:
                 submit_res = self.car_cutter.check_status(images)
@@ -73,10 +73,9 @@ class TopicHandler:
                     
                     if status == "raw" and phase == "ready":
                         img_db_update["car_cutter_ready"] = True
+                        self.mongodb.images_collection.update_one({"_id":id},{"$set":img_db_update})
                     else:
-                        img_db_update["$inc"] = {"status_check_count":1}
-                    print(img_db_update)
-                    self.mongodb.images_collection.update_one({"_id":id},{"$set":img_db_update})
+                        self.mongodb.images_collection.update_one({"_id":id},{"$inc":{"status_check_count":1}})                    
 
 if __name__ == "__main__":
     topic_handler = TopicHandler()
