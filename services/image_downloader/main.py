@@ -68,7 +68,7 @@ class TopicHandler:
                 
                 # download images
                 
-                images = [{"url":i} for i in data["images"]]
+                images = data["images"]
                 
                 for item in images:
                     url = item["url"]
