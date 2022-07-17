@@ -24,8 +24,7 @@ class TopicHandler:
     
     def main(self):
         print("listening for new messages")
-        for i in range(0,5):
-            
+        while True:
             
             all_listings = list(self.mongodb.images_collection.distinct("listing_id"))
             print(all_listings)
@@ -34,10 +33,10 @@ class TopicHandler:
                 active_count = self.mongodb.images_collection.count_documents({"status":"active","listing_id":listing_id})
                 image_downloaded_count = self.mongodb.images_collection.count_documents({"status":"active","listing_id":listing_id,"car_cutter_downloaded":True})
                 
-                print(f'skipping : {listing_id} , active_count : {active_count} , image_downloaded_count : {image_downloaded_count}')
+                
                 
                 if active_count != image_downloaded_count:
-                    print(f'skipping : {listing_id} , active_count : {active_count} , image_downloaded_count : {image_downloaded_count}')
+                    time.sleep(5)
                     continue
                 
                 if active_count == 0 and image_downloaded_count == 0:
@@ -79,7 +78,7 @@ class TopicHandler:
                         }
                     
                     self.producer.produce_message(message)
-                    time.sleep(4)
+                    time.sleep(5)
 
 
 if __name__ == "__main__":
