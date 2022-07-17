@@ -36,7 +36,7 @@ class TopicHandler:
                 "car_cutter_ready":False,
                 "status":"active",
                 "status_check_count":{
-                    "$lt":200
+                    "$lt":20000
                 },
                 "status_checked_at":{
                     "$lt":x_seconds_ago
