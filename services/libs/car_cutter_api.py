@@ -5,8 +5,6 @@ from car_cutter_helper import load_images,generate_sha1_hash
 from concurrent.futures import ThreadPoolExecutor,as_completed
 from helper import get_current_datetime
 
-from imageDownloader import ImageDownloader
-
 import os
 
 class CarCutter:
@@ -36,9 +34,7 @@ class CarCutter:
         
         self.max_images = 15
         
-        self.media = self.cwd.joinpath("media")
-        
-        self.downloader = ImageDownloader()
+        self.media = self.cwd.joinpath("/media")
     
     
     def submit_images(self,images):
@@ -227,87 +223,87 @@ class CarCutter:
                 
         return downloadedImages
     
-    def process_images(self,car_cutter_images,websiteId,listingId):
-        interior = []
-        exterior = []
-        images = []
+    # def process_images(self,car_cutter_images,websiteId,listingId):
+    #     interior = []
+    #     exterior = []
+    #     images = []
         
-        website_dir = self.media.joinpath(f'{websiteId}')
+    #     website_dir = self.media.joinpath(f'{websiteId}')
         
-        if not website_dir.exists():
-            website_dir.mkdir()
+    #     if not website_dir.exists():
+    #         website_dir.mkdir()
         
-        listing_dir = website_dir.joinpath(str(listingId))
+    #     listing_dir = website_dir.joinpath(str(listingId))
         
-        if not listing_dir.exists():
-            listing_dir.mkdir()
+    #     if not listing_dir.exists():
+    #         listing_dir.mkdir()
         
-        # car_cutter_images = []
+    #     # car_cutter_images = []
         
-        # for image in images:
-        #     all_images_by_id[image["id"]] = image
-        #     car_cutter_images.append(image["url"])
+    #     # for image in images:
+    #     #     all_images_by_id[image["id"]] = image
+    #     #     car_cutter_images.append(image["url"])
         
-        processed_images = []
-        result = self.submit_images(car_cutter_images)
-        time.sleep(2)
-        index = 0
-        cc_total_img = 0
-        unique_angles_found = {}
-        for item in result["data"]["images"]:
-            if item["quality"] != 'ok':
-                continue
+    #     processed_images = []
+    #     result = self.submit_images(car_cutter_images)
+    #     time.sleep(2)
+    #     index = 0
+    #     cc_total_img = 0
+    #     unique_angles_found = {}
+    #     for item in result["data"]["images"]:
+    #         if item["quality"] != 'ok':
+    #             continue
             
-            img_item = {}
-            url = item["image"]
-            angle = "_".join(item["angle"]).lower()
-            id = generate_sha1_hash(url)
-            file_name = f'{id}.png'
-            file_path = listing_dir.joinpath(file_name)
-            img_item["id"] = id
-            img_item["angle"] = angle
-            img_item["url"] = url
-            img_item["path"] = str(file_path)
-            img_item["cc_status"] = 0
+    #         img_item = {}
+    #         url = item["image"]
+    #         angle = "_".join(item["angle"]).lower()
+    #         id = generate_sha1_hash(url)
+    #         file_name = f'{id}.png'
+    #         file_path = listing_dir.joinpath(file_name)
+    #         img_item["id"] = id
+    #         img_item["angle"] = angle
+    #         img_item["url"] = url
+    #         img_item["path"] = str(file_path)
+    #         img_item["cc_status"] = 0
             
-            if "exterior" in angle:
-                if angle in self.background_remove_angles:
-                    if "front" in angle:
-                        img_item["cc_status"] = 1
-                        unique_angles_found[angle] = 1
-                        cc_total_img += 1
-                        images.append(url)
-                        exterior.insert(0,img_item)
-                    elif "rear" in angle:
-                        img_item["cc_status"] = 1
-                        unique_angles_found[angle] = 1
-                        cc_total_img += 1
-                        images.append(url)
-                        exterior.append(img_item)
-                else:
-                    pass
-            elif "interior" in angle:
-                if len(interior) <= self.max_images - 4:
-                    images.append(url)
-                    interior.append(img_item)
+    #         if "exterior" in angle:
+    #             if angle in self.background_remove_angles:
+    #                 if "front" in angle:
+    #                     img_item["cc_status"] = 1
+    #                     unique_angles_found[angle] = 1
+    #                     cc_total_img += 1
+    #                     images.append(url)
+    #                     exterior.insert(0,img_item)
+    #                 elif "rear" in angle:
+    #                     img_item["cc_status"] = 1
+    #                     unique_angles_found[angle] = 1
+    #                     cc_total_img += 1
+    #                     images.append(url)
+    #                     exterior.append(img_item)
+    #             else:
+    #                 pass
+    #         elif "interior" in angle:
+    #             if len(interior) <= self.max_images - 4:
+    #                 images.append(url)
+    #                 interior.append(img_item)
                     
-        index = 0
-        for i in exterior:
-            tmp = i.copy()
-            tmp["position"] = index
-            processed_images.append(tmp)
-            index += 1
-            print(i)
+    #     index = 0
+    #     for i in exterior:
+    #         tmp = i.copy()
+    #         tmp["position"] = index
+    #         processed_images.append(tmp)
+    #         index += 1
+    #         print(i)
         
-        processed_images = self.download_multiple_images(processed_images)
+    #     processed_images = self.download_multiple_images(processed_images)
         
-        for i in interior:
-            tmp = i.copy()
-            tmp["position"] = index
-            processed_images.append(tmp)
-            index += 1
-            print(i)
-        return processed_images,len(unique_angles_found)
+    #     for i in interior:
+    #         tmp = i.copy()
+    #         tmp["position"] = index
+    #         processed_images.append(tmp)
+    #         index += 1
+    #         print(i)
+    #     return processed_images,len(unique_angles_found)
 
 
 # if __name__ == "__main__":

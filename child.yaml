@@ -164,6 +164,7 @@ services:
 
     volumes:
       - ./services/libs:/libs
+      - ./media:/media
 
     env_file:
       - .prod.env
@@ -180,6 +181,7 @@ services:
 
     env_file:
       - .prod.env
+      - ./media:/media
 
     network_mode : host
 
