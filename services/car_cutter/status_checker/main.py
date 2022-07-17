@@ -51,7 +51,7 @@ class TopicHandler:
                     url = item["image"]
                     id = generate_sha1_hash(url)
                     
-                    if item["quality"] != 'ok':
+                    if item["quality"] != 'ok' or item["status"] == 'undefined':
                         
                         self.mongodb.images_collection.update_one(
                             {"_id":id},
