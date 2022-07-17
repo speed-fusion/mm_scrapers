@@ -33,7 +33,7 @@ class TopicHandler:
                 downloaded_images = self.car_cutter.download_multiple_images(images)
                 
                 for item in downloaded_images:
-                    
+                    print(item)
                     self.mongodb.images_collection.update_one(item["where"],{
                         "$set":item["what"]
                     })
