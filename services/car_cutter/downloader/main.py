@@ -34,9 +34,8 @@ class TopicHandler:
                 
                 for item in downloaded_images:
                     print(item)
-                    self.mongodb.images_collection.update_one(item["where"],{
-                        item["what"]
-                    })
+                    self.mongodb.images_collection.update_one(item["where"],
+                        item["what"])
 
 if __name__ == "__main__":
     topic_handler = TopicHandler()
