@@ -54,7 +54,7 @@ class TopicHandler:
                 img_where = {
                     "listing_id":listing_id,
                     "is_car":True,
-                    "car_cutter_classified":None,
+                    "car_cutter_classified":False,
                     "status":"active"
                 }
                 

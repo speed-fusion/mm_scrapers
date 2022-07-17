@@ -81,6 +81,9 @@ class TopicHandler:
                     try:
                         item["listing_id"] = listing_id
                         item["website_id"] = website_id
+                        item["car_cutter_classified"] = False
+                        item["car_cutter_ready"] = False
+                        item["car_cutter_downloaded"] = False
                         
                         self.mongodb.images_collection.insert_one(item)
                         

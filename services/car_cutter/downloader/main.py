@@ -20,7 +20,7 @@ class TopicHandler:
             
             img_where = {
                 "car_cutter_ready":True,
-                "car_cutter_downloaded":None,
+                "car_cutter_downloaded":False,
                 "status":"active",
                 "download_failed_count":{
                     "$lt":30
