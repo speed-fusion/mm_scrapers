@@ -55,6 +55,8 @@ class CarCutter:
                 json_response = response.json()
                 break
         
+        print(json_response)
+        
         all_images = []
         
         for item in json_response["data"]["images"]:
