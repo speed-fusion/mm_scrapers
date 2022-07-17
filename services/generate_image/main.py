@@ -28,7 +28,7 @@ class TopicHandler:
             
             
             all_listings = list(self.mongodb.images_collection.distinct("listing_id"))
-            
+            print(all_listings)
             for listing_id in all_listings:
                 
                 active_count = self.mongodb.images_collection.count_documents({"status":"active","listing_id":listing_id})
