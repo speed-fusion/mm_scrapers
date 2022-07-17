@@ -73,6 +73,7 @@ class TopicHandler:
                     
                     if status == "raw" and phase == "ready":
                         img_db_update["car_cutter_ready"] = True
+                        img_db_update["download_failed_count"] = 0
                         self.mongodb.images_collection.update_one({"_id":id},{"$set":img_db_update})
                     else:
                         self.mongodb.images_collection.update_one({"_id":id},{"$inc":{"status_check_count":1}})                    
