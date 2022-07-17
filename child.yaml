@@ -200,6 +200,20 @@ services:
     network_mode : host
 
     restart: always
+  
+  image_downloader:
+    build: ./services/image_downloader
+
+    volumes:
+      - ./services/libs:/libs
+      - ./media:/media
+
+    env_file:
+      - .prod.env
+
+    network_mode : host
+
+    restart: always
 
   generate_image:
     build: ./services/generate_image

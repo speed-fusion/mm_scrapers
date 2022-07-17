@@ -10,7 +10,7 @@ class ImageDownloader:
         
         self.cwd = Path.cwd()
         
-        self.media = self.cwd.joinpath("/media")
+        self.media = Path("/media")
         
         if not self.media.exists():
             self.media.mkdir()
