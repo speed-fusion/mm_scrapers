@@ -34,6 +34,8 @@ class TopicHandler:
                 active_count = self.mongodb.images_collection.count_documents({"status":"active","listing_id":listing_id})
                 image_downloaded_count = self.mongodb.images_collection.count_documents({"status":"active","listing_id":listing_id,"car_cutter_downloaded":True})
                 
+                print(f'skipping : {listing_id} , active_count : {active_count} , image_downloaded_count : {image_downloaded_count}')
+                
                 if active_count != image_downloaded_count:
                     print(f'skipping : {listing_id} , active_count : {active_count} , image_downloaded_count : {image_downloaded_count}')
                     continue
