@@ -20,7 +20,7 @@ class TopicHandler:
         
         self.consumer = pulsar_manager.create_consumer(pulsar_manager.topics.LISTINGS_UPSERT_PROD_DB)
         
-        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.DOWNLOAD_IMAGE)
+        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.SPYNE_AI)
         
         self.mongodb = MongoDatabase()
         
@@ -57,6 +57,10 @@ class TopicHandler:
                 mapped_data = self.mc_mapper.map(data)
                 
                 mapped_data["Status"] = "to_parse"
+                
+                message["data"] = {}
+                
+                message["data"]["images"] = data["images"]
                 
                 self.mysqldb.connect()
                 try:

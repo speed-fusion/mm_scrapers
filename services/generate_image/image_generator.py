@@ -78,8 +78,6 @@ class ImageGenerator:
                     tmp['type'] = size["name"]
                     tmp["size"] = size
                     processedImages[size["name"]] = tmp
-                    
-                
                 
                 # org_image_path = self.files_dir.joinpath(orgImagePath)
                 
@@ -141,7 +139,7 @@ class ImageGenerator:
         with ThreadPoolExecutor(max_workers=15) as executor:
             for item in images:
                 
-                imageId = item["_id"]
+                imageId = item["id"]
                 
                 imagePath = item["path"]
                 

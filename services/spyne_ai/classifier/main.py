@@ -21,9 +21,9 @@ class TopicHandler:
         
         pulsar_manager = PulsarManager()
         
-        self.consumer = pulsar_manager.create_consumer(pulsar_manager.topics.GENERATE_IMAGE)
+        self.consumer = pulsar_manager.create_consumer(pulsar_manager.topics.SPYNE_AI)
         
-        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.FL_LISTING_PHOTOS_INSERT)
+        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.DOWNLOAD_IMAGE)
         
         self.mongodb = MongoDatabase()
         
@@ -57,20 +57,42 @@ class TopicHandler:
                 pass
             
             if website_id == 18:
-                mysql_listing_id = data["mysql_listing_id"]
-                
-                images = message["data"]["images"]
-                
-                result = self.image_generator.processListing(images,website_id,mysql_listing_id)
+                images = data.get("images",[])
                 
                 all_images = []
                 
-                for img in result:
-                    if img["status"] == False:
-                        print(f'image generation failed : {img}')
-                        continue
+                exterior = []
+                
+                interior = []
+                
+                for img in images:
+                    classification = self.spyne_ai.classify_image(img["url"])
                     
+                    if classification["image_class"] == "Interior" and classification["image_class_confidence"] > 80:
+                        img["download_url"] = img["url"]
+                        img["status"] = True
+                        interior.append(img)
+                    elif classification["image_class"] == "Exterior" and classification["image_class_confidence"] > 80:
+                        exterior.append(img["url"])
+                    else:
+                        print(f'unknown class : {classification}')
+                    
+                    if len(exterior) > 5 and len(interior) > 5:
+                        break
+                
+                result_urls = self.spyne_ai.remove_background(exterior,listing_id)
+                
+                index = 0
+                
+                for img in result_urls:
+                    img["position"] = index
                     all_images.append(img)
+                    index +=1
+                
+                for img in interior:
+                    img["position"] = index
+                    all_images.append(img)
+                    index += 1
                 
                 message["data"]["images"] = all_images
 

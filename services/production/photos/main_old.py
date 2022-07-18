@@ -54,12 +54,12 @@ class TopicHandler:
             
             
             if website_id == 18:
+                if not "mysql_listing_id" in data:
+                    continue
                 
                 mysql_listing_id = data["mysql_listing_id"]
                 
-                images = message["data"]["images"]
-                
-                images.sort(key=lambda x: x["position"])
+                images = list(self.mongodb.images_collection.find({"listing_id":listing_id,"image_generated":True,"status":"active"}).sort("position",pymongo.ASCENDING))
                 
                 if len(images) == 0:
                     # keep it in to_parse so we will know when such event occurs.
@@ -104,7 +104,7 @@ class TopicHandler:
                     
                 self.mysqldb.disconnect()
                 
-                # self.delete_mongo_image_data(listing_id)
+                self.delete_mongo_image_data(listing_id)
                 self.delete_images_from_server(website_id,listing_id)
     
     def delete_mongo_image_data(self,id):

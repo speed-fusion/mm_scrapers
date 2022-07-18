@@ -64,27 +64,27 @@ services:
 
     restart: always
   
-  car_image_prediction:
-    build: ./services/ml/prediction/car_image
+  # car_image_prediction:
+  #   build: ./services/ml/prediction/car_image
 
-    volumes:
-      - ./services/libs:/libs
-      - ./media:/media
-      - ./services/ml/prediction/car_image/model:/usr/src/app/model
+  #   volumes:
+  #     - ./services/libs:/libs
+  #     - ./media:/media
+  #     - ./services/ml/prediction/car_image/model:/usr/src/app/model
 
-    env_file:
-      - .prod.env
+  #   env_file:
+  #     - .prod.env
     
-    # deploy:
-    #     mode: replicated
-    #     replicas: 3
-    #     resources:
-    #       limits:
-    #         cpus: '4'
+  #   # deploy:
+  #   #     mode: replicated
+  #   #     replicas: 3
+  #   #     resources:
+  #   #       limits:
+  #   #         cpus: '4'
 
-    network_mode : host
+  #   network_mode : host
 
-    restart: always
+  #   restart: always
 
   # registration_prediction:
   #   build: ./services/ml/prediction/registration
@@ -159,36 +159,50 @@ services:
   #         limits:
   #           cpus: '2'
 
-  car_cutter_submit:
-    build: ./services/car_cutter/submit
+  # car_cutter_submit:
+  #   build: ./services/car_cutter/submit
 
-    volumes:
-      - ./services/libs:/libs
-      - ./media:/media
+  #   volumes:
+  #     - ./services/libs:/libs
+  #     - ./media:/media
 
-    env_file:
-      - .prod.env
+  #   env_file:
+  #     - .prod.env
 
-    network_mode : host
+  #   network_mode : host
 
-    restart: always
+  #   restart: always
 
-  car_cutter_status_checker:
-    build: ./services/car_cutter/status_checker
+  # car_cutter_status_checker:
+  #   build: ./services/car_cutter/status_checker
 
-    volumes:
-      - ./services/libs:/libs
-      - ./media:/media
-    env_file:
-      - .prod.env
+  #   volumes:
+  #     - ./services/libs:/libs
+  #     - ./media:/media
+  #   env_file:
+  #     - .prod.env
       
 
-    network_mode : host
+  #   network_mode : host
 
-    restart: always
+  #   restart: always
 
-  car_cutter_downloader:
-    build: ./services/car_cutter/downloader
+  # car_cutter_downloader:
+  #   build: ./services/car_cutter/downloader
+
+  #   volumes:
+  #     - ./services/libs:/libs
+  #     - ./media:/media
+
+  #   env_file:
+  #     - .prod.env
+
+  #   network_mode : host
+
+  #   restart: always
+
+  spyne_ai:
+    build: ./services/classifier
 
     volumes:
       - ./services/libs:/libs

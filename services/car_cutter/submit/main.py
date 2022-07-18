@@ -40,10 +40,8 @@ class TopicHandler:
             
             where = {"_id":listing_id}
             
-            data = message.get("data",None)
-            
-            if data == None:
-                data = self.mongodb.listings_collection.find_one(where)
+            # data = message.get("data",None)
+            data = self.mongodb.listings_collection.find_one(where)
             
             if data == None:
                 # add code to report this incident

@@ -20,7 +20,7 @@ class TopicHandler:
         
         self.consumer = pulsar_manager.create_consumer(pulsar_manager.topics.DOWNLOAD_IMAGE)
         
-        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.CLASSIFY_IMAGE)
+        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.GENERATE_IMAGE)
         
         self.mongodb = MongoDatabase()
 
@@ -68,7 +68,7 @@ class TopicHandler:
                 
                 # download images
                 
-                images = data["images"]
+                images = message["data"]["images"]
                 
                 for item in images:
                     url = item["url"]
@@ -77,19 +77,23 @@ class TopicHandler:
                     item["id"] = id
                     item["path"] = path
                 
+                downloaded_images = []
+                
                 for item in self.image_downloader.download_multiple_images(images):
-                    try:
-                        item["listing_id"] = listing_id
-                        item["website_id"] = website_id
-                        item["car_cutter_classified"] = False
-                        item["car_cutter_ready"] = False
-                        item["car_cutter_downloaded"] = False
+                    item["path"] = str(item["path"])
+                    downloaded_images.append(item)
+                    # try:
+                    #     item["listing_id"] = listing_id
+                    #     item["website_id"] = website_id
+                    #     item["car_cutter_classified"] = False
+                    #     item["car_cutter_ready"] = False
+                    #     item["car_cutter_downloaded"] = False
                         
-                        self.mongodb.images_collection.insert_one(item)
+                    #     self.mongodb.images_collection.insert_one(item)
                         
-                    except Exception as e:
-                        print(f'error : {str(e)}')
-            
+                    # except Exception as e:
+                    #     print(f'error : {str(e)}')
+                message["data"]["images"] = downloaded_images
             self.producer.produce_message(message)
             
 if __name__ == "__main__":
