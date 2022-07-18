@@ -11,10 +11,7 @@ from mysql_database import MysqlDatabase
 
 from car_cutter_api import CarCutter
 
-from helper import get_current_datetime
-
-from spyne_ai import SpyneAi
-
+from image_generator import ImageGenerator
 class TopicHandler:
     def __init__(self):
         print("transform topic handler init")
@@ -31,7 +28,7 @@ class TopicHandler:
         
         self.mysqldb = MysqlDatabase()
         
-        self.spyne_ai = SpyneAi()
+        self.image_generator = ImageGenerator()
     
     
     def main(self):
