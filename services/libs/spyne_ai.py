@@ -9,7 +9,7 @@ import time
 class SpyneAi:
     def __init__(self):
         self.classification_base_url = "https://www.clippr.ai/api/pv1/image-validation"
-        self.auth_key = os.environ.get("SPYNE_AI_API_KEY","2db69c27-38f6-498f-a434-e4dcc9d454ae")
+        self.auth_key = os.environ.get("SPYNE_AI_API_KEY")
         self.max_retry = 5
         self.headers = {"Accept": "application/json"}
     
