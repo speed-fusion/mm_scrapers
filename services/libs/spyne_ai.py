@@ -9,7 +9,7 @@ import time
 class SpyneAi:
     def __init__(self):
         self.classification_base_url = "https://www.clippr.ai/api/pv1/image-validation"
-        self.auth_key = os.environ.get("SPYNE_AI_API_KEY")
+        self.auth_key = os.environ.get("SPYNE_AI_API_KEY","2db69c27-38f6-498f-a434-e4dcc9d454ae")
         self.max_retry = 5
         self.headers = {"Accept": "application/json"}
     
@@ -20,8 +20,10 @@ class SpyneAi:
             if json_response != None:
                 continue
             try:
-                response = requests.get(url,headers=self.headers)
+                response = requests.post(url,headers=self.headers)
+                # print(response.status_code)
                 json_response = response.json()
+                # print(json_response)
                 break
             except Exception as e:
                 print(f'error : {str(e)}')
@@ -29,12 +31,16 @@ class SpyneAi:
     
     def parse_classification_response(self,json_response):
         status = False
+        image_class = None
+        image_class_confidence = None
+        image_angle = None
+        image_angle_confidence= None
         try:
             image_class = json_response["data"]["type"]["value"]
             image_class_confidence = json_response["data"]["type"]["confidence"]
 
             image_angle = json_response["data"]["angle"]["value"]
-            image_angle_confidence = json_response["data"]["type"]["confidence"]
+            image_angle_confidence = json_response["data"]["angle"]["confidence"]
             status = True
         except Exception as e:
             print(f'error : {str(e)}')
@@ -53,7 +59,7 @@ class SpyneAi:
     def remove_background(self,image_items,listing_id):
         response = self.submit_bg_remove_request(image_items,listing_id)
         parsed_response = self.parse_bg_remove_response(response)
-        time.sleep(5)
+        # time.sleep(5)
         result = self.get_bg_remove_result(parsed_response["sku_id"])
         return result
     
@@ -86,6 +92,7 @@ class SpyneAi:
             try:
                 response = requests.post(url, json=payload, headers=headers)
                 json_response = response.json()
+                print(json_response)
                 break
             except Exception as e:
                 print(f'error : {str(e)}')
@@ -115,10 +122,14 @@ class SpyneAi:
 
         json_response = None
         
-        for i in range(0,self.max_retry):
+        for i in range(0,40):
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
                 json_response = response.json()
+                if json_response["sku_status"] != 'Done':
+                    time.sleep(5)
+                    print(f'sleeping for 5 sec...')
+                    continue
                 break
             else:
                 time.sleep(1)
@@ -127,6 +138,7 @@ class SpyneAi:
         
     def parse_bg_remove_result_response(self,json_response):
         images = []
+        
         
         if json_response["sku_status"] == "Done":
             
@@ -149,6 +161,70 @@ class SpyneAi:
     def get_bg_remove_result(self,sku_id):
         response = self.submit_bg_remove_result_request(sku_id)
         return self.parse_bg_remove_result_response(response)
+
+
+
+# if __name__ == "__main__":
+    
+#     sai = SpyneAi()
+    
+#     test_images = [
+#     {
+#       "url": "https://bluesky.cdn.imgeng.in/cogstock-images/cit-cfa5c95add2ae3c95d0a0fc3cb62d487224d05bd.jpg?width=1200&quality=80"
+#     },
+#     {
+#       "url": "https://bluesky.cdn.imgeng.in/cogstock-images/cit-f8cfc0afbea688e7fb6653113412bac3483cc064.jpg?width=1200&quality=80"
+#     },
+#     {
+#       "url": "https://bluesky.cdn.imgeng.in/cogstock-images/cit-2b21218248d1848780bedd9ee84a66cd06419487.jpg?width=1200&quality=80"
+#     },
+#     {
+#       "url": "https://bluesky.cdn.imgeng.in/cogstock-images/cit-5596776a84809502bd20c54068818227848f8fee.jpg?width=1200&quality=80"
+#     },
+#     {
+#       "url": "https://bluesky.cdn.imgeng.in/cogstock-images/cit-e402781785892f78b80e4f469fb14bbff4477454.jpg?width=1200&quality=80"
+#     },
+#     {
+#       "url": "https://bluesky.cdn.imgeng.in/cogstock-images/cit-7f6344d9ad5bc5cf799d0e3558e5f8a72f935149.jpg?width=1200&quality=80"
+#     },
+#     {
+#       "url": "https://bluesky.cdn.imgeng.in/cogstock-images/cit-ffacae4696933b455ede93fc09b189b314f7a842.jpg?width=1200&quality=80"
+#     },
+#     {
+#       "url": "https://bluesky.cdn.imgeng.in/cogstock-images/cit-f1f7d5889a7d0a509cd29e24e7a81a959d0f1758.jpg?width=1200&quality=80"
+#     },
+#     {
+#       "url": "https://bluesky.cdn.imgeng.in/cogstock-images/cit-223483e40092c6585ce53e7502c939d9c549ddec.jpg?width=1200&quality=80"
+#     },
+#     {
+#       "url": "https://bluesky.cdn.imgeng.in/cogstock-images/cit-36661413d695dc156ee15cbcd9d741b6bc377ad3.jpg?width=1200&quality=80"
+#     },
+#     {
+#       "url": "https://bluesky.cdn.imgeng.in/cogstock-images/cit-b3a063826692d8dee3f99752add4c0b618758b89.jpg?width=1200&quality=80"
+#     },
+#     {
+#       "url": "https://bluesky.cdn.imgeng.in/cogstock-images/cit-301df17d2dd256552da7de4d57a0e2b9f3cb7d09.jpg?width=1200&quality=80"
+#     }
+#     ]
+    
+#     imgs = [i["url"] for i in test_images]
+    
+#     bg_rm = sai.remove_background(imgs,"xyzddkfn")
+    
+#     for img in bg_rm:
+#         print(img)
+#         print("--------------------")
+    
+    # for img in test_images:
+    #     classification = sai.classify_image(img["url"])
+    #     print(f'url : {img["url"]}')
+    #     print(classification)
+        
+    #     print("------------------------------------------------------")
+        
+    #     break
+    
+
 
 
 # {
