@@ -53,6 +53,7 @@ class SpyneAi:
     def remove_background(self,image_items,listing_id):
         response = self.submit_bg_remove_request(image_items,listing_id)
         parsed_response = self.parse_bg_remove_response(response)
+        time.sleep(5)
         result = self.get_bg_remove_result(parsed_response["sku_id"])
         return result
     
