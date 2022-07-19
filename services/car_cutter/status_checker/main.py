@@ -65,7 +65,8 @@ class TopicHandler:
                     for index,item in enumerate(images):
                         if item["car_cutter_ready"] == False:
                             url = item["mm_img_url"]
-                            response = self.car_cutter.submit_images([url])
+                            response = self.car_cutter.check_status([url])
+                            
                             status = response["status"]
                             quality = response["quality"]
                             
