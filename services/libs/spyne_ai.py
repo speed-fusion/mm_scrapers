@@ -39,8 +39,8 @@ class SpyneAi:
             image_class = json_response["data"]["type"]["value"]
             image_class_confidence = json_response["data"]["type"]["confidence"]
 
-            image_angle = json_response["data"]["angle"]["value"]
-            image_angle_confidence = json_response["data"]["angle"]["confidence"]
+            # image_angle = json_response["data"]["angle"]["value"]
+            # image_angle_confidence = json_response["data"]["angle"]["confidence"]
             status = True
         except Exception as e:
             print(f'error : {str(e)}')
@@ -48,8 +48,8 @@ class SpyneAi:
             "status":status,
             "image_class":image_class,
             "image_class_confidence":image_class_confidence,
-            "image_angle":image_angle,
-            "image_angle_confidence":image_angle_confidence
+            # "image_angle":image_angle,
+            # "image_angle_confidence":image_angle_confidence
         }
     
     def classify_image(self,image_url):
