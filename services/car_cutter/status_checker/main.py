@@ -1,4 +1,4 @@
-from cmath import phase
+
 import sys
 
 import pymongo
@@ -70,7 +70,8 @@ class TopicHandler:
                             
                             status = response["status"]
                             quality = response["quality"]
-                            print(f'status : {status}, quality : {quality}')
+                            phase = response["phase"]
+                            print(f'status : {status}, quality : {quality}, phase : {phase}')
                             if quality != 'ok' or status in ['undefined','error']:
                                 images.pop(index)
                                 continue
