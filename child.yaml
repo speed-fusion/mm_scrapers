@@ -159,50 +159,8 @@ services:
   #         limits:
   #           cpus: '2'
 
-  # car_cutter_submit:
-  #   build: ./services/car_cutter/submit
-
-  #   volumes:
-  #     - ./services/libs:/libs
-  #     - ./media:/media
-
-  #   env_file:
-  #     - .prod.env
-
-  #   network_mode : host
-
-  #   restart: always
-
-  # car_cutter_status_checker:
-  #   build: ./services/car_cutter/status_checker
-
-  #   volumes:
-  #     - ./services/libs:/libs
-  #     - ./media:/media
-  #   env_file:
-  #     - .prod.env
-      
-
-  #   network_mode : host
-
-  #   restart: always
-
-  # car_cutter_downloader:
-  #   build: ./services/car_cutter/downloader
-
-  #   volumes:
-  #     - ./services/libs:/libs
-  #     - ./media:/media
-
-  #   env_file:
-  #     - .prod.env
-
-  #   network_mode : host
-
-  #   restart: always
-
-  spyne_ai:
-    build: ./services/spyne_ai
+  car_cutter_submit:
+    build: ./services/car_cutter/submit
 
     volumes:
       - ./services/libs:/libs
@@ -214,6 +172,48 @@ services:
     network_mode : host
 
     restart: always
+
+  car_cutter_status_checker:
+    build: ./services/car_cutter/status_checker
+
+    volumes:
+      - ./services/libs:/libs
+      - ./media:/media
+    env_file:
+      - .prod.env
+      
+
+    network_mode : host
+
+    restart: always
+
+  car_cutter_downloader:
+    build: ./services/car_cutter/downloader
+
+    volumes:
+      - ./services/libs:/libs
+      - ./media:/media
+
+    env_file:
+      - .prod.env
+
+    network_mode : host
+
+    restart: always
+
+  # spyne_ai:
+  #   build: ./services/spyne_ai
+
+  #   volumes:
+  #     - ./services/libs:/libs
+  #     - ./media:/media
+
+  #   env_file:
+  #     - .prod.env
+
+  #   network_mode : host
+
+  #   restart: always
   
   image_downloader:
     build: ./services/image_downloader
