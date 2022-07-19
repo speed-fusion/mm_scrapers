@@ -73,6 +73,10 @@ class Topics(Enum):
     
     CAR_CUTTER_SUBMIT = f'motormarket{PIPELINE_NAME}.listing.car.cutter.submit'
     
+    CAR_CUTTER_STATUS_CHECK = f'motormarket{PIPELINE_NAME}.listing.car.cutter.status.check'
+    
+    CAR_CUTTER_DOWNLOADER = f'motormarket{PIPELINE_NAME}.listing.car.cutter.downloader'
+    
     SPYNE_AI = f'motormarket{PIPELINE_NAME}.listing.spyne.ai'
     
     AUTOTRADER_LISTING_SCRAPER = f'motormarket{PIPELINE_NAME}.scraper.autotrader.listing.scrape'

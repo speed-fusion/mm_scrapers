@@ -21,11 +21,18 @@ class TopicHandler:
         
         self.consumer = pulsar_manager.create_consumer(pulsar_manager.topics.CAR_CUTTER_SUBMIT)
         
+        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.CAR_CUTTER_STATUS_CHECK)
+        
         self.mongodb = MongoDatabase()
         
         self.car_cutter = CarCutter()
         
         self.mysqldb = MysqlDatabase()
+    
+    def delete_mysql_listing(self,listing_id):
+        self.mysqldb.connect()
+        self.mysqldb.recDelete("fl_listings",{"ID":listing_id})
+        self.mysqldb.disconnect()
     
     
     def main(self):
@@ -53,45 +60,44 @@ class TopicHandler:
             
             if website_id == 18:
                 
-                img_where = {
-                    "listing_id":listing_id,
-                    "is_car":True,
-                    "car_cutter_classified":False,
-                    "status":"active"
-                }
+                final_images = []
                 
-                images = [i["url"] for i in list(self.mongodb.images_collection.find(img_where))]
+                mysql_listing_id = data["mysql_listing_id"]
+                
+                images = message["data"]["images"]
+                
+                image_by_id = {}
+                
+                for img in images:
+                    image_by_id[img["id"]] = img
+                
                 print(f'total images :{len(images)}')
-                if len(images) > 0:
-                    cc_total_images,processed_images = self.car_cutter.submit_images(images)
-                    
-                    if len(processed_images) == 0:
-                        self.mysqldb.connect()
-                        self.mysqldb.recUpdate("fl_listings",{"Status":"expired","why":"car cutter returned zero image in submit endpoint"},{"ID":data["mysql_listing_id"]})
-                        self.mysqldb.disconnect()
-                        self.mongodb.images_collection.delete_many({"listing_id":listing_id})
-                        continue                    
-                    
-                    for item in processed_images:
-                        print(item)
-                        item["data"]["status_check_count"] = 0
-                        item["data"]["status_checked_at"] = get_current_datetime()
-                        item["data"]["image_generated"] = False 
-                        self.mongodb.images_collection.update_one({"_id":item["_id"]},{
-                            "$set":item["data"]
-                        })
-                    
-                    self.mongodb.listings_collection.update_one({"_id":listing_id},{"$set":{
+                
+                if len(images) == 0:
+                    self.delete_mysql_listing(mysql_listing_id)
+                    continue
+                
+                submit_images = [i["mm_img_url"] for i in images]
+                cc_total_images,processed_images = self.car_cutter.submit_images(submit_images)
+                
+                self.mongodb.listings_collection.update_one(where,{
+                    "$set":{
                         "cc_total_img":cc_total_images
-                    }})
-                    
-                    self.mongodb.images_collection.update_many({"listing_id":listing_id,"car_cutter_classified":False},{
-                        "$set":{
-                            "status":"expired",
-                            "message":"car cutter did not process it."
-                        }
-                    })
-
+                    }
+                })
+                
+                if len(processed_images) == 0:
+                    self.delete_mysql_listing(mysql_listing_id)
+                    continue
+                
+                for item in processed_images:
+                    img_item = image_by_id[item["id"]]
+                    img_item.update(item)
+                    final_images.append(img_item)
+                
+                message["data"]["images"] = final_images
+                
+                self.producer.produce_message(message)
 
 if __name__ == "__main__":
     topic_handler = TopicHandler()

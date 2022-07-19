@@ -32,7 +32,9 @@ class CarCutter:
             
         self.max_retry = 20
         
-        self.max_images = 15
+        self.max_exterior = 6
+        
+        self.max_interior = 10
         
         self.media = self.cwd.joinpath("/media")
     
@@ -72,68 +74,52 @@ class CarCutter:
             id = generate_sha1_hash(url)
             
             if item["quality"] != 'ok':
-                all_images.append({
-                    "_id":id,
-                    "data":{
-                        "status":"expired",
-                        "message":"image quality is bad (car cutter)"
-                    }
-                })
+                print(f'the quality is ok : {url}')
                 continue
             
             angle = "_".join(item["angle"]).lower()
             
             img_item = {
-                "_id":id,
-                "data":{
-                    "car_cutter_classified":True,
-                    "car_cutter_class":angle,
-                    "status_checked_at":get_current_datetime()
-                }
+                "id":id,
+                "car_cutter_class":angle,
             }
             
             if "exterior" in angle:
-                if angle in self.background_remove_angles:
-                    if "front" in angle:
-                        unique_angles_found[angle] = 1
-                        img_item["data"]["car_cutter_ready"] = False
-                        exterior.insert(0,img_item)
-                    elif "rear" in angle:
-                        unique_angles_found[angle] = 1
-                        img_item["data"]["car_cutter_ready"] = False
-                        exterior.append(img_item)
-                else:
-                    pass
+                if len(exterior) <= self.max_exterior:
+                    if angle in self.background_remove_angles:
+                        if "front" in angle:
+                            unique_angles_found[angle] = 1
+                            img_item["car_cutter_ready"] = False
+                            img_item["car_cutter_downloaded"] = False
+                            exterior.insert(0,img_item)
+                        elif "rear" in angle:
+                            unique_angles_found[angle] = 1
+                            img_item["car_cutter_ready"] = False
+                            img_item["car_cutter_downloaded"] = False
+                            exterior.append(img_item)
+                    else:
+                        print(f'angle is not in required angles : {angle}')
+                        
             elif "interior" in angle:
-                if len(interior) <= self.max_images - 4:
-                    img_item["data"]["car_cutter_ready"] = True
-                    img_item["data"]["car_cutter_downloaded"] = True 
+                if len(interior) <= self.max_interior:
+                    img_item["car_cutter_ready"] = True
+                    img_item["car_cutter_downloaded"] = True
                     interior.append(img_item)
                 else:
-                    all_images.append({
-                        "_id":id,
-                        "data":{
-                            "status":"expired",
-                            "message":"maximum interior image limit reached."
-                        }
-                    })
+                    print(f'skipping : maximum limit reached : {url}')
+                    continue
             else:
-                all_images.append({
-                        "_id":id,
-                        "data":{
-                            "status":"expired",
-                            "message":"unknown class"
-                        }
-                    })
+                print(f'image class is unknown : {angle}')
+        
         index = 0
         
         for img in exterior:
-            img["data"]["position"] = index
+            img["position"] = index
             index += 1
             all_images.append(img)
         
         for img in interior:
-            img["data"]["position"] = index
+            img["position"] = index
             index += 1
             all_images.append(img)
             
@@ -162,7 +148,7 @@ class CarCutter:
             try:
                 response = requests.request("GET", url, headers=headers)
                 json_response = response.json()
-                json_response["data"]["images"]
+                json_response = json_response["data"]["images"][0]
                 break
             except:
                 pass
@@ -215,30 +201,23 @@ class CarCutter:
         threads = []
         
         with ThreadPoolExecutor(max_workers=30) as executor:
-            for position,url in enumerate(urls):
-                threads.append(executor.submit(self.get_result,url["url"],url["path"],url))
+            for position,item in enumerate(urls):
+                
+                if item["car_cutter_downloaded"] == True:
+                    downloadedImages.append(item)
+                    continue
+                
+                threads.append(executor.submit(self.get_result,item["mm_img_url"],item["path"],item))
         
             for task in as_completed(threads):
                 status,data = task.result()
                 
-                if status == False:
-                    print(f'failed to download image : {data["url"]}')
-                    downloadedImages.append({
-                        "where":{"_id":data["_id"]},
-                        "what":{
-                            "$inc":{
-                                "download_failed_count":1
-                            }
-                        }
-                    })
-                    continue
-                
-                downloadedImages.append({
-                    "where":{"_id":data["_id"]},
-                    "what":{
-                        "$set":{"car_cutter_downloaded":True}
-                    }
-                })
+                if status == True:
+                    data["car_cutter_downloaded"] = True
+                    downloadedImages.append(data)
+                else:
+                    print(f'car cutter image download failed.')
+                    print(data)
                 
         return downloadedImages
     

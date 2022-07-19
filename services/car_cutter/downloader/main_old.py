@@ -23,34 +23,27 @@ class TopicHandler:
         self.producer = pulsar_manager.create_producer(pulsar_manager.topics.GENERATE_IMAGE)
         
     def main(self):
+        print(f'car cutter image downloader running...')
         while True:
             
-            message =  self.consumer.consume_message()
+            img_where = {
+                "car_cutter_ready":True,
+                "car_cutter_downloaded":False,
+                "status":"active",
+                "download_failed_count":{
+                    "$lt":30
+                }
+            }
             
-            website_id = message["website_id"]
+            images = list(self.mongodb.images_collection.find(img_where))
             
-            listing_id = message["listing_id"]
-            
-            where = {"_id":listing_id}
-
-            data = self.mongodb.listings_collection.find_one(where)
-            
-            if data == None:
-                continue
-            
-            
-            if website_id == 17:
-                pass
-            
-            if website_id == 18:
-                images = message["data"]["images"]
-                
+            if len(images) > 0:
                 downloaded_images = self.car_cutter.download_multiple_images(images)
                 
-                message["data"]["images"] = downloaded_images
-                
-                self.producer.produce_message(message)
-                
+                for item in downloaded_images:
+                    print(item)
+                    self.mongodb.images_collection.update_one(item["where"],
+                        item["what"])
 
 if __name__ == "__main__":
     topic_handler = TopicHandler()

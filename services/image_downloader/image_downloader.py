@@ -27,18 +27,12 @@ class ImageDownloader:
             "https":self.datacenterProxy
         }
         
-    def download_image(self,url,file_path,id,item):
+    def download_image(self,url,file_path,item):
         
         if file_path.exists() == True:
             print(f'image already exists : {url}')
             return {
                 "status":True,
-                "data":{
-                    "_id":id,
-                    "url":url,
-                    "path":str(file_path),
-                    "status":"active"
-                },
                 "item":item
             }
         response = None
@@ -60,12 +54,6 @@ class ImageDownloader:
             print(f'failed to download image : {url}')
             return {
             "status":False,
-            "data":{
-                "_id":id,
-                "url":url,
-                "path":str(file_path),
-                "status":"active"
-                },
             "item":item
             }
         
@@ -74,12 +62,6 @@ class ImageDownloader:
         print(f'image downloaded : {url}')
         return {
             "status":True,
-            "data":{
-                "_id":id,
-                "url":url,
-                "path":str(file_path),
-                "status":"active"
-            },
             "item":item
         }
         
@@ -91,10 +73,9 @@ class ImageDownloader:
         
         with ThreadPoolExecutor(max_workers=30) as executor:
             for position,item in enumerate(items):
-                url = item["download_url"]
+                url = item["source_url"]
                 path = item["path"]
-                id = item["id"]
-                threads.append(executor.submit(self.download_image,url,path,id,item))
+                threads.append(executor.submit(self.download_image,url,path,item))
         
             for task in as_completed(threads):
                 data = task.result()

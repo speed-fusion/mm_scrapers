@@ -33,8 +33,6 @@ class TopicHandler:
                 active_count = self.mongodb.images_collection.count_documents({"status":"active","listing_id":listing_id})
                 image_downloaded_count = self.mongodb.images_collection.count_documents({"status":"active","listing_id":listing_id,"car_cutter_downloaded":True})
                 
-                
-                
                 if active_count != image_downloaded_count:
                     time.sleep(5)
                     continue

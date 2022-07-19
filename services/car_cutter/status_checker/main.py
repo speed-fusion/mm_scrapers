@@ -1,3 +1,4 @@
+from cmath import phase
 import sys
 
 import pymongo
@@ -22,67 +23,81 @@ class TopicHandler:
     def __init__(self):
         print("transform topic handler init")
         
+        pulsar_manager = PulsarManager()
+        
+        self.consumer = pulsar_manager.create_consumer(pulsar_manager.topics.CAR_CUTTER_STATUS_CHECK)
+        
+        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.CAR_CUTTER_DOWNLOADER)
+        
         self.mongodb = MongoDatabase()
         
         self.car_cutter = CarCutter()
 
         self.status_check_interval = 60
+        
+        self.status_check_timeout = 15
     
     def main(self):
         print(f'car cutter status checker is running...')
         while True:
-            x_seconds_ago = get_current_datetime() - timedelta(seconds=self.status_check_interval)
             
-            img_where = {
-                "car_cutter_classified":True,
-                "car_cutter_ready":False,
-                "status":"active",
-                "status_check_count":{
-                    "$lt":20000
-                },
-                "status_checked_at":{
-                    "$lt":x_seconds_ago
-                },
-            }
+            message =  self.consumer.consume_message()
             
-            images = [i["url"] for i in list(self.mongodb.images_collection.find(img_where).sort("updated_at",pymongo.ASCENDING).limit(30))]
+            website_id = message["website_id"]
             
-            if len(images) > 0:
-                submit_res = self.car_cutter.check_status(images)
+            listing_id = message["listing_id"]
+            
+            where = {"_id":listing_id}
+
+            data = self.mongodb.listings_collection.find_one(where)
+            
+            if data == None:
+                continue
+            
+            
+            if website_id == 17:
+                pass
+            
+            if website_id == 18:
+                images = message["data"]["images"]
                 
-                for item in submit_res["data"]["images"]:
+                for count in range(0,self.status_check_timeout):
+                    for index,item in enumerate(images):
+                        if item["car_cutter_ready"] == False:
+                            url = item["mm_img_url"]
+                            response = self.car_cutter.submit_images([url])
+                            status = response["status"]
+                            quality = response["quality"]
+                            
+                            if quality != 'ok' or status in ['undefined','error']:
+                                images.pop(index)
+                                continue
+                            
+                            if status == "raw" and phase == "ready":
+                                item["car_cutter_ready"] = True
                     
-                    url = item["image"]
-                    id = generate_sha1_hash(url)
+                    total_pending = 0
                     
-                    if item["quality"] != 'ok' or item["status"] in ['undefined','error']:
-                        
-                        self.mongodb.images_collection.update_one(
-                            {"_id":id},
-                            {"$set":{
-                                "status":"expired",
-                                "message":"image quality is bad (car cutter)"
-                            }}
-                        )
-                        
+                    for item in images:
+                        if item["car_cutter_ready"] == False:
+                            total_pending += 1
+                    
+                    if total_pending != 0:
+                        print(f'sleeping for next {self.status_check_interval} seconds...')
+                        time.sleep(self.status_check_interval)
                         continue
-                    
-                    status = item["status"]
-                    
-                    phase = item["phase"]
-                    
-                    img_db_update = {}
-                    
-                    img_db_update["updated_at"] = get_current_datetime()
-                    
-                    if status == "raw" and phase == "ready":
-                        img_db_update["car_cutter_ready"] = True
-                        img_db_update["download_failed_count"] = 0
-                        self.mongodb.images_collection.update_one({"_id":id},{"$set":img_db_update})
-                    else:
-                        self.mongodb.images_collection.update_one({"_id":id},{"$inc":{"status_check_count":1}})
-            else:
-                time.sleep(10)                  
+                    break
+                
+                for index,item in images:
+                    if item["car_cutter_ready"] == False:
+                        images.pop(index)
+                
+                print(f'all images ready to download...')
+                
+                message["data"]["images"] = images
+                
+                self.producer.produce_message(message)
+                
 
 if __name__ == "__main__":
     topic_handler = TopicHandler()
