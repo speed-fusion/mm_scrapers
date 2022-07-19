@@ -91,7 +91,7 @@ class TopicHandler:
                         continue
                     break
                 
-                for index,item in images:
+                for index,item in enumerate(images):
                     if item["car_cutter_ready"] == False:
                         images.pop(index)
                 
