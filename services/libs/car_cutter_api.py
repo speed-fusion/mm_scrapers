@@ -85,6 +85,9 @@ class CarCutter:
             }
             
             if "exterior" in angle:
+                if angle in unique_angles_found:
+                    continue
+                
                 if len(exterior) <= self.max_exterior:
                     if angle in self.background_remove_angles:
                         if "front" in angle:
