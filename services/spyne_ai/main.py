@@ -97,6 +97,7 @@ class TopicHandler:
                 message["data"]["images"] = all_images
 
             self.producer.produce_message(message)
+            break
             
 if __name__ == "__main__":
     topic_handler = TopicHandler()
