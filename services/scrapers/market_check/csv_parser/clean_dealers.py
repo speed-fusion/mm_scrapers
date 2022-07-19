@@ -1,4 +1,4 @@
-CleanDealers = [11002247]
+CleanDealers = [11002247,10041477]
 # CleanDealers = [10023800,
 #  10043243,
 #  10041477,
