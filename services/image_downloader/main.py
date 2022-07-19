@@ -70,7 +70,7 @@ class TopicHandler:
                 
                 # download images
                 
-                images = message["data"]["images"]
+                images = message["data"]["images"][0:30]
                 
                 for item in images:
                     url = item["url"]

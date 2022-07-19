@@ -43,7 +43,7 @@ class TopicHandler:
                 pass
             
             if website_id == 18:
-                images = message["data"]["images"][0:30]
+                images = message["data"]["images"]
                 
                 downloaded_images = self.car_cutter.download_multiple_images(images)
                 
