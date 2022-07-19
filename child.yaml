@@ -173,6 +173,13 @@ services:
 
     restart: always
 
+    deploy:
+      mode: replicated
+      replicas: 5
+      resources:
+        limits:
+          cpus: '1'
+
   car_cutter_status_checker:
     build: ./services/car_cutter/status_checker
 
@@ -181,7 +188,13 @@ services:
       - ./media:/media
     env_file:
       - .prod.env
-      
+    
+    deploy:
+      mode: replicated
+      replicas: 5
+      resources:
+        limits:
+          cpus: '1'
 
     network_mode : host
 
@@ -201,6 +214,12 @@ services:
 
     restart: always
 
+    deploy:
+      mode: replicated
+      replicas: 5
+      resources:
+        limits:
+          cpus: '1'
   # spyne_ai:
   #   build: ./services/spyne_ai
 
