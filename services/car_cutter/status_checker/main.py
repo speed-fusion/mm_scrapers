@@ -65,11 +65,12 @@ class TopicHandler:
                     for index,item in enumerate(images):
                         if item["car_cutter_ready"] == False:
                             url = item["mm_img_url"]
+                            print(f'checking status for : {url}')
                             response = self.car_cutter.check_status([url])
                             
                             status = response["status"]
                             quality = response["quality"]
-                            
+                            print(f'status : {status}, quality : {quality}')
                             if quality != 'ok' or status in ['undefined','error']:
                                 images.pop(index)
                                 continue
