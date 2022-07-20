@@ -191,7 +191,7 @@ services:
     
     deploy:
       mode: replicated
-      replicas: 15
+      replicas: 25
       resources:
         limits:
           cpus: '1'
@@ -209,6 +209,13 @@ services:
 
     env_file:
       - .prod.env
+
+    deploy:
+      mode: replicated
+      replicas: 5
+      resources:
+        limits:
+          cpus: '1'
 
     network_mode : host
 
