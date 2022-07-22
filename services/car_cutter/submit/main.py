@@ -34,12 +34,14 @@ class TopicHandler:
         self.mysqldb.recDelete("fl_listings",{"ID":listing_id})
         self.mysqldb.disconnect()
     
-    def insert_image_logs(self,image_logs):
+    def insert_image_logs(self,image_logs,mysql_listing_id,mongo_listing_id):
         now = get_current_datetime()
         print(image_logs)
         current_month_collection = self.mongodb.car_cutter_logs[f'{now.month}-{now.year}']
         for img in image_logs:
             img["created_at"] = now
+            img["mysql_listing_id"] = mysql_listing_id
+            img["mongo_listing_id"] = mongo_listing_id
             current_month_collection.insert_one(img)
     
     def main(self):
@@ -85,7 +87,7 @@ class TopicHandler:
                 
                 submit_images = [i["mm_img_url"] for i in images]
                 cc_total_images,processed_images,image_logs,all_angles_count = self.car_cutter.submit_images(submit_images)
-                self.insert_image_logs(image_logs)
+                self.insert_image_logs(image_logs,mysql_listing_id,listing_id)
                 self.mongodb.listings_collection.update_one(where,{
                     "$set":{
                         "cc_unique_img_count":cc_total_images,
