@@ -206,6 +206,7 @@ services:
     volumes:
       - ./services/libs:/libs
       - ./media:/media
+      - /var/html/www/files:/files
 
     env_file:
       - .prod.env
@@ -247,6 +248,7 @@ services:
     volumes:
       - ./services/libs:/libs
       - ./media:/media
+      - /var/html/www/files:/files
 
     env_file:
       - .prod.env
@@ -268,7 +270,7 @@ services:
     volumes:
       - ./services/libs:/libs
       - ./media:/media
-      - /var/www/html/files:/files
+      - /var/html/www/files:/files
 
     env_file:
       - .prod.env

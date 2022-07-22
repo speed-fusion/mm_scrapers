@@ -19,7 +19,8 @@ class MysqlDatabase:
 
   def connect (self):
     # Open database connection
-    self.db = pymysql.connect(host=self.host,user=self.user,password=self.password,database=self.database,cursorclass=pymysql.cursors.DictCursor,port=self.port)
+    # db = pymysql.connect(host=host,user=username,password=password,database=database,cursorclass=pymysql.cursors.DictCursor)
+    self.db = pymysql.connect(host=self.host,user=self.user,password=self.password,database=self.database,cursorclass=pymysql.cursors.DictCursor)
     # #self.db.set_character_set(self.obj_config.charset)
     self.cursor = self.db.cursor(pymysql.cursors.DictCursor)
     self.cursor.execute('SET NAMES ' + self.charset + ';')
