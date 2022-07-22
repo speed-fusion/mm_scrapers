@@ -36,10 +36,11 @@ class TopicHandler:
     
     def insert_image_logs(self,image_logs):
         now = get_current_datetime()
+        print(image_logs)
         current_month_collection = self.mongodb.car_cutter_logs[f'{now.month}-{now.year}']
         for img in image_logs:
             img["created_at"] = now
-        current_month_collection.insert_many(image_logs)
+            current_month_collection.insert_one(img)
     
     def main(self):
         print("listening for new messages")
