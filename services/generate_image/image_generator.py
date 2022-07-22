@@ -2,7 +2,7 @@ from io import BytesIO
 from pathlib import Path
 from PIL import Image
 from concurrent.futures import ThreadPoolExecutor,as_completed
-from ftpHandler import ftpHandler
+# from ftpHandler import ftpHandler
 class ImageGenerator:
     def __init__(self) -> None:
         self.sizes = [
@@ -56,7 +56,7 @@ class ImageGenerator:
         processedImages["position"] = position
         processedImages["status"] = False
         
-        ftp = ftpHandler()
+        # ftp = ftpHandler()
         
         for counter in range(0,3):
             try:
@@ -79,37 +79,31 @@ class ImageGenerator:
                     tmp["size"] = size
                     processedImages[size["name"]] = tmp
                 
-                # org_image_path = self.files_dir.joinpath(orgImagePath)
+                org_image_path = self.files_dir.joinpath(orgImagePath)
                 
-                
-                
-                
-                t_img,orgImage = self.convert_image(rawImage)
-                ftp.uploadFile(orgImagePath,orgImage)
-                
-                    # upload image in server through ftp
-                    # t_img.save(org_image_path)
+                if org_image_path.exists() == False:
+                    t_img,orgImage = self.convert_image(rawImage)
+                    t_img.save(org_image_path)
                     
                 
                 for size in self.sizes:
                     imagePathTmp = f'S{websiteId}/ad{listingId}/{size["name"]}_{imageId}.jpg'
-                    # img_path_tmp = self.files_dir.joinpath(imagePathTmp)
-                    # if img_path_tmp.exists() == False:
-                    t_img,buff = self.convert_image(rawImage,size)
-                        
-                    ftp.uploadFile(imagePathTmp,buff)
-                        # t_img.save(img_path_tmp)
+                    img_path_tmp = self.files_dir.joinpath(imagePathTmp)
+                    if img_path_tmp.exists() == False:
+                        t_img,buff = self.convert_image(rawImage,size)
+                        t_img.save(img_path_tmp)
+                    # ftp.uploadFile(imagePathTmp,buff)
                 
                 processedImages["status"] = True
                 
-                ftp.disconnect()
+                # ftp.disconnect()
                 return processedImages
                 
             
             except Exception as e:
                 print(f'error : {str(e)}')
             
-        ftp.disconnect()
+        # ftp.disconnect()
         
         return processedImages
         
@@ -128,13 +122,13 @@ class ImageGenerator:
         # if listing_img_dir.exists() == False:
         #     listing_img_dir.mkdir()
         
-        ftp = ftpHandler()
+        # ftp = ftpHandler()
         
-        dirname = f'S{websiteId}/ad{listingId}'
+        # dirname = f'S{websiteId}/ad{listingId}'
 
-        ftp.createDirectory(f'{ftp.imageDir}/{dirname}')
+        # ftp.createDirectory(f'{ftp.imageDir}/{dirname}')
         
-        ftp.disconnect()
+        # ftp.disconnect()
         
         with ThreadPoolExecutor(max_workers=15) as executor:
             for item in images:

@@ -35,7 +35,7 @@ class TopicHandler:
 
         self.status_check_interval = 60
         
-        self.status_check_timeout = 15
+        self.status_check_timeout = 60
     
     def main(self):
         print(f'car cutter status checker is running...')
@@ -100,7 +100,6 @@ class TopicHandler:
                 message["data"]["images"] = images
                 
                 self.producer.produce_message(message)
-                
 
 if __name__ == "__main__":
     topic_handler = TopicHandler()

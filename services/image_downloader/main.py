@@ -26,9 +26,11 @@ class TopicHandler:
 
         self.media_dir = Path("/media")
         
+        self.files_dir = Path("/files")
+        
         self.image_downloader = ImageDownloader()
         
-        self.image_domain_base_url = "https://images.motor.market"
+        self.image_domain_base_url = "https://media.motor.market"
         
         
     def main(self):
@@ -41,22 +43,21 @@ class TopicHandler:
             
             listing_id = message["listing_id"]
             
-            website_dir = self.media_dir.joinpath(f'S{website_id}')
+            where = {"_id":listing_id}
+            
+            data = self.mongodb.listings_collection.find_one(where)
+            
+            mysql_listing_id = data["mysql_listing_id"]
+            
+            website_dir = self.files_dir.joinpath(f'S{website_id}')
             
             if not website_dir.exists():
                 website_dir.mkdir()
             
-            listing_dir = website_dir.joinpath(listing_id)
+            listing_dir = website_dir.joinpath(f'ad{mysql_listing_id}')
             
             if not listing_dir.exists():
                 listing_dir.mkdir()
-            
-            where = {"_id":listing_id}
-            
-            data = message.get("data",None)
-            
-            if data == None:
-                data = self.mongodb.listings_collection.find_one(where)
             
             if data == None:
                 # add code to report this incident
@@ -64,7 +65,6 @@ class TopicHandler:
             
             if website_id == 17:
                 pass
-            
             
             if website_id == 18:
                 
@@ -75,9 +75,9 @@ class TopicHandler:
                 for item in images:
                     url = item["url"]
                     id = generate_sha1(url)
-                    path = listing_dir.joinpath(f'{id}.jpg')
+                    path = listing_dir.joinpath(f'org_{id}.jpg')
                     item["mm_img_url"] = f'{self.image_domain_base_url}{str(path)}'
-                    item["id"] = generate_sha1(item["mm_img_url"])
+                    item["id"] = id
                     item["path"] = path
                     item["source_url"] = url
                 

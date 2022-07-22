@@ -69,13 +69,14 @@ class TopicHandler:
                 
                 mm_url = data["mm_url"]
                 
-                cc_total_img = data["cc_total_img"]
+                cc_unique_img_count = data["cc_total_img"]
+                cc_all_img_count = data["cc_unique_img_count"]
                 
                 Photos_count = len(images)
                 
                 self.mysqldb.connect()
                 
-                self.mysqldb.recCustomQuery(f'UPDATE fl_listings SET Main_photo="{thumb_image_path}",car_cutter=1,cc_total_img={cc_total_img},Photos_count={Photos_count},Status="active",mm_product_url="{mm_url}" WHERE ID={mysql_listing_id} AND Status NOT IN("manual_expire","pending","sold")')
+                self.mysqldb.recCustomQuery(f'UPDATE fl_listings SET Main_photo="{thumb_image_path}",car_cutter=1,cc_unique_img_count={cc_unique_img_count},cc_all_img_count={cc_all_img_count},Photos_count={Photos_count},Status="active",mm_product_url="{mm_url}" WHERE ID={mysql_listing_id} AND Status NOT IN("manual_expire","pending","sold")')
                 
                 self.delete_existing_image_entries(mysql_listing_id)
                 

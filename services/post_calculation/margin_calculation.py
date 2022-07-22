@@ -24,19 +24,22 @@ class MarginCalculation:
                 0: {"margin": 1370, "min": 0, "max": 1001},
                 1: {"margin": 1370, "min": 1001, "max": 2001},
                 2: {"margin": 1420, "min": 2001, "max": 2501},
-                3: {"margin": 1545, "min": 2501, "max": 3001}
+                3: {"margin": 1545, "min": 2501, "max": 3001},
+                4: {"margin": 1545, "min": 3001, "max": 10000}
             },
             "luxury": {
                 0: {"margin": 1425, "min": 0, "max": 1001},
                 1: {"margin": 1425, "min": 1001, "max": 2001},
                 2: {"margin": 1499, "min": 2001, "max": 2501},
-                3: {"margin": 1599, "min": 2501, "max": 3001}
+                3: {"margin": 1599, "min": 2501, "max": 3001},
+                4: {"margin": 1599, "min": 3001, "max": 10000}
             },
             "others": {
                 0: {"margin": 1299, "min": 0, "max": 1001},
                 1: {"margin": 1299, "min": 1001, "max": 2001},
                 2: {"margin": 1355, "min": 2001, "max": 2501},
-                3: {"margin": 1415, "min": 2501, "max": 3001}
+                3: {"margin": 1415, "min": 2501, "max": 3001},
+                4: {"margin": 1415, "min": 3001, "max": 10000}
             }
         }
         

@@ -111,16 +111,24 @@ class MarketCheckCalculation:
 
         ltv_resp = self.mc_calc_rules.calculate(source_mrp,registration,mileage,website_id,make,model,engine_cc,listing_id)
         
+        # new_source price
+        # new_margin
+        # new_price
+        # new_cal_price_from_file
+        
         if ltv_resp["status"] == True:
             mm_price = ltv_resp["mm_price"]
             margin = ltv_resp["margin"]
             ltv_percentage = ltv_resp["ltv_percentage"]
             old_ltv_values = ltv_resp["ltv"]
             ltv_status =ltv_resp["ltv_status"]
+            
             if ltv_resp["forecourt_call"] == True:
                 response = ltv_resp["response"]
                 data["dealer_forecourt_response"] = response
+                
                 data["forecourt_price"] = ltv_resp["forecourt_price"]
+            
             data["mm_price"] = mm_price
             data["margin"] = margin
             data["ltv_percentage"] = round(ltv_percentage,1)
@@ -205,8 +213,10 @@ class MarketCheckCalculation:
             data["video_id"] = videoId
     
     def car_cutter_extra_margin(self,data):
+        data["cc_extra_margin"] = 0
+        return
         if data["source_mrp"] > 11999:
-            extra_margin = 200
+            extra_margin = 0
             data["cc_extra_margin"] = extra_margin
             data["margin"] = data["margin"] + extra_margin
             data["mm_price"] = data["mm_price"] + extra_margin

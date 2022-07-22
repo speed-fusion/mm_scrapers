@@ -69,6 +69,9 @@ class CarCutter:
         unique_angles_found = {}
         exterior = []
         interior = []
+        all_angles_count = 0
+        image_logs = []
+        
         for item in json_response["data"]["images"]:
             url = item["image"]
             id = generate_sha1_hash(url)
@@ -86,6 +89,11 @@ class CarCutter:
             
             if "exterior" in angle:
                 if angle in unique_angles_found:
+                    all_angles_count += 1
+                    img_item["url"] = url
+                    img_item["status"] = "skipped"
+                    img_item["reason"] = "duplicate angle"
+                    image_logs.append(img_item)
                     continue
                 
                 if len(exterior) <= self.max_exterior:
@@ -95,23 +103,52 @@ class CarCutter:
                             img_item["car_cutter_ready"] = False
                             img_item["car_cutter_downloaded"] = False
                             exterior.insert(0,img_item)
+                            img_item["status"] = "added"
+                            img_item["url"] = url
+                            image_logs.append(img_item)
+                            all_angles_count += 1
+                            
                         elif "rear" in angle:
                             unique_angles_found[angle] = 1
                             img_item["car_cutter_ready"] = False
                             img_item["car_cutter_downloaded"] = False
                             exterior.append(img_item)
+                            img_item["status"] = "added"
+                            img_item["url"] = url
+                            image_logs.append(img_item)
+                            all_angles_count += 1
                     else:
                         print(f'angle is not in required angles : {angle}')
-                        
+                        img_item["status"] = "skipped"
+                        img_item["reason"] = "invalid angle"
+                        img_item["url"] = url
+                        image_logs.append(img_item)
+                else:
+                    img_item["status"] = "skipped"
+                    img_item["reason"] = "max exterior limit reached."
+                    img_item["url"] = url
+                    image_logs.append(img_item)
+                    
             elif "interior" in angle:
                 if len(interior) <= self.max_interior:
                     img_item["car_cutter_ready"] = True
                     img_item["car_cutter_downloaded"] = True
                     interior.append(img_item)
+                    img_item["status"] = "added"
+                    img_item["url"] = url
+                    image_logs.append(img_item)
                 else:
+                    img_item["status"] = "skipped"
+                    img_item["reason"] = "max interior limit reached."
+                    img_item["url"] = url
+                    image_logs.append(img_item)
                     print(f'skipping : maximum limit reached : {url}')
                     continue
             else:
+                img_item["status"] = "skipped"
+                img_item["reason"] = "image class is unknown."
+                img_item["url"] = url
+                image_logs.append(img_item)
                 print(f'image class is unknown : {angle}')
         
         index = 0
@@ -126,7 +163,7 @@ class CarCutter:
             index += 1
             all_images.append(img)
             
-        return len(unique_angles_found),all_images
+        return len(unique_angles_found),all_images,image_logs,all_angles_count
     
     def generate_query_param(self,key,images):
         q = ""

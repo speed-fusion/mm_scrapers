@@ -34,6 +34,12 @@ class TopicHandler:
         self.mysqldb.recDelete("fl_listings",{"ID":listing_id})
         self.mysqldb.disconnect()
     
+    def insert_image_logs(self,image_logs):
+        now = get_current_datetime()
+        current_month_collection = self.mongodb.car_cutter_logs[f'{now.month}-{now.year}']
+        for img in image_logs:
+            img["created_at"] = now
+        current_month_collection.insert_many(image_logs)
     
     def main(self):
         print("listening for new messages")
@@ -59,7 +65,6 @@ class TopicHandler:
                 pass
             
             if website_id == 18:
-                
                 final_images = []
                 
                 mysql_listing_id = data["mysql_listing_id"]
@@ -78,11 +83,12 @@ class TopicHandler:
                     continue
                 
                 submit_images = [i["mm_img_url"] for i in images]
-                cc_total_images,processed_images = self.car_cutter.submit_images(submit_images)
-                
+                cc_total_images,processed_images,image_logs,all_angles_count = self.car_cutter.submit_images(submit_images)
+                self.insert_image_logs(image_logs)
                 self.mongodb.listings_collection.update_one(where,{
                     "$set":{
-                        "cc_total_img":cc_total_images
+                        "cc_unique_img_count":cc_total_images,
+                        "cc_all_img_count":all_angles_count
                     }
                 })
                 
