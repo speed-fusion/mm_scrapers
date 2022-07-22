@@ -77,7 +77,7 @@ class TopicHandler:
                     id = generate_sha1(url)
                     path = listing_dir.joinpath(f'org_{id}.jpg')
                     item["mm_img_url"] = f'{self.image_domain_base_url}{str(path)}'
-                    item["id"] = id
+                    item["id"] = generate_sha1(item["mm_img_url"])
                     item["path"] = path
                     item["source_url"] = url
                 

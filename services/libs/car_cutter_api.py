@@ -77,7 +77,7 @@ class CarCutter:
             id = generate_sha1_hash(url)
             
             if item["quality"] != 'ok':
-                print(f'the quality is ok : {url}')
+                print(f'the quality is not ok : {url}')
                 continue
             
             angle = "_".join(item["angle"]).lower()
