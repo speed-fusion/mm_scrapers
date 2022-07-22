@@ -69,8 +69,8 @@ class TopicHandler:
                 
                 mm_url = data["mm_url"]
                 
-                cc_unique_img_count = data["cc_total_img"]
-                cc_all_img_count = data["cc_unique_img_count"]
+                cc_unique_img_count = data["cc_unique_img_count"]
+                cc_all_img_count = data["cc_all_img_count"]
                 
                 Photos_count = len(images)
                 
