@@ -76,7 +76,6 @@ services:
     restart: always
   
   notebook:
-    container_name: python_notebook
     ports:
       - 9090:8888
     volumes:
@@ -84,5 +83,5 @@ services:
       - /var/www/html/files:/files
 
     build: ./services/jupyter
-    
+
     network_mode: "host"
