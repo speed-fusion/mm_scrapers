@@ -35,7 +35,7 @@ class TopicHandler:
 
         self.status_check_interval = 60
         
-        self.status_check_timeout = 60
+        self.status_check_timeout = 5 * 60
     
     def main(self):
         print(f'car cutter status checker is running...')
