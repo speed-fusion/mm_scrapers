@@ -74,3 +74,15 @@ services:
     command: "bin/pulsar standalone -nss"
 
     restart: always
+  
+  notebook:
+    container_name: python_notebook
+    ports:
+      - 9090:8888
+    volumes:
+      - ./services/jupyter/notebooks:/notebooks
+      - /var/www/html/files:/files
+
+    build: ./services/jupyter
+    
+    network_mode: "host"
