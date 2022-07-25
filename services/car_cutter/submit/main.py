@@ -50,7 +50,7 @@ class TopicHandler:
             
             message =  self.consumer.consume_message()
             
-            continue
+            # continue
             
             website_id = message["website_id"]
             
