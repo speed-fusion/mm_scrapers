@@ -23,7 +23,7 @@ def search_meta(page):
     
     per_page = 20
     
-    skip = page * per_page
+    skip = int(page) * per_page
     
     limit = per_page
     
@@ -43,7 +43,7 @@ def search_meta(page):
     
     total_pages = int(total/per_page)
     
-    current_page = page
+    current_page = int(page)
     
     return(jsonify({
         "status":True,
