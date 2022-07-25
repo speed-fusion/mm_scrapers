@@ -69,7 +69,8 @@ class MarketCheckFieldMaper:
             {'key':'dealer_number','value':'dealer_number'},
             {'key':'source_price','value':'cal_price_from_file'},
             {'key':'registration','value':'product_website_id'},
-            {'key':'ltv_percentage','value':'ltv_percentage'}
+            {'key':'ltv_percentage','value':'ltv_percentage'},
+            {'key':'registration','value':'reference_number'},
             ]
         
     def map(self,data):
