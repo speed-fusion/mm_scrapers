@@ -15,26 +15,6 @@ app = Flask(__name__)
 
 CORS(app)
 
-
-
-# listing
-@app.route('/listings')
-def listings():
-    pass
-
-@app.route('/listings/distinct/<key>')
-def search_meta(key):
-    resp = {
-        "status":False,
-        "data":[]
-    }
-    data = db.listings_collection.distinct(key)
-    
-    resp["data"] = data
-    resp["status"] = True
-    
-    return jsonify(resp)
-
 @app.route('/listings/filter/<page>')
 def search_meta(page):
     if page == None:
@@ -86,15 +66,6 @@ def search_meta(page):
 @app.route('/dealers')
 def dealers():
     pass
-
-
-
-
-
-@app.route('/<path:path>')
-def download_file(path):
-    print(path)
-    return send_from_directory(media_base_path,path)
 
 # if __name__ == "__main__":
 #     app.run(host="0.0.0.0",port=6001,debug=True)

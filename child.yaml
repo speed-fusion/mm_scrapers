@@ -12,6 +12,16 @@ services:
   #     - .prod.env
     
   #   network_mode : host
+  api:
+    build: ./services/api
+
+    volumes:
+      - ./services/libs:/libs
+
+    env_file:
+      - .prod.env
+    
+    network_mode : host
 
   transform:
     build: ./services/transform
