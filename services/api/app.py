@@ -16,14 +16,15 @@ app = Flask(__name__)
 
 CORS(app)
 
-@app.route('/listings/filter/<page>',methods=["POST"])
-def search_meta(page):
+@app.route('/listings/filter',methods=["POST"])
+def search_meta():
+    page = int(request.args.get("page",0))
     if page == None:
         page = 0
     
     per_page = 20
     
-    skip = int(page) * per_page
+    skip = page * per_page
     
     limit = per_page
     
@@ -43,7 +44,7 @@ def search_meta(page):
     
     total_pages = int(total/per_page)
     
-    current_page = int(page)
+    current_page = page
     
     return(jsonify({
         "status":True,
