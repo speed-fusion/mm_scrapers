@@ -27,14 +27,17 @@ class ImageDownloader:
             "https":self.datacenterProxy
         }
         
-    def download_image(self,url,file_path,item):
+    def download_image(self,url,file_path:Path,item):
         
         if file_path.exists() == True:
             print(f'image already exists : {url}')
-            return {
-                "status":True,
-                "item":item
-            }
+            # return {
+            #     "status":True,
+            #     "item":item
+            # }
+            file_path.unlink()
+            print(f'existing image deleted...')
+            
         response = None
         
         for retry in range(0,self.max_retry):
