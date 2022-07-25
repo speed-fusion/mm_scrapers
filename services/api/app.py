@@ -16,6 +16,21 @@ app = Flask(__name__)
 
 CORS(app)
 
+@app.route('/listings/unique',methods=["POST"])
+def unique_values():
+    json_data = request.get_json()
+    
+    where = json_data["where"]
+    
+    what = json_data["what"]
+    
+    what_distinct = db.listings_collection.distinct(what,where)
+    
+    return jsonify({
+        "status":True,
+        "data":what_distinct
+    })
+
 @app.route('/listings/filter',methods=["POST"])
 def search_meta():
     page = int(request.args.get("page",0))
