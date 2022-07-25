@@ -1,4 +1,5 @@
 
+from crypt import methods
 from flask import Flask, jsonify, send_from_directory,request
 from flask_cors import CORS
 
@@ -15,7 +16,7 @@ app = Flask(__name__)
 
 CORS(app)
 
-@app.route('/listings/filter/<page>')
+@app.route('/listings/filter/<page>',methods=["POST"])
 def search_meta(page):
     if page == None:
         page = 0
