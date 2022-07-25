@@ -42,6 +42,7 @@ class TopicHandler:
         while True:
             
             message =  self.consumer.consume_message()
+            continue
             
             website_id = message["website_id"]
             
