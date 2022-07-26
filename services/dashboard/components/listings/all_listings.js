@@ -39,6 +39,7 @@ const AllListings = ({make}) => {
 
         setModelList(data["data"])
         setSelectedModel(null)
+        setSelectedTrim(null)
         await fetchListings(0,make,null,null)
         setShowProgressBar(false)
     }
@@ -61,13 +62,21 @@ const AllListings = ({make}) => {
 
         setTrimList(data["data"])
         setSelectedTrim(null)
+        await fetchListings(0,selectedMake,model,null)
         setShowProgressBar(false)
+    }
+
+    async function on_trim_change(value)
+    {
+        setSelectedTrim(value)
+        fetchListings(0,selectedMake,selectedModel,value)
+
     }
 
     async function fetchListings(page,make,model,trim)
     {
         setShowProgressBar(true)
-
+        setSelectedTrim(trim)
         let where = {}
         if (make != null)
         {
@@ -105,6 +114,15 @@ const AllListings = ({make}) => {
         // setPagination(pagination)
 
     }
+
+
+    async function handle_pagination(page)
+    {
+        setCurrentPage(page)
+        await fetchListings(page,selectedMake,selectedModel,selectedTrim)
+
+    }
+
 
   return (
     <Stack alignItems="center">
@@ -149,8 +167,10 @@ const AllListings = ({make}) => {
                 <Autocomplete
                     disablePortal
                     id="trim_list"
+                    onChange={(event,value,reason,detail)=>on_trim_change(value)}
                     options={trimList}
                     sx={{ width: 300 }}
+                    value={selectedTrim}
                     renderInput={(params) => <TextField {...params} label="Select Trim" />}
                 />
             </Stack>
@@ -161,7 +181,9 @@ const AllListings = ({make}) => {
                 {
                     listingList.map((item)=>(
                         <ListItem>
-                            <ListItemText primary={item.title} />
+                            <Card sx={{width:800}}>
+                                <CardHeader title={item.title} subheader={`dealer name : ${item.dealer_name}`} ></CardHeader>
+                            </Card>
                         </ListItem>
                     ))
                 }
@@ -169,7 +191,7 @@ const AllListings = ({make}) => {
         </Stack>
 
         <Stack marginY={2}>
-        <Pagination onChange={async(event,page) => fetchListings(page)}  count={totalPage} shape="rounded" siblingCount={0}/>
+        <Pagination onChange={async(event,page) => handle_pagination(page)} page={currentPage == 0 ? 1 : currentPage} count={totalPage} shape="rounded" siblingCount={0}/>
         </Stack>
     </Stack>
   )

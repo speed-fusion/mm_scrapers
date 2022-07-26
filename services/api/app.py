@@ -54,6 +54,7 @@ def search_meta():
         "mm_url":1,
         "status":1,
         "margin":1,
+        "images":1,
         "write_off_category":1
     }
     page = int(request.args.get("page",0))
