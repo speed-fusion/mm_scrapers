@@ -114,15 +114,17 @@ class MarketCheckLtvCalculationRules:
             
             mm_price = provisional_mm_price + margin
             
-            if engine_cc != None:
-                if engine_cc <= 3001:
-                    old_margin = self.calculate_old_margin(make,model,engine_cc)
-                    old_mm_price = source_price + old_margin
-                    final_ltv = self.old_ltv.calculate(old_mm_price,forecourt_value)
-                else:
-                    final_ltv = self.old_ltv.calculate(mm_price,forecourt_value)
-            else:
-                final_ltv = self.old_ltv.calculate(mm_price,forecourt_value)
+            final_ltv = self.old_ltv.calculate(mm_price,forecourt_value)
+            
+            # if engine_cc != None:
+            #     if engine_cc <= 3001:
+            #         old_margin = self.calculate_old_margin(make,model,engine_cc)
+            #         old_mm_price = source_price + old_margin
+            #         final_ltv = self.old_ltv.calculate(old_mm_price,forecourt_value)
+            #     else:
+            #         final_ltv = self.old_ltv.calculate(mm_price,forecourt_value)
+            # else:
+            #     final_ltv = self.old_ltv.calculate(mm_price,forecourt_value)
             
             return  {
                     "status":True,
