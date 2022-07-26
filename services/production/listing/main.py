@@ -70,7 +70,7 @@ class TopicHandler:
                     if len(result) == 0:
                         
                         mapped_data["create_ts"] = {"func":"now()"}
-                        mapped_data["updated_at"] = {"func":"now()"}
+                        
                         
                         id = self.mysqldb.recInsert("fl_listings",mapped_data)
                         

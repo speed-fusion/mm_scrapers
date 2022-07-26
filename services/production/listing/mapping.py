@@ -96,4 +96,5 @@ class MarketCheckFieldMaper:
                 tmp[key] = pcp_apr[key]
         if not "emission_scheme" in tmp:
             tmp["emission_scheme"] = 99
+        tmp["updated_at"] = {"func":"now()"}
         return tmp
