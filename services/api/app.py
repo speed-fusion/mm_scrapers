@@ -4,7 +4,7 @@ from flask import Flask, jsonify, send_from_directory,request,send_file
 from flask_cors import CORS
 import requests
 from pathlib import Path
-
+from io import BytesIO
 import sys 
 sys.path.append("/libs")
 
@@ -101,7 +101,7 @@ def image_downloader():
     url = request.args.get("url")
     resp = requests.get(url,headers=headers)
     return send_file(
-    resp.content,
+    BytesIO(resp.content),
     mimetype='image/jpeg',
     as_attachment=True,
     download_name=f'{uuid.uuid4()}.jpg')
