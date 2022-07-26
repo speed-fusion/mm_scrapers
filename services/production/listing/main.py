@@ -33,7 +33,8 @@ class TopicHandler:
     
     def main(self):
         print("listening for new messages")
-        while True:
+        # while True:
+        for i in range(0,10):
             
             message =  self.consumer.consume_message()
             
@@ -82,7 +83,8 @@ class TopicHandler:
                         self.mongodb.listings_collection.update_one(where,{
                             "$set":{
                                 "mysql_listing_id":id,
-                                "mm_url":mm_url
+                                "mm_url":mm_url,
+                                "status":"to_parse"
                             }
                         })
                         
@@ -112,18 +114,23 @@ class TopicHandler:
                                 
                                 self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
                                 
+                                self.mongodb.listings_collection(where,{"$set":{"status":mapped_data["status"]}})
+                                
                         elif mysql_entry["Website_ID"] == 18:
                             if status in ["manual_expire","pending","sold"]:
+                                self.mongodb.listings_collection(where,{"$set":{"status":status}})
                                 continue
                             
                             if status in ["active"]:
                                 mapped_data["Status"] = status
                                 self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
+                                self.mongodb.listings_collection(where,{"$set":{"status":status}})
                                 continue
                             
                             if status == "expired":
                                 mapped_data["Status"] = "active"
                                 self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
+                                self.mongodb.listings_collection(where,{"$set":{"status":mapped_data["Status"]}})
                                 continue
                             
                             if status == "to_parse":

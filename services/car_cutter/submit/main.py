@@ -33,6 +33,8 @@ class TopicHandler:
         self.mysqldb.connect()
         self.mysqldb.recDelete("fl_listings",{"ID":listing_id})
         self.mysqldb.disconnect()
+        
+        self.mongodb.listings_collection.update_one({"mysql_listing_id":listing_id},{"$set":{"status":"expired"}})
     
     def insert_image_logs(self,image_logs,mysql_listing_id,mongo_listing_id):
         now = get_current_datetime()
@@ -83,13 +85,18 @@ class TopicHandler:
                 
                 print(f'total images :{len(images)}')
                 
-                if len(images) == 0:
+                if len(images) < 2:
                     self.delete_mysql_listing(mysql_listing_id)
                     continue
                 
                 submit_images = [i["mm_img_url"] for i in images]
                 cc_total_images,processed_images,image_logs,all_angles_count = self.car_cutter.submit_images(submit_images)
+                for item in image_logs:
+                    img_item = image_by_id[item["id"]]
+                    item["source_url"] = img_item["source_url"]
+                    
                 self.insert_image_logs(image_logs,mysql_listing_id,listing_id)
+                
                 self.mongodb.listings_collection.update_one(where,{
                     "$set":{
                         "cc_unique_img_count":cc_total_images,
@@ -97,7 +104,7 @@ class TopicHandler:
                     }
                 })
                 
-                if len(processed_images) == 0:
+                if len(processed_images) < 2:
                     self.delete_mysql_listing(mysql_listing_id)
                     continue
                 

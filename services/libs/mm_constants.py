@@ -20,6 +20,9 @@ PULSAR_HOST = os.environ.get("PULSAR_HOST")
 REDIS_HOST = os.environ.get("REDIS_HOST")
 REDIS_PORT = int(os.environ.get("REDIS_PORT"))
 
+class ListingCountTypes(Enum):
+    NEW_LISTING_COUNT = "new_listing_count"
+
 class AutoTraderConstants(Enum):
     WEBSITE_ID = 17
     ACCOUNT_ID = 24898

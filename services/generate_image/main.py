@@ -30,6 +30,12 @@ class TopicHandler:
         
         self.image_generator = ImageGenerator()
     
+    def delete_mysql_listing(self,listing_id):
+        self.mysqldb.connect()
+        self.mysqldb.recDelete("fl_listings",{"ID":listing_id})
+        self.mysqldb.disconnect()
+        
+        self.mongodb.listings_collection.update_one({"mysql_listing_id":listing_id},{"$set":{"status":"expired"}})
     
     def main(self):
         print("listening for new messages")
@@ -58,6 +64,10 @@ class TopicHandler:
                 
                 images = message["data"]["images"]
                 
+                if len(images) < 2:
+                    self.delete_mysql_listing(mysql_listing_id)
+                    continue
+                
                 result = self.image_generator.processListing(images,website_id,mysql_listing_id)
                 
                 all_images = []
@@ -68,6 +78,10 @@ class TopicHandler:
                         continue
                     
                     all_images.append(img)
+                
+                if len(images) < 2:
+                    self.delete_mysql_listing(mysql_listing_id)
+                    continue
                 
                 message["data"]["images"] = all_images
 

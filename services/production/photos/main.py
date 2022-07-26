@@ -3,8 +3,8 @@ import sys
 
 sys.path.append("/libs")
 
+from mm_constants import ListingCountTypes
 from pulsar_manager import PulsarManager
-import pymongo
 from mongo_database import MongoDatabase
 from mysql_database import MysqlDatabase
 
@@ -110,6 +110,10 @@ class TopicHandler:
                 self.mysqldb.disconnect()
                 
                 self.delete_images_from_server(website_id,listing_id)
+                
+                self.mongodb.increase_count(ListingCountTypes.NEW_LISTING_COUNT.value)
+                
+                self.mongodb.listings_collection.update_one(where,{"$set":{"status":"active"}})
     
     def delete_mongo_image_data(self,id):
         self.mongodb.images_collection.delete_many({
