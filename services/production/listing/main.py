@@ -114,23 +114,23 @@ class TopicHandler:
                                 
                                 self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
                                 
-                                self.mongodb.listings_collection(where,{"$set":{"status":mapped_data["status"]}})
+                                self.mongodb.listings_collection.update_one(where,{"$set":{"status":mapped_data["status"]}})
                                 
                         elif mysql_entry["Website_ID"] == 18:
                             if status in ["manual_expire","pending","sold"]:
-                                self.mongodb.listings_collection(where,{"$set":{"status":status}})
+                                self.mongodb.listings_collection.update_one(where,{"$set":{"status":status}})
                                 continue
                             
                             if status in ["active"]:
                                 mapped_data["Status"] = status
                                 self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
-                                self.mongodb.listings_collection(where,{"$set":{"status":status}})
+                                self.mongodb.listings_collection.update_one(where,{"$set":{"status":status}})
                                 continue
                             
                             if status == "expired":
                                 mapped_data["Status"] = "active"
                                 self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
-                                self.mongodb.listings_collection(where,{"$set":{"status":mapped_data["Status"]}})
+                                self.mongodb.listings_collection.update_one(where,{"$set":{"status":mapped_data["Status"]}})
                                 continue
                             
                             if status == "to_parse":
