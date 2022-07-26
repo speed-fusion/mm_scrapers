@@ -239,7 +239,7 @@ class MarketCheck:
                 id = generate_unique_uuid()
                 
                 what["_id"] = id
-                
+                what["status"] = "just_added"
                 self.mongodb.listings_collection.insert_one(what)
             else:
                 for key in what.copy():
