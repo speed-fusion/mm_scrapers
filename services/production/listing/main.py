@@ -33,8 +33,8 @@ class TopicHandler:
     
     def main(self):
         print("listening for new messages")
-        # while True:
-        for i in range(0,10):
+        while True:
+        # for i in range(0,10):
             
             message =  self.consumer.consume_message()
             

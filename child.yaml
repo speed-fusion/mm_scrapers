@@ -135,7 +135,7 @@ services:
 
     network_mode : host
 
-    # restart: always
+    restart: always
 
   fl_listing_photos_upsert:
     build: ./services/production/photos
