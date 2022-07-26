@@ -33,6 +33,29 @@ def unique_values():
 
 @app.route('/listings/filter',methods=["POST"])
 def search_meta():
+    required_columns = {
+        "predicted_make":1,
+        "predicted_model":1,
+        "mm_price":1,
+        "source_price":1,
+        "admin_fee":1,
+        "title":1,
+        "source_url":1,
+        "mm_url":1,
+        "mileage":1,
+        "engine_cylinders_cc":1,
+        "fuel":1,
+        "dealer_name":1,
+        "dealer_number":1,
+        "dealer_id":1,
+        "body_style":1,
+        "transmission":1,
+        "trim":1,
+        "mm_url":1,
+        "status":1,
+        "margin":1,
+        "write_off_category":1
+    }
     page = int(request.args.get("page",0))
     if page == None:
         page = 0
@@ -47,15 +70,9 @@ def search_meta():
     
     where = json_data["where"]
     
-    what = json_data["what"]
-    
-    what_distinct = None
-    if what != None:
-        what_distinct = db.listings_collection.distinct(what,where)
-    
     total = db.listings_collection.count_documents(where)
     
-    listings = list(db.listings_collection.find(where).skip(skip).limit(limit))
+    listings = list(db.listings_collection.find(where,required_columns).skip(skip).limit(limit))
     
     total_pages = int(total/per_page)
     
@@ -68,7 +85,6 @@ def search_meta():
             "total_listings":total,
             "total_pages":total_pages,
             "current_page":current_page,
-            "what_distinct":what_distinct
         }
     }))
 

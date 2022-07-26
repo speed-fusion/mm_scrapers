@@ -18,6 +18,10 @@ const AllListings = ({make}) => {
 
     const [showProgressBar,setShowProgressBar] = useState(false);
 
+    const [totalPage,setTotalPage] = useState(0)
+    const [currentPage,setCurrentPage] = useState(0)
+    const [totalListings,setTotalListings] = useState(0)
+
     async function fetchModels(make)
     {   setSelectedMake(make)
         setShowProgressBar(true)
@@ -35,6 +39,7 @@ const AllListings = ({make}) => {
 
         setModelList(data["data"])
         setSelectedModel(null)
+        await fetchListings(0,make,null,null)
         setShowProgressBar(false)
     }
 
@@ -46,7 +51,7 @@ const AllListings = ({make}) => {
         method:"POST",
         body:JSON.stringify({
             "what":"trim",
-            "where":{"predicted_make":selectedMake,"predicted_model":model,"trim":{"$exists":true}}
+            "where":{"predicted_make":selectedMake,"predicted_model":model,"trim":{"$ne":null}}
         }),headers:{
             "Content-Type":"application/json"
         }
@@ -59,10 +64,48 @@ const AllListings = ({make}) => {
         setShowProgressBar(false)
     }
 
-    function fetchListings()
+    async function fetchListings(page,make,model,trim)
     {
+        setShowProgressBar(true)
+
+        let where = {}
+        if (make != null)
+        {
+            where["predicted_make"] = make
+        }
+
+        if (model != null)
+        {
+            where["predicted_model"] = model
+        }
+
+        if (trim != null)
+        {
+            where["trim"] = trim
+        }
+
+        const res = await fetch(`http://195.181.164.37:5000/listings/filter?page=${page}`,{
+        method:"POST",
+        body:JSON.stringify({
+            "what":null,
+            "where":where
+        }),headers:{
+            "Content-Type":"application/json"
+        }
+        })
+        
+        const data = await res.json()
+
+        setTotalPage(data["data"]["total_pages"])
+        setTotalListings(data["data"]["total_listings"])
+        setCurrentPage(page)
+        
+        setListingList(data["data"]["listings"])
+        setShowProgressBar(false)
+        // setPagination(pagination)
 
     }
+
   return (
     <Stack alignItems="center">
         <Stack marginY={2}>
@@ -114,11 +157,19 @@ const AllListings = ({make}) => {
         </Stack>
 
         <Stack>
-            
+            <List>
+                {
+                    listingList.map((item)=>(
+                        <ListItem>
+                            <ListItemText primary={item.title} />
+                        </ListItem>
+                    ))
+                }
+            </List>
         </Stack>
 
         <Stack marginY={2}>
-        <Pagination  count={500} shape="rounded" siblingCount={0}/>
+        <Pagination onChange={async(event,page) => fetchListings(page)}  count={totalPage} shape="rounded" siblingCount={0}/>
         </Stack>
     </Stack>
   )
