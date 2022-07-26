@@ -4,3 +4,4 @@ gunicorn
 flask-jwt-extended
 Flask-PyMongo
 Flask-Bcrypt
+requests
