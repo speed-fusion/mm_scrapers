@@ -98,8 +98,8 @@ def search_meta():
 @app.route('/fetch/image')
 def image_downloader():
     headers =   {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'}
-    url = request.args.get("url",headers=headers)
-    resp = requests.get(url)
+    url = request.args.get("url")
+    resp = requests.get(url,headers=headers)
     return send_file(
     resp.content,
     mimetype='image/jpeg',
