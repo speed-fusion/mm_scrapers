@@ -55,4 +55,4 @@ class MongoDatabase:
             
             return
 
-        self.listing_counts.update_one({"_id":result["_id"]},{"$inc":{"count":1}})
+        self.listing_counts.update_one({"_id":result["_id"]},{"$inc":{"count":1},"$set":{"updated_at":now}})
