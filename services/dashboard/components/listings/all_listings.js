@@ -1,4 +1,4 @@
-import { Autocomplete, Avatar, Card, CardActions, CardContent, CardHeader, CardMedia, CircularProgress, IconButton, LinearProgress, List, ListItem, ListItemAvatar, ListItemText, Modal, Pagination, SpeedDialIcon, Stack, TextField, Typography } from '@mui/material'
+import { Autocomplete, Avatar, Card, CardActions, CardContent, CardHeader, CardMedia, CircularProgress, Grid, IconButton, LinearProgress, List, ListItem, ListItemAvatar, ListItemText, Modal, Pagination, SpeedDialIcon, Stack, TextField, Typography } from '@mui/material'
 import { Box, height } from '@mui/system';
 import React, { useState } from 'react'
 
@@ -176,18 +176,23 @@ const AllListings = ({make}) => {
             </Stack>
         </Stack>
 
-        <Stack>
-            <List>
+        <Stack alignItems={"center"} justifyContent="center" alignContent={"center"}>
+            <Grid container rowSpacing={3} columnSpacing={3} justifyItems="center">
                 {
                     listingList.map((item)=>(
-                        <ListItem>
-                            <Card sx={{width:800}}>
+                        <Grid item xs={12} md={6} lg={6}>
+                            <Card sx={{width:600}}>
                                 <CardHeader title={item.title} subheader={`dealer name : ${item.dealer_name}`} ></CardHeader>
+                                <CardMedia
+                                height={300}
+                                component={"img"}
+                                image={item.images[1]["url"]}
+                                />
                             </Card>
-                        </ListItem>
+                        </Grid>
                     ))
                 }
-            </List>
+            </Grid>
         </Stack>
 
         <Stack marginY={2}>

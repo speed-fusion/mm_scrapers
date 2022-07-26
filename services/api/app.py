@@ -1,8 +1,8 @@
 
-from crypt import methods
-from flask import Flask, jsonify, send_from_directory,request
+import uuid
+from flask import Flask, jsonify, send_from_directory,request,send_file
 from flask_cors import CORS
-
+import requests
 from pathlib import Path
 
 import sys 
@@ -94,7 +94,19 @@ def search_meta():
 # 2. select model
 # 3. select trim
 
-
+# dealers
+@app.route('/fetch/image')
+def image_downloader():
+    headers =   {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'}
+    url = request.args.get("url",headers=headers)
+    resp = requests.get(url)
+    return send_file(
+    resp.content,
+    mimetype='image/jpeg',
+    as_attachment=True,
+    download_name=f'{uuid.uuid4()}.jpg')
+    
+    
 
 # dealers
 @app.route('/dealers')
