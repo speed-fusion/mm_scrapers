@@ -79,10 +79,6 @@ class TopicHandler:
                     
                     all_images.append(img)
                 
-                if len(images) < 2:
-                    self.delete_mysql_listing(mysql_listing_id)
-                    continue
-                
                 message["data"]["images"] = all_images
 
             self.producer.produce_message(message)

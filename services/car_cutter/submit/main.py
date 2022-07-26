@@ -85,7 +85,7 @@ class TopicHandler:
                 
                 print(f'total images :{len(images)}')
                 
-                if len(images) < 2:
+                if len(images) <= 2:
                     self.delete_mysql_listing(mysql_listing_id)
                     continue
                 
@@ -103,10 +103,6 @@ class TopicHandler:
                         "cc_all_img_count":all_angles_count
                     }
                 })
-                
-                if len(processed_images) < 2:
-                    self.delete_mysql_listing(mysql_listing_id)
-                    continue
                 
                 for item in processed_images:
                     img_item = image_by_id[item["id"]]
