@@ -103,7 +103,7 @@ def image_downloader():
     return send_file(
     BytesIO(resp.content),
     mimetype='image/jpeg',
-    as_attachment=True,
+    as_attachment=False,
     download_name=f'{uuid.uuid4()}.jpg')
     
     
