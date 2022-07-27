@@ -28,7 +28,6 @@ CORS(app)
 
 @app.route('/listings/add',methods=["POST"])
 def add_listings():
-    PIPELINE_NAME = ".manual"
     
     json_data = request.get_json()
     
@@ -63,8 +62,9 @@ def add_listings():
                 "website_id":18,
                 "data":None
             }
-        topic = f'motormarket{PIPELINE_NAME}.scraper.listing.transform'
-        producer = pm.create_producer(topic)
+        
+        producer = pm.create_producer(pm.topics.MANUAL_TRANSFORM)
+        
         producer.produce_message(message)
         
         return jsonify({
