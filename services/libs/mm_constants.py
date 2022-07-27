@@ -50,6 +50,8 @@ class Topics(Enum):
     
     LISTING_TRANSFORM = f'motormarket{PIPELINE_NAME}.scraper.listing.transform'
     
+    MANUAL_TRANSFORM = f'motormarket.manual.scraper.listing.transform'
+    
     LISTING_PRE_VALIDATION = f'motormarket{PIPELINE_NAME}.scraper.listing.prevalidation'
     
     LISTING_POST_VALIDATION = f'motormarket{PIPELINE_NAME}.scraper.listing.postvalidation'
