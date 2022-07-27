@@ -1,0 +1,185 @@
+version: '3.1'
+
+services:
+  transform:
+    build: ./services/transform
+
+    volumes:
+      - ./services/libs:/libs
+
+    env_file:
+      - .prod.env
+    
+    network_mode : host
+    
+    environment:
+      - PIPELINE_NAME=manual
+    
+    restart: always
+  
+  pre_validation:
+    build: ./services/pre_validation
+
+    volumes:
+      - ./services/libs:/libs
+
+    env_file:
+      - .prod.env
+
+    environment:
+      - PIPELINE_NAME=manual
+
+    network_mode : host
+    
+    restart: always
+  
+  make_model_prediction:
+    build: ./services/ml/prediction/make_model
+
+    volumes:
+      - ./services/libs:/libs
+
+    env_file:
+      - .prod.env
+
+    environment:
+      - PIPELINE_NAME=manual
+
+    network_mode : host
+
+    restart: always
+
+  post_calculation:
+    build: ./services/post_calculation
+
+    volumes:
+      - ./services/libs:/libs
+
+    env_file:
+      - .prod.env
+
+    environment:
+      - PIPELINE_NAME=manual
+    
+    network_mode : host
+
+    restart: always
+  
+  fl_listing_upsert:
+    build: ./services/production/listing
+
+    volumes:
+      - ./services/libs:/libs
+
+    env_file:
+      - .prod.env
+    
+    environment:
+      - PIPELINE_NAME=manual
+
+    network_mode : host
+
+    restart: always
+
+  fl_listing_photos_upsert:
+    build: ./services/production/photos
+
+    volumes:
+      - ./services/libs:/libs
+      - ./media:/media
+
+    env_file:
+      - .prod.env
+    environment:
+      - PIPELINE_NAME=manual
+
+    network_mode : host
+
+    restart: always
+
+  car_cutter_submit:
+    build: ./services/car_cutter/submit
+
+    volumes:
+      - ./services/libs:/libs
+      - ./media:/media
+
+    env_file:
+      - .prod.env
+
+    network_mode : host
+
+    restart: always
+
+    environment:
+      - PIPELINE_NAME=manual
+
+  car_cutter_status_checker:
+    build: ./services/car_cutter/status_checker
+
+    volumes:
+      - ./services/libs:/libs
+      - ./media:/media
+    env_file:
+      - .prod.env
+    
+    environment:
+      - PIPELINE_NAME=manual
+
+    network_mode : host
+
+    restart: always
+
+  car_cutter_downloader:
+    build: ./services/car_cutter/downloader
+
+    volumes:
+      - ./services/libs:/libs
+      - ./media:/media
+      - /var/www/html/files:/files
+
+    env_file:
+      - .prod.env
+    
+    environment:
+      - PIPELINE_NAME=manual
+
+    network_mode : host
+
+    restart: always
+  
+  image_downloader:
+    build: ./services/image_downloader
+
+    volumes:
+      - ./services/libs:/libs
+      - ./media:/media
+      - /var/www/html/files:/files
+
+    env_file:
+      - .prod.env
+
+    network_mode : host
+
+    restart: always
+
+    environment:
+      - PIPELINE_NAME=manual
+
+  generate_image:
+    build: ./services/generate_image
+
+    volumes:
+      - ./services/libs:/libs
+      - ./media:/media
+      - /var/www/html/files:/files
+
+    env_file:
+      - .prod.env
+
+    environment:
+      - PIPELINE_NAME=manual
+    
+    network_mode : host
+
+    restart: always

@@ -16,7 +16,6 @@ class MongoDatabase:
         
         self.listing_counts = self.db["listing-counts"]
         
-        # market check
         self.listings_collection = self.db["listings"]
         
         self.dealers_collection = self.db["dealers"]
@@ -28,6 +27,8 @@ class MongoDatabase:
         self.listing_event_collection = self.db["listing-events"]
         
         self.report_event_collection = self.db["report-events"]
+        
+        self.manual_entry_collection = self.db["manual-entry"]
     
     def insert_event(self,collection,data):
         now = get_current_datetime()

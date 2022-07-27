@@ -2,8 +2,9 @@ import { Box, Stack, Tab, Tabs, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import AllListings from '../../components/listings/all_listings'
 import BlockedListings from '../../components/listings/blocked_listings'
+import RecentListings from '../../components/listings/recent'
 
-const ListingsHome = ({ data }) => {
+const ListingsHome = ({ makes,listings,total_pages,current_page,total_listings }) => {
     // console.log(data)
     const tab_items = [
         {
@@ -11,7 +12,7 @@ const ListingsHome = ({ data }) => {
             status:false
         },
         {
-            label:"Blocked Listings",
+            label:"Recently Added",
             status:false
         }
     ]
@@ -38,10 +39,10 @@ const ListingsHome = ({ data }) => {
 
         <Stack>
             {selectedTab == 0 &&
-                <AllListings make={data["data"]}/>
+                <AllListings makes={makes} listings={listings} total_pages={total_pages} total_listings={total_listings} current_page={current_page}/>
             }
             {selectedTab == 1 &&
-                <BlockedListings/>
+                <RecentListings/>
             }
         </Stack>
     
@@ -56,8 +57,8 @@ export async function getServerSideProps() {
     const res = await fetch(`http://195.181.164.37:5000/listings/unique`,{
         method:"POST",
         body:JSON.stringify({
-            "what":"predicted_make",
-            "where":{"predicted_make":{"$exists":true}}
+            "what":"raw.make",
+            "where":{"raw.make":{"$exists":true}}
         }),headers:{
             "Content-Type":"application/json"
         }
@@ -65,8 +66,25 @@ export async function getServerSideProps() {
 
     const data = await res.json()
 
-    // console.log(data)
-  
-    // Pass data to the page via props
-    return { props: { data } }
+
+    const listing_res = await fetch(`http://195.181.164.37:5000/listings/filter?page=${0}`,{
+        method:"POST",
+        body:JSON.stringify({
+            "what":null,
+            "where":{"raw.make":{"$exists":true}}
+        }),headers:{
+            "Content-Type":"application/json"
+        }
+        })
+        
+        const listing_data = await listing_res.json()
+
+    return { props: { 
+        "makes":data["data"],
+        "listings":listing_data["data"]["listings"],
+        "total_pages":listing_data["data"]["total_pages"],
+        "total_listings":listing_data["data"]["total_listings"],
+        "current_page":0
+        
+     } }
   }

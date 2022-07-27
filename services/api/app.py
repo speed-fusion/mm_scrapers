@@ -1,20 +1,77 @@
 
 import uuid
-from flask import Flask, jsonify, send_from_directory,request,send_file
+from flask import Flask, jsonify,request,send_file
 from flask_cors import CORS
 import requests
 from pathlib import Path
 from io import BytesIO
-import sys 
+import sys
+from helper import get_current_datetime 
 sys.path.append("/libs")
 
 from mongo_database import MongoDatabase
 
-db = MongoDatabase() 
+from mysql_database import MysqlDatabase
+
+from pulsar_manager import PulsarManager
+
+pm = PulsarManager()
+
+db = MongoDatabase()
+
+mysql_db = MysqlDatabase()
 
 app = Flask(__name__)
 
 CORS(app)
+
+@app.route('/listings/add',methods=["POST"])
+def add_listings():
+    PIPELINE_NAME = ".manual"
+    registration = request.args.get("registration","").strip().upper()
+    
+    listing_id = request.args.get("listing_id")
+    
+    if len(registration) == 0:
+        return {
+            "status":False,
+            "message":f'The registration is invalid : {registration}'
+        }
+    
+    mysql_db.connect()
+    resp = mysql_db.recCustomQuery(f'SELECT registration,mm_product_url,ID FROM fl_listings WHERE registration={registration}')
+    mysql_db.disconnect()
+    
+    if len(resp) == 0:
+        
+        now = get_current_datetime()
+        
+        db.manual_entry_collection.insert_one({
+            "listing_id":listing_id,
+            "created_at":now,
+            "updated_at":now,
+            "status":"processing",
+            "message":""
+        })
+        
+        message = {
+                "listing_id":listing_id,
+                "website_id":18,
+                "data":None
+            }
+        topic = f'motormarket{PIPELINE_NAME}.scraper.listing.transform'
+        producer = pm.create_producer(topic)
+        producer.produce_message(message)
+        
+        return jsonify({
+            "status":True,
+            "message":"listing added in queue."
+        })
+    else:
+        return jsonify({
+            "status":False,
+            "message":f'listing already available on site : {resp[0]["ID"]}'
+        })
 
 @app.route('/listings/unique',methods=["POST"])
 def unique_values():
@@ -34,30 +91,11 @@ def unique_values():
 @app.route('/listings/filter',methods=["POST"])
 def search_meta():
     required_columns = {
-        "predicted_make":1,
-        "predicted_model":1,
-        "mm_price":1,
-        "source_price":1,
-        "admin_fee":1,
-        "title":1,
-        "source_url":1,
-        "mm_url":1,
-        "mileage":1,
-        "engine_cylinders_cc":1,
-        "fuel":1,
-        "dealer_name":1,
-        "dealer_number":1,
-        "dealer_id":1,
-        "body_style":1,
-        "transmission":1,
-        "trim":1,
-        "mm_url":1,
-        "status":1,
-        "margin":1,
-        "images":1,
-        "write_off_category":1
+        "raw":1,
     }
+    
     page = int(request.args.get("page",0))
+    
     if page == None:
         page = 0
     
@@ -73,8 +111,22 @@ def search_meta():
     
     total = db.listings_collection.count_documents(where)
     
-    listings = list(db.listings_collection.find(where,required_columns).skip(skip).limit(limit))
+    db_listings = list(db.listings_collection.find(where,required_columns).skip(skip).limit(limit))
     
+    listings = []
+    
+    for l in db_listings:
+        tmp = {}
+        
+        main_img = None
+        for img in l["raw"]["images"]:
+            main_img = img["url"]
+            break
+        tmp["main_img"] = main_img
+        tmp.update(l["raw"])
+        tmp["listing_id"] = l["_id"]
+        listings.append(tmp)
+        
     total_pages = int(total/per_page)
     
     current_page = page
