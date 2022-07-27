@@ -43,7 +43,7 @@ def add_listings():
         }
     
     mysql_db.connect()
-    resp = mysql_db.recCustomQuery(f'SELECT registration,mm_product_url,ID FROM fl_listings WHERE registration={registration}')
+    resp = mysql_db.recCustomQuery(f'SELECT registration,mm_product_url,ID FROM fl_listings WHERE registration="{registration}"')
     mysql_db.disconnect()
     
     if len(resp) == 0:
