@@ -133,6 +133,9 @@ def search_meta():
             del tmp["images"]
         if "location" in tmp:
             del tmp["location"]
+            
+        if "registration_date" in tmp:
+            del tmp["registration_date"]
         listings.append(tmp)
         
     total_pages = int(total/per_page)

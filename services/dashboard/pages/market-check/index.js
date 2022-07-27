@@ -75,7 +75,8 @@ export async function getServerSideProps() {
             "Content-Type":"application/json"
         }
         })
-        
+    
+    
     const listing_data = await listing_res.json()
 
     return { props: { 
