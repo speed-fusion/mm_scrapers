@@ -70,7 +70,6 @@ export async function getServerSideProps() {
     const listing_res = await fetch(`http://195.181.164.37:5000/listings/filter?page=${0}`,{
         method:"POST",
         body:JSON.stringify({
-            "what":null,
             "where":{"raw.make":{"$exists":true}}
         }),headers:{
             "Content-Type":"application/json"
