@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 import sys
 
@@ -114,6 +115,11 @@ class TopicHandler:
                 self.mongodb.increase_count(ListingCountTypes.NEW_LISTING_COUNT.value)
                 
                 self.mongodb.listings_collection.update_one(where,{"$set":{"status":"active"}})
+                
+                pipeline = os.environ.get("PIPELINE","")
+                
+                if pipeline == "manual":
+                    self.mongodb.manual_entry_collection.update_many({"listing_id":listing_id},{"status":"active","mm_url":mm_url})
     
     def delete_mongo_image_data(self,id):
         self.mongodb.images_collection.delete_many({
