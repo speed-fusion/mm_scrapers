@@ -28,9 +28,12 @@ CORS(app)
 @app.route('/listings/add',methods=["POST"])
 def add_listings():
     PIPELINE_NAME = ".manual"
-    registration = request.args.get("registration","").strip().upper()
     
-    listing_id = request.args.get("listing_id")
+    json_data = request.get_json()
+    
+    registration = json_data.get("registration","").strip().upper()
+    
+    listing_id = json_data.get("listing_id")
     
     if len(registration) == 0:
         return {
