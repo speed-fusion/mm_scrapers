@@ -76,7 +76,7 @@ export async function getServerSideProps() {
         }
         })
         
-        const listing_data = await listing_res.json()
+    const listing_data = await listing_res.json()
 
     return { props: { 
         "makes":data["data"],

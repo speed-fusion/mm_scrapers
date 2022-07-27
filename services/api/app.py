@@ -129,7 +129,10 @@ def search_meta():
         tmp["main_img"] = main_img
         tmp.update(l["raw"])
         tmp["listing_id"] = l["_id"]
-        del tmp["images"]
+        if "images" in tmp:
+            del tmp["images"]
+        if "location" in tmp:
+            del tmp["location"]
         listings.append(tmp)
         
     total_pages = int(total/per_page)
