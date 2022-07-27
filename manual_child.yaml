@@ -1,7 +1,7 @@
 version: '3.1'
 
 services:
-  transform:
+  manual_transform:
     build: ./services/transform
 
     volumes:
@@ -17,7 +17,7 @@ services:
     
     restart: always
   
-  pre_validation:
+  manual_pre_validation:
     build: ./services/pre_validation
 
     volumes:
@@ -33,7 +33,7 @@ services:
     
     restart: always
   
-  make_model_prediction:
+  manual_make_model_prediction:
     build: ./services/ml/prediction/make_model
 
     volumes:
@@ -49,7 +49,7 @@ services:
 
     restart: always
 
-  post_calculation:
+  manual_post_calculation:
     build: ./services/post_calculation
 
     volumes:
@@ -65,7 +65,7 @@ services:
 
     restart: always
   
-  fl_listing_upsert:
+  manual_fl_listing_upsert:
     build: ./services/production/listing
 
     volumes:
@@ -81,7 +81,7 @@ services:
 
     restart: always
 
-  fl_listing_photos_upsert:
+  manual_fl_listing_photos_upsert:
     build: ./services/production/photos
 
     volumes:
@@ -97,7 +97,7 @@ services:
 
     restart: always
 
-  car_cutter_submit:
+  manual_car_cutter_submit:
     build: ./services/car_cutter/submit
 
     volumes:
@@ -114,7 +114,7 @@ services:
     environment:
       - PIPELINE_NAME=manual
 
-  car_cutter_status_checker:
+  manual_car_cutter_status_checker:
     build: ./services/car_cutter/status_checker
 
     volumes:
@@ -130,7 +130,7 @@ services:
 
     restart: always
 
-  car_cutter_downloader:
+  manual_car_cutter_downloader:
     build: ./services/car_cutter/downloader
 
     volumes:
@@ -148,7 +148,7 @@ services:
 
     restart: always
   
-  image_downloader:
+  manual_image_downloader:
     build: ./services/image_downloader
 
     volumes:
@@ -166,7 +166,7 @@ services:
     environment:
       - PIPELINE_NAME=manual
 
-  generate_image:
+  manual_generate_image:
     build: ./services/generate_image
 
     volumes:
