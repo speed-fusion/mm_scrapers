@@ -217,6 +217,7 @@ class MarketCheck:
                         del what[key]
                         
                 self.mongodb.dealers_collection.update_one(where,{"$set":what})
+                what["_id"] = result["_id"]
                 self.csv_parser_mysql.produce_message({
                     "table":"market_check_dealers",
                     "what":what,
@@ -260,15 +261,17 @@ class MarketCheck:
                 for key in what.copy():
                     if what[key] == None:
                         del what[key]
+                
+                
+                self.mongodb.listings_collection.update_one(where,{"$set":what})
+                
+                id = result["_id"]
+                what["_id"] = id
                 self.csv_parser_mysql.produce_message({
                     "table":"market_check_listings",
                     "what":what,
                     "where":where
                 })
-                
-                self.mongodb.listings_collection.update_one(where,{"$set":what})
-                
-                id = result["_id"]
             
             if dealer_id in active_dealer_ids:
                 tmp.append({
