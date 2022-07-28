@@ -96,7 +96,11 @@ class TopicHandler:
             table = message["table"]
             
             what = self.column_mapping( message["what"],table)
-            where = message["where"]
+            
+            if table == "market_check_dealers":
+                where = {"dealer_id":what["dealer_id"]}
+            elif table == "market_check_listings":
+                where = {"registration":what["registration"]}
             
             result = self.mysql_db.recSelect(table,where)
             what["updated_at"] = {"func":"now()"}
