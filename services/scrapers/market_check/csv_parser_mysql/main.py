@@ -89,7 +89,8 @@ class TopicHandler:
             return data
         
     def main(self):
-        while True:
+        # while True:
+        for i in range(0,5):
             message =  self.consumer.consume_message()
             
             self.mysql_db.connect()
@@ -97,6 +98,8 @@ class TopicHandler:
             table = message["table"]
             
             what = self.column_mapping( message["what"],table)
+            
+            print(what)
             
             if table == "market_check_dealers":
                 dealer_id = what.get("dealer_id",None)
