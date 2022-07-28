@@ -3,7 +3,7 @@ from flask import Blueprint, abort,jsonify,request,send_file, send_from_director
 import sys
 import requests
 from PIL import Image
-from io import StringIO
+from io import StringIO,BytesIO
 
 sys.path.append("/libs")
 
@@ -78,9 +78,7 @@ def resize():
     
     response = requests.get(url,headers=headers)
     
-    response.raw.decode_content = True
-    
-    im = Image.open(response.raw)
+    im = Image.open(BytesIO(response.content))
     
     im = im.resize((width,height))
     
