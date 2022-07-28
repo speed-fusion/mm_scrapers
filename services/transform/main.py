@@ -30,7 +30,7 @@ class TopicHandler:
         while True:
             
             message =  self.consumer.consume_message()
-            
+            print(message)
             website_id = message["website_id"]
             
             listing_id = message["listing_id"]
