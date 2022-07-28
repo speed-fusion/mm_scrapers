@@ -246,10 +246,12 @@ class MarketCheck:
             
             if result == None:
                 what["created_at"] = get_current_datetime()
+                
                 id = generate_unique_uuid()
                 
                 what["_id"] = id
                 what["status"] = "inactive"
+                
                 self.mongodb.listings_collection.insert_one(what)
                 
                 self.csv_parser_mysql.produce_message({
@@ -261,7 +263,6 @@ class MarketCheck:
                 for key in what.copy():
                     if what[key] == None:
                         del what[key]
-                
                 
                 self.mongodb.listings_collection.update_one(where,{"$set":what})
                 

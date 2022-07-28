@@ -30,22 +30,23 @@ class TopicHandler:
         while True:
             
             message =  self.consumer.consume_message()
-            print(message)
+            
             website_id = message["website_id"]
             
             listing_id = message["listing_id"]
             
             where = {"_id":listing_id}
-            print(where)
             
+            data = message.get("data",None)
             
-            data = self.mongodb.listings_collection.find_one(where)
+            if data == None:
+                data = self.mongodb.listings_collection.find_one(where)
             
             if data == None:
                 # add code to report this incident
                 continue
             
-            print(data)
+            
             if website_id == 17:
                 pass
             
