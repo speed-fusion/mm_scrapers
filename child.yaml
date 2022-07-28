@@ -21,6 +21,8 @@ services:
 
     env_file:
       - .prod.env
+
+    restart: always
     
     network_mode : host
 
