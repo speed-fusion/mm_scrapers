@@ -74,7 +74,7 @@ def resize():
     im = Image.open(response.raw)
     
     im = im.resize((width,height))
-    
+    im =  im.convert('RGB')
     return serve_pil_image(im)
     
     
