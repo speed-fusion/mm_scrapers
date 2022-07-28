@@ -82,6 +82,7 @@ class TopicHandler:
             for item in data["raw"]:
                 if item in self.listing_columns:
                     final_data[item] = data["raw"][item]
+            final_data["_id"] = data["_id"]
         else:
             final_data = data
         return final_data
