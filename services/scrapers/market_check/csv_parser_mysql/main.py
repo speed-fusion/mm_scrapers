@@ -21,6 +21,7 @@ class TopicHandler:
 
         self.dealer_columns = {
                 "_id":"_id",
+                "dealer_id":"dealer_id",
                 "dealer_name":"dealer_name",
                 "fca_status":"fca_status",
                 "fca_reference_no":"fca_reference_no",
@@ -71,22 +72,19 @@ class TopicHandler:
         }
     
     def column_mapping(self,data,table):
+        final_data = {}
         if table == "market_check_dealers":
-            final_data = {}
             
             for item in data:
                 if item in self.dealer_columns:
                     final_data[item] = data[item]
-            return final_data
         elif table == "market_check_listings":
-            final_data = {}
-            
             for item in data:
                 if item in self.listing_columns:
                     final_data[item] = data[item]
-            return final_data
         else:
-            return data
+            final_data = data
+        return final_data
         
     def main(self):
         # while True:
