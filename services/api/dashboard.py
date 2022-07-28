@@ -31,7 +31,7 @@ def dropdown():
 
 @Dashboard.route('/listings',methods=["POST"])
 def listings():
-    per_page = 20
+    per_page = 10
     
     body = request.get_json()
     
