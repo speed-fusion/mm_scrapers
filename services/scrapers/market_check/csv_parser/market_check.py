@@ -123,7 +123,7 @@ class MarketCheck:
                 tmp["doors"] = row_dict["doors"]
                 tmp["interior_color"] = row_dict["interior_color"]
                 tmp["exterior_color"] = row_dict["exterior_color"]
-                tmp[""] = None
+                tmp["price_indicator"] = None
                 tmp["admin_fee"] = "0"
                 tmp["vehicle_type"] = "car"
                 tmp["euro_status"] = row_dict["euro_status"]
@@ -260,26 +260,25 @@ class MarketCheck:
                     "where":where
                 })
             else:
-                final_what = {}
-                for key in what.copy():
-                    if what[key] != None:
-                        if len(key) != 0:
-                            final_what[key] = what[key]
                 
-                self.mongodb.listings_collection.update_one(where,{"$set":final_what})
+                for key in what.copy():
+                    if what[key] == None:
+                        del what[key]
+                
+                self.mongodb.listings_collection.update_one(where,{"$set":what})
                 
                 id = result["_id"]
-                final_what["_id"] = id
+                what["_id"] = id
                 self.csv_parser_mysql.produce_message({
                     "table":"market_check_listings",
-                    "what":final_what,
+                    "what":what,
                     "where":where
                 })
             
             if dealer_id in active_dealer_ids:
                 tmp.append({
                     "listing_id":id,
-                    "data":final_what
+                    "data":listing
                 })
         
         return tmp
