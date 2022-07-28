@@ -25,6 +25,6 @@ def dropdown():
     what = body["what"]
     where = body["where"]
     
-    data = list(mongo_db.dropdown_collection.find(where,what))
+    data = list(mongo_db.dropdown_collection.distinct(what,where))
     
     return jsonify({"status":200,"data":data})
