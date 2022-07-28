@@ -28,3 +28,15 @@ def dropdown():
     data = list(mongo_db.dropdown_collection.distinct(what,where))
     
     return jsonify({"status":200,"data":data})
+
+@Dashboard.route('/listings',methods=["POST"])
+def listings():
+    
+    body = request.get_json()
+    
+    what = body["what"]
+    where = body["where"]
+    
+    data = list(mongo_db.listings_collection.find(where,what))
+    
+    return jsonify({"status":200,"data":data})
