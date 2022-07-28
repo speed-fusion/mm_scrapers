@@ -91,7 +91,7 @@ class TopicHandler:
     def main(self):
         while True:
             message =  self.consumer.consume_message()
-            print(message)
+            
             self.mysql_db.connect()
             
             table = message["table"]
@@ -99,8 +99,14 @@ class TopicHandler:
             what = self.column_mapping( message["what"],table)
             
             if table == "market_check_dealers":
+                dealer_id = what.get("dealer_id",None)
+                if dealer_id == None:
+                    continue
                 where = {"dealer_id":what["dealer_id"]}
             elif table == "market_check_listings":
+                registration = what.get("registration",None)
+                if registration == None:
+                    continue
                 where = {"registration":what["registration"]}
             
             result = self.mysql_db.recSelect(table,where)
