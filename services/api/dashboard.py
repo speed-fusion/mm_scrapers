@@ -76,7 +76,7 @@ def resize():
     
     response = requests.get(url,headers=headers)
     
-    im = Image.open(BytesIO(response.content))
+    im = Image.open(StringIO(response.content))
     
     im = im.resize((width,height))
     
