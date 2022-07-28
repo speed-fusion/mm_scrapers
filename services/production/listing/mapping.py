@@ -10,13 +10,12 @@ class MarketCheckFieldMaper:
             {'key': 'plan_id', 'value': 'Plan_ID'},
             {'key': 'priority', 'value': 'Priority'},
             {'key': 'admin_fee', 'value': 'admin_fees'},
-            {'key': 'body_style', 'value': 'body_style'},
+            {'key': 'pred_body_style', 'value': 'body_style'},
             {'key': 'built', 'value': 'built'},
             {'key': 'cab_type', 'value': 'cabType'},
             {'key': 'dealer_id', 'value': 'dealer_id'},
             {'key': 'dealer_location', 'value': 'dealer_location'},
             {'key': 'dealer_name', 'value': 'dealer_name'},
-            {'key': 'dealer_phone', 'value': 'dealer_number'},
             {'key': 'doors', 'value': 'doors'},
             {'key': 'emission_scheme', 'value': 'emission_scheme'},
             {'key': 'engine_cylinders_cc', 'value': 'engineCylindersCC'},
@@ -75,8 +74,6 @@ class MarketCheckFieldMaper:
         
     def map(self,data):
         tmp = {}
-        
-        
         for key in data:
             for item in self.insert_field_map:
                 if item["key"] == key:

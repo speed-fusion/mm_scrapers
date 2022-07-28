@@ -17,7 +17,9 @@ class TopicHandler:
         
         self.producer = pulsar_manager.create_producer(pulsar_manager.topics.LISTING_TRANSFORM)
         
-        self.marketcheck = MarketCheck()
+        self.csv_parser_mysql = pulsar_manager.create_producer(pulsar_manager.topics.CSV_PARSER_MYSQL)
+        
+        self.marketcheck = MarketCheck(self.csv_parser_mysql)
         
     def main(self):
         

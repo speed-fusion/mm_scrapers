@@ -67,23 +67,26 @@ export async function getServerSideProps() {
     const data = await res.json()
 
 
-    const listing_res = await fetch(`http://195.181.164.37:5000/listings/filter?page=${0}`,{
-        method:"POST",
-        body:JSON.stringify({
-            "where":{"raw.make":{"$exists":true}}
-        }),headers:{
-            "Content-Type":"application/json"
-        }
-        })
+    // const listing_res = await fetch(`http://195.181.164.37:5000/listings/filter?page=${0}`,{
+    //     method:"POST",
+    //     body:JSON.stringify({
+    //         "where":{"raw.make":{"$exists":true}}
+    //     }),headers:{
+    //         "Content-Type":"application/json"
+    //     }
+    //     })
     
     
-    const listing_data = await listing_res.json()
+    // const listing_data = await listing_res.json()
 
     return { props: { 
         "makes":data["data"],
-        "listings":listing_data["data"]["listings"],
-        "total_pages":listing_data["data"]["total_pages"],
-        "total_listings":listing_data["data"]["total_listings"],
+        // "listings":listing_data["data"]["listings"],
+        "listings":[],
+        // "total_pages":listing_data["data"]["total_pages"],
+        "total_pages":0,
+        // "total_listings":listing_data["data"]["total_listings"],
+        "total_listings":0,
         "current_page":0
         
      } }

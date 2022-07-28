@@ -58,8 +58,13 @@ class TopicHandler:
                         "message":error["error_message"],
                         "website_id":website_id
                     }
+                    
                     print(f'listing rejected : {error["error_message"]}')
+                    
                     self.mongodb.insert_event(self.mongodb.listing_event_collection,event_data)
+                    
+                    
+                    
                     
                     continue
                 

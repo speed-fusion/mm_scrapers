@@ -111,6 +111,11 @@ class MarketCheckLtvCalculationRules:
                 margin = max_margin - provisional_mm_price
             else:
                 margin = 0
+                
+            max_margin = 3000
+            
+            if margin >= max_margin:
+                margin = max_margin
             
             mm_price = provisional_mm_price + margin
             

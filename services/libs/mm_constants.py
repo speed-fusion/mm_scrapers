@@ -86,3 +86,5 @@ class Topics(Enum):
     
     AUTOTRADER_LISTING_SCRAPER = f'motormarket{PIPELINE_NAME}.scraper.autotrader.listing.scrape'
     
+    CSV_PARSER_MYSQL = f'motormarket{PIPELINE_NAME}.scraper.market.check.csv.parser.mysql'
+    

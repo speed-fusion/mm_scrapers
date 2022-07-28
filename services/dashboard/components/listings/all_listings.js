@@ -192,16 +192,16 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
                             <Card elevation={3}>
                                 
                                 
-                                <CardHeader title={`${item.predicted_make} - ${item.predicted_model}`} subheader={item.title} ></CardHeader>
+                                <CardHeader title={`${item.make} - ${item.model}`} subheader={item.trim} ></CardHeader>
                                 <Stack my={1} mx={2} justifyContent="right" direction={"row"}>
-                                    <Chip label={`${item.source_price}$`} variant='filled' color='secondary' />
+                                    <Chip label={`${item.price}$`} variant='filled' color='secondary' />
                                 </Stack>
                                 <CardMedia
                                 onError={(e)=>{e.target.src="/default-image.jpg"}}
                                 height={250}
                                 component={"img"}
                                 
-                                image={item.images[0]["url"]}
+                                image={item.main_img}
                                 />
                                 <CardContent>
                                     <Stack spacing={1}>

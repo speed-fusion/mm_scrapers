@@ -18,8 +18,9 @@ from clean_dealers import CleanDealers
 
 class MarketCheck:
     
-    def __init__(self) -> None:
+    def __init__(self,csv_parser_mysql) -> None:
         
+        self.csv_parser_mysql = csv_parser_mysql
         self.cwd = Path.cwd()
         
         self.new_files_dir = self.cwd.joinpath("new_files")
@@ -122,7 +123,7 @@ class MarketCheck:
                 tmp["doors"] = row_dict["doors"]
                 tmp["interior_color"] = row_dict["interior_color"]
                 tmp["exterior_color"] = row_dict["exterior_color"]
-                tmp["price_indicator"] = None
+                tmp[""] = None
                 tmp["admin_fee"] = "0"
                 tmp["vehicle_type"] = "car"
                 tmp["euro_status"] = row_dict["euro_status"]
@@ -155,7 +156,6 @@ class MarketCheck:
                 data["plan_id"] = self.plan_id
                 data["priority"] = self.priority
                 data["raw"] = tmp
-                
                 yield data
                 
             except Exception as e:
@@ -203,16 +203,25 @@ class MarketCheck:
                 
                 what["_id"] = id
                 what["website_id"] = MarketCheckConstants.WEBSITE_ID.value
-                what["status"] = "active"
+                what["status"] = "inactive"
                 
                 self.mongodb.dealers_collection.insert_one(what)
+                self.csv_parser_mysql.produce_message({
+                    "table":"market_check_dealers",
+                    "what":what,
+                    "where":where
+                })
             else:
                 for key in what.copy():
                     if what[key] == None:
                         del what[key]
                         
                 self.mongodb.dealers_collection.update_one(where,{"$set":what})
-            
+                self.csv_parser_mysql.produce_message({
+                    "table":"market_check_dealers",
+                    "what":what,
+                    "where":where
+                })
             
     
     def upsert_listings(self,listings):
@@ -239,13 +248,24 @@ class MarketCheck:
                 id = generate_unique_uuid()
                 
                 what["_id"] = id
-                what["status"] = "just_added"
+                what["status"] = "inactive"
                 self.mongodb.listings_collection.insert_one(what)
+                
+                self.csv_parser_mysql.produce_message({
+                    "table":"market_check_listings",
+                    "what":what,
+                    "where":where
+                })
             else:
                 for key in what.copy():
                     if what[key] == None:
                         del what[key]
-                        
+                self.csv_parser_mysql.produce_message({
+                    "table":"market_check_listings",
+                    "what":what,
+                    "where":where
+                })
+                
                 self.mongodb.listings_collection.update_one(where,{"$set":what})
                 
                 id = result["_id"]
