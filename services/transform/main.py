@@ -50,21 +50,21 @@ class TopicHandler:
             if website_id == 17:
                 pass
             
-            # try:
+            try:
             
-            if website_id == 18:
-                final = self.mc_transform.transform(data,listing_id)
-                print(where)
-                print(final)
-                self.mongodb.listings_collection.update_one(
-                    where,
-                    {
-                        "$set":final
-                    }
-                )
-            # except Exception as e:
-            #     print(f'error : {str(e)}')
-            #     continue
+                if website_id == 18:
+                    final = self.mc_transform.transform(data,listing_id)
+                    print(where)
+                    print(final)
+                    self.mongodb.listings_collection.update_one(
+                        where,
+                        {
+                            "$set":final
+                        }
+                    )
+            except Exception as e:
+                print(f'error : {str(e)}')
+                continue
             
             self.producer.produce_message({
             "website_id":website_id,
