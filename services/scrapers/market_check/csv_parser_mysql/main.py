@@ -91,6 +91,7 @@ class TopicHandler:
     def main(self):
         while True:
             message =  self.consumer.consume_message()
+            print(message)
             self.mysql_db.connect()
             
             table = message["table"]
