@@ -36,7 +36,7 @@ class TopicHandler:
             listing_id = message["listing_id"]
             
             where = {"_id":listing_id}
-            
+            print(where)
             data = message.get("data",None)
             
             if data == None:
