@@ -114,7 +114,7 @@ class TopicHandler:
             what["updated_at"] = {"func":"now()"}
             
             if len(result) > 0:
-                self.mysql_db.recUpdate(table,what,{"id":result["id"]})
+                self.mysql_db.recUpdate(table,what,{"id":result[0]["id"]})
             else:
                 what["created_at"] = {"func":"now()"}
                 self.mysql_db.recInsert(table,what)
