@@ -4,7 +4,7 @@ sys.path.append("/libs")
 
 from mongo_database import MongoDatabase
 
-from helper import generate_unique_uuid,get_current_datetime,clean_int
+from helper import generate_unique_uuid,get_current_datetime,clean_int,generate_sha1
 
 from mm_constants import MarketCheckConstants
 
@@ -14,6 +14,8 @@ import shutil
 import pandas as pd
 import numpy as np
 from clean_dealers import CleanDealers
+
+from mysql_database import MysqlDatabase
 
 
 class MarketCheck:
@@ -47,26 +49,52 @@ class MarketCheck:
         
         self.clean_dealers = CleanDealers
         
+        self.mysql_db = MysqlDatabase()
+    
+    def replace_na_with_none(self,item):
+        
+        if pd.pd.isna(item) == True:
+            return None
+        else:
+            return item
+            
+    
     def parse_dealers(self,df:pd.DataFrame):
         columns = ["dealer_id","seller_name","fca_status","fca_reference_no","seller_phone","street","city","county","postal_code","latitude","longitude","country"]
-        dealer_df = df.where(pd.notnull(df), None)[columns]
+        # dealer_df = df.where(pd.notnull(df), None)[columns]
+        dealer_df = df[columns]
+        
+        dealer_df = dealer_df[dealer_df.seller_name.notna()]
+        
         dealer_df.drop_duplicates(inplace=True)
+        
         for index,row in dealer_df.iterrows():
             row_dict = row.to_dict()
             tmp = {}
             
             tmp["dealer_id"] = clean_int(row_dict["dealer_id"])
-            tmp["dealer_name"] = row_dict["seller_name"]
-            tmp["fca_status"] = row_dict["fca_status"]
-            tmp["fca_reference_no"] = row_dict["fca_reference_no"]
-            tmp["dealer_phone"] = row_dict["seller_phone"]
-            tmp["street"] = row_dict["street"]
-            tmp["city"] = row_dict["city"]
-            tmp["county"] = row_dict["county"]
-            tmp["postal_code"] = row_dict["postal_code"]
-            tmp["latitude"] = row_dict["latitude"]
-            tmp["longitude"] = row_dict["longitude"]
-            tmp["country"] = row_dict["country"]
+            
+            tmp["dealer_name"] = self.replace_na_with_none(row_dict["seller_name"])
+            
+            tmp["fca_status"] = self.replace_na_with_none(row_dict["fca_status"])
+            
+            tmp["fca_reference_no"] = self.replace_na_with_none(row_dict["fca_reference_no"])
+            
+            tmp["dealer_phone"] = self.replace_na_with_none(row_dict["seller_phone"])
+            
+            tmp["street"] = self.replace_na_with_none(row_dict["street"])
+            
+            tmp["city"] = self.replace_na_with_none(row_dict["city"])
+            
+            tmp["county"] = self.replace_na_with_none(row_dict["county"])
+            
+            tmp["postal_code"] = self.replace_na_with_none(row_dict["postal_code"])
+            
+            tmp["latitude"] = self.replace_na_with_none(row_dict["latitude"])
+            
+            tmp["longitude"] = self.replace_na_with_none(row_dict["longitude"])
+            
+            tmp["country"] = self.replace_na_with_none(row_dict["country"])
             
             yield tmp
             
@@ -97,38 +125,38 @@ class MarketCheck:
                 row_dict = row.to_dict()
                 tmp = {}
                 data = {}
-                data["source_id"] = row_dict["id"]
-                tmp["source_url"] = row_dict["vdp_url"]
-                tmp["price"] = row_dict["price"]
-                tmp["mileage"] = row_dict["miles"]
-                tmp["built"] = row_dict["year"]
-                tmp["make"] = row_dict["make"]
-                tmp["model"] = row_dict["model"]
-                tmp["trim"] = row_dict["variant"]
-                tmp["body_style"] = row_dict["body_type"]
-                tmp["fuel"] = row_dict["fuel_type"]
-                tmp["fuel_type"] = row_dict["fuel_type"]
-                tmp["transmission"] = row_dict["transmission"]
-                tmp["doors"] = row_dict["doors"]
-                tmp["registration"] = row_dict["vehicle_registration_mark"]
-                tmp["registration_date"] = row_dict["vehicle_registration_date"]
-                tmp["exterior_color"] = row_dict["exterior_color"]
-                tmp["dealer_id"] = clean_int(row_dict["dealer_id"])
-                tmp["dealer_name"] = row_dict["seller_name"]
-                tmp["dealer_number"] = row_dict["seller_phone"]
-                tmp["dealer_location"] = row_dict["postal_code"]
+                data["source_id"] = self.replace_na_with_none(row_dict["id"])
+                tmp["source_url"] = self.replace_na_with_none(row_dict["vdp_url"])
+                tmp["price"] = self.replace_na_with_none(row_dict["price"])
+                tmp["mileage"] = self.replace_na_with_none(row_dict["miles"])
+                tmp["built"] = self.replace_na_with_none(row_dict["year"])
+                tmp["make"] = self.replace_na_with_none(row_dict["make"])
+                tmp["model"] = self.replace_na_with_none(row_dict["model"])
+                tmp["trim"] = self.replace_na_with_none(row_dict["variant"])
+                tmp["body_style"] = self.replace_na_with_none(row_dict["body_type"])
+                tmp["fuel"] = self.replace_na_with_none(row_dict["fuel_type"])
+                tmp["fuel_type"] = self.replace_na_with_none(row_dict["fuel_type"])
+                tmp["transmission"] = self.replace_na_with_none(row_dict["transmission"])
+                tmp["doors"] = self.replace_na_with_none(row_dict["doors"])
+                tmp["registration"] = self.replace_na_with_none(row_dict["vehicle_registration_mark"])
+                tmp["registration_date"] = self.replace_na_with_none(row_dict["vehicle_registration_date"])
+                tmp["exterior_color"] = self.replace_na_with_none(row_dict["exterior_color"])
+                tmp["dealer_id"] = clean_int(self.replace_na_with_none(row_dict["dealer_id"]))
+                tmp["dealer_name"] = self.replace_na_with_none(row_dict["seller_name"])
+                tmp["dealer_number"] = self.replace_na_with_none(row_dict["seller_phone"])
+                tmp["dealer_location"] = self.replace_na_with_none(row_dict["postal_code"])
                 tmp["cab_type"] = None
                 tmp["seats"] = None
                 tmp["write_off_category"] = None
-                tmp["doors"] = row_dict["doors"]
-                tmp["interior_color"] = row_dict["interior_color"]
-                tmp["exterior_color"] = row_dict["exterior_color"]
+                tmp["doors"] = self.replace_na_with_none(row_dict["doors"])
+                tmp["interior_color"] = self.replace_na_with_none(row_dict["interior_color"])
+                tmp["exterior_color"] = self.replace_na_with_none(row_dict["exterior_color"])
                 tmp["price_indicator"] = None
                 tmp["admin_fee"] = "0"
                 tmp["vehicle_type"] = "car"
-                tmp["euro_status"] = row_dict["euro_status"]
-                tmp["imported"] = row_dict["imported"]
-                tmp["scrapped"] = row_dict["scrapped"]
+                tmp["euro_status"] = self.replace_na_with_none(row_dict["euro_status"])
+                tmp["imported"] = self.replace_na_with_none(row_dict["imported"])
+                tmp["scrapped"] = self.replace_na_with_none(row_dict["scrapped"])
                 
                 tmp["location"] = json.dumps({
                     "street":row_dict["street"],
@@ -138,7 +166,7 @@ class MarketCheck:
                     "country":row_dict["country"]
                 })
                 
-                tmp["dealer_location"] = row_dict["postal_code"]
+                tmp["dealer_location"] = self.replace_na_with_none(row_dict["postal_code"])
                 tmp["images"] = []
                 if type(row_dict["photo_links"]) == str:
                     for i in row_dict["photo_links"].split("|"):
@@ -162,11 +190,127 @@ class MarketCheck:
                 print(f'error : {str(e)}')
                 print(row_dict)
     
+    def apply_filters(self,df):
+        # price should not be null
+        df = df[df.price.notna()]
+        
+        # miles should not be null
+        df = df[df.miles.notna()]
+        
+        # registration should not be null
+        df = df[df.vehicle_registration_mark.notna()]
+        
+        # min price should be 30000
+        df = df[df.price < 30000]
+        
+        # max miles should be 120000
+        df = df[df.miles < 120000]
+        
+        # min year should be 2012
+        df = df[df.year > 2012]
+        
+        # registration length should be 7
+        df["registration_length"] = df.vehicle_registration_mark.apply(lambda x: len(str(x)))
+        df = df[df.registration_length == 7]
+        
+        # min price should be 4700
+        df = df[df.price >= 4700]
+        
+        # make should not be null
+        df = df[df.make.notna()]
+        
+        # model should not be null
+        df = df[df.model.notna()]
+        
+        df["make"] = df.make.astype(str).str.title()
+        
+        df["model"] = df.model.astype(str).str.title()
+        
+        return df
+    
+    def get_unique_registration(self,df):
+        
+        regs = set()
+        
+        df["registration"] = df.vehicle_registration_mark.astype(str).str.upper()
+        
+        unique_reg = df["registration"].unique()
+        
+        for item in unique_reg:
+            if pd.isna(item) == False:
+                regs.add(item)
+        
+        return regs
+    
+    
+    
+    def get_dropdown_data(self,df):
+    
+        dropdown_data = []
+
+        dropdown = df[["make","model","variant"]]
+        dropdown.drop_duplicates(inplace=True)
+        dropdown.dropna(inplace=True)
+        dropdown["make"] = dropdown.make.astype(str).str.lower()
+        dropdown["model"] = dropdown.model.astype(str).str.lower()
+        dropdown["variant"] = dropdown.variant.astype(str).str.lower()
+        dropdown.drop_duplicates(inplace=True)
+        dropdown["make"] = dropdown.make.astype(str).str.title()
+        dropdown["model"] = dropdown.model.astype(str).str.title()
+        dropdown["variant"] = dropdown.variant.astype(str).str.title()
+        dropdown.rename(columns={"variant":"trim"},inplace=True)
+        
+        for index,row in dropdown.iterrows():
+            item = row.to_dict()
+            id = generate_sha1(item)
+            item["_id"] = id
+            dropdown_data.append(item)
+        
+        return dropdown_data
+    
+    
+    def insert_dropdown_data(self,data):
+        for item in data:
+            try:
+                self.mongodb.dropdown_collection.insert_one(item)
+            except:
+                pass
+            
+    def deactivate_expired_listings(self,registration_numbers):
+        
+        if len(registration_numbers) == 0:
+            return
+        
+        self.mysql_db.connect()
+        result = self.mysql_db.recCustomQuery(f'SELECT DISTINCT(registration) FROM fl_listings WHERE Website_ID=18 AND Status="active"')
+        self.mysql_db.disconnect()
+        
+        active_registration = [item["registration"] for item in result]
+        
+        self.mysql_db.connect()
+        for reg in active_registration:
+            if not reg in registration_numbers:
+                where = {"registration":reg}
+                what = {"Status":"expired","why":"this listing was not present in latest market check csv.","updated_at":{"func":"now()"}}
+                self.mysql_db.recUpdate("fl_listings",what,where)
+        
+        self.mysql_db.disconnect()
+    
     def parse_csv(self,filepath):
         
         df = pd.read_csv(filepath)
         
-        df = df[df.dealer_id.apply(lambda x:self.is_clean_dealer(x))]
+        df = self.apply_filters(df)
+        
+        dropdown_data = self.get_dropdown_data(df)
+        
+        self.insert_dropdown_data(dropdown_data)
+        
+        unique_reg = self.get_unique_registration(df)
+        
+        self.deactivate_expired_listings(unique_reg)
+        
+        # df = df[df.dealer_id.apply(lambda x:self.is_clean_dealer(x))]
         
         dealers = self.parse_dealers(df)
         
@@ -206,11 +350,11 @@ class MarketCheck:
                 what["status"] = "inactive"
                 
                 self.mongodb.dealers_collection.insert_one(what)
-                self.csv_parser_mysql.produce_message({
-                    "table":"market_check_dealers",
-                    "what":what,
-                    "where":where
-                })
+                # self.csv_parser_mysql.produce_message({
+                #     "table":"market_check_dealers",
+                #     "what":what,
+                #     "where":where
+                # })
             else:
                 for key in what.copy():
                     if what[key] == None:
@@ -218,11 +362,11 @@ class MarketCheck:
                         
                 self.mongodb.dealers_collection.update_one(where,{"$set":what})
                 what["_id"] = result["_id"]
-                self.csv_parser_mysql.produce_message({
-                    "table":"market_check_dealers",
-                    "what":what,
-                    "where":where
-                })
+                # self.csv_parser_mysql.produce_message({
+                #     "table":"market_check_dealers",
+                #     "what":what,
+                #     "where":where
+                # })
             
     
     def upsert_listings(self,listings):
@@ -254,11 +398,11 @@ class MarketCheck:
                 
                 self.mongodb.listings_collection.insert_one(what)
                 
-                self.csv_parser_mysql.produce_message({
-                    "table":"market_check_listings",
-                    "what":what,
-                    "where":where
-                })
+                # self.csv_parser_mysql.produce_message({
+                #     "table":"market_check_listings",
+                #     "what":what,
+                #     "where":where
+                # })
             else:
                 
                 for key in what.copy():
@@ -269,11 +413,11 @@ class MarketCheck:
                 
                 id = result["_id"]
                 what["_id"] = id
-                self.csv_parser_mysql.produce_message({
-                    "table":"market_check_listings",
-                    "what":what,
-                    "where":where
-                })
+                # self.csv_parser_mysql.produce_message({
+                #     "table":"market_check_listings",
+                #     "what":what,
+                #     "where":where
+                # })
             
             if dealer_id in active_dealer_ids:
                 tmp.append({

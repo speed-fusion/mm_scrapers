@@ -12,6 +12,11 @@ class MongoDatabase:
         connection_uri = f'mongodb://{self.user}:{self.password}@{self.host}/?authSource=admin'
         client = pymongo.MongoClient(connection_uri)
         self.db = client[self.database]
+        
+        self.dashboard_db = client["dashboard"]
+        
+        self.dropdown_collection = self.dashboard_db["dropdown"]
+        
         self.car_cutter_logs = client["car_cutter_logs"]
         
         self.listing_counts = self.db["listing-counts"]
