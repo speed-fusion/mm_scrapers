@@ -31,12 +31,16 @@ def dropdown():
 
 @Dashboard.route('/listings',methods=["POST"])
 def listings():
+    per_page = 20
     
     body = request.get_json()
     
     what = body["what"]
     where = body["where"]
+    page = body["page"]
     
-    data = list(mongo_db.listings_collection.find(where,what))
+    skip = per_page * page
+    
+    data = list(mongo_db.listings_collection.find(where,what).skip(skip).limit(per_page))
     
     return jsonify({"status":200,"data":data})
