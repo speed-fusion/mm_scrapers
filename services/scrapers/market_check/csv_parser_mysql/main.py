@@ -90,37 +90,39 @@ class TopicHandler:
     def main(self):
         while True:
         # for i in range(0,5):
-            message =  self.consumer.consume_message()
-            print(message)
-            self.mysql_db.connect()
-            
-            table = message["table"]
-            
-            what = self.column_mapping( message["what"],table)
-            
-            print(what)
-            
-            if table == "market_check_dealers":
-                dealer_id = what.get("dealer_id",None)
-                if dealer_id == None:
-                    continue
-                where = {"dealer_id":what["dealer_id"]}
-            elif table == "market_check_listings":
-                registration = what.get("registration",None)
-                if registration == None:
-                    continue
-                where = {"registration":what["registration"]}
-            
-            result = self.mysql_db.recSelect(table,where)
-            what["updated_at"] = {"func":"now()"}
-            
-            if len(result) > 0:
-                self.mysql_db.recUpdate(table,what,{"id":result[0]["id"]})
-            else:
-                what["created_at"] = {"func":"now()"}
-                self.mysql_db.recInsert(table,what)
+            try:
+                message =  self.consumer.consume_message()
+                self.mysql_db.connect()
                 
-            self.mysql_db.disconnect()
+                table = message["table"]
+                
+                what = self.column_mapping( message["what"],table)
+                
+                print(what)
+                
+                if table == "market_check_dealers":
+                    dealer_id = what.get("dealer_id",None)
+                    if dealer_id == None:
+                        continue
+                    where = {"dealer_id":what["dealer_id"]}
+                elif table == "market_check_listings":
+                    registration = what.get("registration",None)
+                    if registration == None:
+                        continue
+                    where = {"registration":what["registration"]}
+                
+                result = self.mysql_db.recSelect(table,where)
+                what["updated_at"] = {"func":"now()"}
+                
+                if len(result) > 0:
+                    self.mysql_db.recUpdate(table,what,{"id":result[0]["id"]})
+                else:
+                    what["created_at"] = {"func":"now()"}
+                    self.mysql_db.recInsert(table,what)
+                    
+                self.mysql_db.disconnect()
+            except Exception as e:
+                print(f'error : {str(e)}')
             
             
 if __name__ == "__main__":
