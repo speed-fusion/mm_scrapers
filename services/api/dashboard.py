@@ -1,3 +1,4 @@
+from crypt import methods
 from flask import Blueprint,jsonify,request
 import sys
 
@@ -16,7 +17,7 @@ mongo_db = MongoDatabase()
 
 Dashboard = Blueprint('dashboard', __name__)
 
-@Dashboard.route('/dropdown')
+@Dashboard.route('/dropdown',methods=["POST"])
 def dropdown():
     
     body = request.get_json()
