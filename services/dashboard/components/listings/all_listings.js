@@ -31,13 +31,10 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
 
 
 
-    useEffect(()=>{
-        
-
-
-    },[currentPage])
+   
 
     useEffect(()=>{
+
         setShowProgressBar(true)
         axios.post(`${api_endpoint}/dropdown`,{
             "what":"make",
@@ -56,6 +53,12 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
     },[])
 
     useEffect(()=>{
+
+        if (selectedMake == null)
+        {
+            return
+        }
+
         setShowProgressBar(true)
         axios.post(`${api_endpoint}/dropdown`,{
             "what":"model",
@@ -73,6 +76,12 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
     },[selectedMake])
 
     useEffect(()=>{
+
+        if (selectedModel == null)
+        {
+            return
+        }
+
         setShowProgressBar(true)
         axios.post(`${api_endpoint}/dropdown`,{
             "what":"trim",
@@ -84,133 +93,52 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
             console.log(err)
             setShowProgressBar(false)
         })
+
+        // return () => {
+        //     setShowProgressBar(false)
+        //   };
 
     },[selectedModel])
 
     useEffect(()=>{
-        setShowProgressBar(true)
-        axios.post(`${api_endpoint}/dropdown`,{
-            "what":"trim",
-            "where":{"make":selectedMake,"model":selectedModel}
+        // setShowProgressBar(true)
+
+        let what = {"raw":1}
+
+        let where = {}
+        if(selectedMake != null)
+        {
+            where["raw.make"] = {"$regex":selectedMake,"$options" : "i"}
+        }
+
+        if(selectedModel != null)
+        {
+            where["raw.model"] = {"$regex":selectedModel,"$options" : "i"}
+        }
+
+        if(selectedTrim != null)
+        {
+            where["raw.trim"] =  {"$regex":selectedTrim,"$options" : "i"}
+        }
+
+        axios.post(`${api_endpoint}/listings`,{
+            "what":what,
+            "where":where,
+            "page":currentPage
         }).then(res => {
-            setTrimList(res.data.data)
-            setShowProgressBar(false)
+            setListingList(res.data.data)
+            setTotalListings(res.data.listing_count)
+            setTotalPage(res.data.page_count)
         }).catch(err => {
             console.log(err)
-            setShowProgressBar(false)
+            
         })
 
-    },[selectedMake,selectedModel,selectedTrim])
+        // return () => {
+        //     setShowProgressBar(false)
+        //   };
 
-
-
-    useEffect(()=>{
-        
-
-
-    },[currentPage])
-
-    async function fetchModels(make)
-    {   setSelectedMake(make)
-        setShowProgressBar(true)
-        const res = await fetch(`http://195.181.164.37:5000/listings/unique`,{
-        method:"POST",
-        body:JSON.stringify({
-            "what":"raw.model",
-            "where":{"raw.make":make}
-        }),headers:{
-            "Content-Type":"application/json"
-        }
-        })
-        
-        const data = await res.json()
-
-        setModelList(data["data"])
-        setSelectedModel(null)
-        setSelectedTrim(null)
-        await fetchListings(0,make,null,null)
-        setShowProgressBar(false)
-    }
-
-    async function fetchTrim(model)
-    {
-        setSelectedModel(model)
-        setShowProgressBar(true)
-        const res = await fetch(`http://195.181.164.37:5000/listings/unique`,{
-        method:"POST",
-        body:JSON.stringify({
-            "what":"raw.trim",
-            "where":{"raw.make":selectedMake,"raw.model":model,"raw.trim":{"$ne":null}}
-        }),headers:{
-            "Content-Type":"application/json"
-        }
-        })
-        
-        const data = await res.json()
-
-        setTrimList(data["data"])
-        setSelectedTrim(null)
-        await fetchListings(0,selectedMake,model,null)
-        setShowProgressBar(false)
-    }
-
-    async function on_trim_change(value)
-    {
-        setSelectedTrim(value)
-        fetchListings(0,selectedMake,selectedModel,value)
-
-    }
-
-    async function fetchListings(page,make,model,trim)
-    {
-        setShowProgressBar(true)
-        setSelectedTrim(trim)
-        let where = {}
-        if (make != null)
-        {
-            where["raw.make"] = make
-        }
-
-        if (model != null)
-        {
-            where["raw.model"] = model
-        }
-
-        if (trim != null)
-        {
-            where["raw.trim"] = trim
-        }
-
-        const res = await fetch(`http://195.181.164.37:5000/listings/filter?page=${page}`,{
-        method:"POST",
-        body:JSON.stringify({
-            "what":null,
-            "where":where
-        }),headers:{
-            "Content-Type":"application/json"
-        }
-        })
-        
-        const data = await res.json()
-
-        setTotalPage(data["data"]["total_pages"])
-        setTotalListings(data["data"]["total_listings"])
-        setCurrentPage(page)
-        
-        setListingList(data["data"]["listings"])
-        setShowProgressBar(false)
-        // setPagination(pagination)
-
-    }
-
-
-    async function handle_pagination(page)
-    {
-        setCurrentPage(page)
-        await fetchListings(page,selectedMake,selectedModel,selectedTrim)
-
-    }
-
+    },[currentPage,selectedMake,selectedModel,selectedTrim])
 
   return (
     <Stack alignItems="center">
@@ -265,38 +193,38 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
         </Stack>
 
         <Stack marginY={2}>
-        <Pagination onChange={async(event,page) => handle_pagination(page)} page={currentPage == 0 ? 1 : currentPage} count={totalPage} shape="rounded" siblingCount={0}/>
+        <Pagination onChange={(event,page) => setCurrentPage(page)} page={currentPage == 0 ? 1 : currentPage} count={totalPage} shape="rounded" siblingCount={0}/>
         </Stack>
 
         <Stack justify = "center">
             <Grid container rowSpacing={3} columnSpacing={3} justify = "center">
-                {
+                {listingList &&
                     listingList.map((item)=>(
-                        <Grid width={300} minWidth={300} spacing={1} justify = "center" alignItems={"center"} item xs={12} md={6} lg={6}>
+                        <Grid key={item._id} width={300} minWidth={300} justify = "center" alignItems={"center"} item xs={12} md={6} lg={6}>
                             <Card elevation={3}>
                                 
                                 
-                                <CardHeader title={`${item.make} - ${item.model}`} subheader={item.trim} ></CardHeader>
+                                <CardHeader title={`${item.raw.make} - ${item.raw.model}`} subheader={item.raw.trim} ></CardHeader>
                                 <Stack my={1} mx={2} justifyContent="right" direction={"row"}>
-                                    <Chip label={`${item.price}$`} variant='filled' color='secondary' />
+                                    <Chip label={`${item.raw.price}$`} variant='filled' color='secondary' />
                                 </Stack>
                                 <CardMedia
                                 onError={(e)=>{e.target.src="/default-image.jpg"}}
                                 height={250}
                                 component={"img"}
                                 
-                                image={item.main_img}
+                                // image={item.main_img}
                                 />
                                 <CardContent>
                                     <Stack spacing={1}>
                                         <Stack spacing={1} justifyContent="center" direction={"row"}>
-                                            <Chip icon={<SettingsSuggestRoundedIcon/>} label={item.transmission}/>
-                                            <Chip icon={<AddRoadRoundedIcon/>} label={item.mileage}/>
-                                            <Chip icon={<EvStationIcon/>} label={item.fuel}/>
+                                            <Chip icon={<SettingsSuggestRoundedIcon/>} label={item.raw.transmission}/>
+                                            <Chip icon={<AddRoadRoundedIcon/>} label={item.raw.mileage}/>
+                                            <Chip icon={<EvStationIcon/>} label={item.raw.fuel}/>
                                         </Stack>
                                         <Stack spacing={1} justifyContent="center" direction={"row"}>
-                                            {item.engine_cylinders_cc != null && item.engine_cylinders_cc != 0 &&
-                                                <Chip icon={<ClosedCaptionOffRoundedIcon/>} label={item.engine_cylinders_cc}/>
+                                            {item.raw.engine_cylinders_cc != null && item.raw.engine_cylinders_cc != 0 &&
+                                                <Chip icon={<ClosedCaptionOffRoundedIcon/>} label={item.raw.engine_cylinders_cc}/>
                                             }
                                             
                                             
@@ -329,7 +257,7 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
         </Stack>
 
         <Stack marginY={2}>
-        <Pagination onChange={async(event,page) => handle_pagination(page)} page={currentPage == 0 ? 1 : currentPage} count={totalPage} shape="rounded" siblingCount={0}/>
+        <Pagination onChange={(event,page) => setCurrentPage(page)} page={currentPage == 0 ? 1 : currentPage} count={totalPage} shape="rounded" siblingCount={0}/>
         </Stack>
     </Stack>
   )
