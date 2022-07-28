@@ -53,7 +53,7 @@ class MarketCheck:
     
     def replace_na_with_none(self,item):
         
-        if pd.pd.isna(item) == True:
+        if pd.isna(item) == True:
             return None
         else:
             return item
