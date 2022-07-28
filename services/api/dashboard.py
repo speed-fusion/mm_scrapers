@@ -15,7 +15,7 @@ from pulsar_manager import PulsarManager
 
 mongo_db = MongoDatabase()
 
-Dashboard = Blueprint('dashboard', __name__)
+Dashboard = Blueprint('dashboard', __name__,url_prefix="dashboard")
 
 @Dashboard.route('/dropdown',methods=["POST"])
 def dropdown():

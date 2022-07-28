@@ -54,17 +54,17 @@ export default ListingsHome
 
 export async function getServerSideProps() {
     // Fetch data from external API
-    const res = await fetch(`http://195.181.164.37:5000/listings/unique`,{
-        method:"POST",
-        body:JSON.stringify({
-            "what":"raw.make",
-            "where":{"raw.make":{"$exists":true}}
-        }),headers:{
-            "Content-Type":"application/json"
-        }
-    })
+    // const res = await fetch(`http://195.181.164.37:5000/listings/unique`,{
+    //     method:"POST",
+    //     body:JSON.stringify({
+    //         "what":"raw.make",
+    //         "where":{"raw.make":{"$exists":true}}
+    //     }),headers:{
+    //         "Content-Type":"application/json"
+    //     }
+    // })
 
-    const data = await res.json()
+    // const data = await res.json()
 
 
     // const listing_res = await fetch(`http://195.181.164.37:5000/listings/filter?page=${0}`,{
@@ -80,7 +80,7 @@ export async function getServerSideProps() {
     // const listing_data = await listing_res.json()
 
     return { props: { 
-        "makes":data["data"],
+        "makes":[],
         // "listings":listing_data["data"]["listings"],
         "listings":[],
         // "total_pages":listing_data["data"]["total_pages"],

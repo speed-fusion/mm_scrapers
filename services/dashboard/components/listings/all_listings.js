@@ -5,12 +5,15 @@ import EvStationIcon from '@mui/icons-material/EvStation';
 import SettingsSuggestRoundedIcon from '@mui/icons-material/SettingsSuggestRounded';
 import AddRoadRoundedIcon from '@mui/icons-material/AddRoadRounded';
 import ClosedCaptionOffRoundedIcon from '@mui/icons-material/ClosedCaptionOffRounded';
+import axios from 'axios';
 
 
 const AllListings = ({makes,listings,total_pages,current_page,total_listings}) => {
 
+    const api_endpoint = "http://195.181.164.37:5000/dashboard"
+
     const [selectedMake,setSelectedMake] = useState(null);
-    const [makeList,setMakeList] = useState(makes);
+    const [makeList,setMakeList] = useState([]);
 
     const [selectedModel,setSelectedModel] = useState(null);
     const [modelList,setModelList] = useState([]);
@@ -27,13 +30,79 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
     const [totalListings,setTotalListings] = useState(total_listings)
 
 
+
     useEffect(()=>{
         
-        
 
 
+    },[currentPage])
+
+    useEffect(()=>{
+        setShowProgressBar(true)
+        axios.post(`${api_endpoint}/dropdown`,{
+            "what":"make",
+            "where":{}
+        }).then(res => {
+            console.log(res.data.data)
+            setMakeList(res.data.data)
+            setSelectedModel(null)
+            setSelectedTrim(null)
+            setShowProgressBar(false)
+        }).catch(err => {
+            console.log(err)
+            setShowProgressBar(false)
+        })
+
+    },[])
+
+    useEffect(()=>{
+        setShowProgressBar(true)
+        axios.post("http://195.181.164.37:5000/dropdown",{
+            "what":"model",
+            "where":{"make":selectedMake}
+        }).then(res => {
+            setModelList(res.data.data)
+            setSelectedModel(null)
+            setSelectedTrim(null)
+            setShowProgressBar(false)
+        }).catch(err => {
+            console.log(err)
+            setShowProgressBar(false)
+        })
+
+    },[selectedMake])
+
+    useEffect(()=>{
+        setShowProgressBar(true)
+        axios.post("http://195.181.164.37:5000/dropdown",{
+            "what":"trim",
+            "where":{"make":selectedMake,"model":selectedModel}
+        }).then(res => {
+            setTrimList(res.data.data)
+            setShowProgressBar(false)
+        }).catch(err => {
+            console.log(err)
+            setShowProgressBar(false)
+        })
+
+    },[selectedModel])
+
+    useEffect(()=>{
+        setShowProgressBar(true)
+        axios.post("http://195.181.164.37:5000/dropdown",{
+            "what":"trim",
+            "where":{"make":selectedMake,"model":selectedModel}
+        }).then(res => {
+            setTrimList(res.data.data)
+            setShowProgressBar(false)
+        }).catch(err => {
+            console.log(err)
+            setShowProgressBar(false)
+        })
 
     },[selectedMake,selectedModel,selectedTrim])
+
+
 
     useEffect(()=>{
         
@@ -163,8 +232,8 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
                 <Autocomplete
                     disablePortal
                     id="make_list"
+                    onChange={(event,value,reason,detail)=>setSelectedMake(value)}
                     options={makeList}
-                    onChange={(event,value,reason,detail)=>fetchModels(value)}
                     sx={{ width: 300 }}
                     value={selectedMake}
                     renderInput={(params) => <TextField {...params} label="Select Make" />}
@@ -175,7 +244,7 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
                     disablePortal
                     id="model_list"
                     options={modelList}
-                    onChange={(event,value,reason,detail)=>fetchTrim(value)}
+                    onChange={(event,value,reason,detail)=>setSelectedModel(value)}
                     value={selectedModel}
                     sx={{ width: 300 }}
                     renderInput={(params) => <TextField {...params} label="Select Model" />}
@@ -186,7 +255,7 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
                 <Autocomplete
                     disablePortal
                     id="trim_list"
-                    onChange={(event,value,reason,detail)=>on_trim_change(value)}
+                    onChange={(event,value,reason,detail)=>setSelectedTrim(value)}
                     options={trimList}
                     sx={{ width: 300 }}
                     value={selectedTrim}
