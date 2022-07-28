@@ -37,7 +37,6 @@ class TopicHandler:
             
             where = {"_id":listing_id}
             print(where)
-            data = message.get("data",None)
             
             if data == None:
                 data = self.mongodb.listings_collection.find_one(where)
@@ -46,7 +45,7 @@ class TopicHandler:
                 # add code to report this incident
                 continue
             
-            
+            print(data)
             if website_id == 17:
                 pass
             
