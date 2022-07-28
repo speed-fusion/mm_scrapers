@@ -90,7 +90,7 @@ class TopicHandler:
         # while True:
         for i in range(0,5):
             message =  self.consumer.consume_message()
-            
+            print(message)
             self.mysql_db.connect()
             
             table = message["table"]
