@@ -297,23 +297,29 @@ class MarketCheck:
         self.mysql_db.disconnect()
     
     def parse_csv(self,filepath):
-        
+        print("reading csv...")
         df = pd.read_csv(filepath)
         
+        print("applying filters...")
         df = self.apply_filters(df)
         
+        print("generating dropdown values...")
         dropdown_data = self.get_dropdown_data(df)
         
+        print("inserting dropdown values ...")
         self.insert_dropdown_data(dropdown_data)
         
+        print("getting unique registration...")
         unique_reg = self.get_unique_registration(df)
         
+        print("deactivating expired listings")
         self.deactivate_expired_listings(unique_reg)
         
         # df = df[df.dealer_id.apply(lambda x:self.is_clean_dealer(x))]
-        
+        print("parsing dealers...")
         dealers = self.parse_dealers(df)
         
+        print("parsing listings...")
         listings = self.parse_listings(df)
         
         return listings,dealers
