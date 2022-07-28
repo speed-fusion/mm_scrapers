@@ -260,24 +260,26 @@ class MarketCheck:
                     "where":where
                 })
             else:
+                final_what = {}
                 for key in what.copy():
-                    if what[key] == None:
-                        del what[key]
+                    if what[key] != None:
+                        if len(key) != 0:
+                            final_what[key] = what[key]
                 
-                self.mongodb.listings_collection.update_one(where,{"$set":what})
+                self.mongodb.listings_collection.update_one(where,{"$set":final_what})
                 
                 id = result["_id"]
-                what["_id"] = id
+                final_what["_id"] = id
                 self.csv_parser_mysql.produce_message({
                     "table":"market_check_listings",
-                    "what":what,
+                    "what":final_what,
                     "where":where
                 })
             
             if dealer_id in active_dealer_ids:
                 tmp.append({
                     "listing_id":id,
-                    "data":listing
+                    "data":final_what
                 })
         
         return tmp
