@@ -1,5 +1,5 @@
 from crypt import methods
-from flask import Blueprint, abort,jsonify,request,send_file
+from flask import Blueprint, abort,jsonify,request,send_file, send_from_directory
 import sys
 import requests
 from PIL import Image
@@ -59,11 +59,7 @@ def listings():
     
     return jsonify({"status":200,"listing_count":listing_count,"page_count":page_count,"per_page":per_page,"data":data})
 
-def serve_pil_image(pil_img):
-    img_io = StringIO()
-    pil_img.save(img_io, 'JPEG', quality=70)
-    img_io.seek(0)
-    return send_file(img_io, mimetype='image/jpeg')
+
 
 @Dashboard.route('/resize',methods=["GET"])
 def resize():
@@ -74,15 +70,28 @@ def resize():
     if url == None:
         return abort(404)
     
+    file_name = f'{generate_sha1(url)}_{height}_{width}.jpg'
+    
+    file_path = tmp_dir.joinpath(file_name)
+    
+    if file_path.exists() == True:
+        return send_from_directory(str(tmp_dir),file_path.name)
+    
+    
     response = requests.get(url,headers=headers)
     
-    im = Image.open(StringIO(response.content))
+    im = Image.open(BytesIO(response.content))
     
     im = im.resize((width,height))
     
     im =  im.convert('RGB')
     
-    return serve_pil_image(im)
+    im.save(str(file_path))
+    
+    return send_from_directory(str(tmp_dir),file_path.name)
+    
+    
+    
     
     
     
