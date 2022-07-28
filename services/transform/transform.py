@@ -195,7 +195,7 @@ class MarketCheckTransform:
         
         if final["body_style"] != None:
             final["org_body_style"] = final["body_style"]
-            final["pred_body_style"] = None
+            final["pred_body_style"] = final["body_style"]
             
             for bs in self.body_styles:
                 if final["body_style"] in bs["from"].lower():
