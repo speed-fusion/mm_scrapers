@@ -88,8 +88,8 @@ class TopicHandler:
         return final_data
         
     def main(self):
-        # while True:
-        for i in range(0,5):
+        while True:
+        # for i in range(0,5):
             message =  self.consumer.consume_message()
             print(message)
             self.mysql_db.connect()
