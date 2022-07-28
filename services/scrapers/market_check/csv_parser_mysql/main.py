@@ -81,7 +81,7 @@ class TopicHandler:
         elif table == "market_check_listings":
             for item in data["raw"]:
                 if item in self.listing_columns:
-                    final_data[item] = data[item]
+                    final_data[item] = data["raw"][item]
         else:
             final_data = data
         return final_data
