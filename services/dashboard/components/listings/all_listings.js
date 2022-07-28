@@ -1,6 +1,6 @@
 import { Autocomplete, Avatar, Button, Card, CardActions, CardContent, CardHeader, CardMedia, Chip, CircularProgress, Grid, Icon, IconButton, LinearProgress, Link, List, ListItem, ListItemAvatar, ListItemText, Modal, Pagination, SpeedDialIcon, Stack, TextField, Typography } from '@mui/material'
 import { Box, height } from '@mui/system';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import EvStationIcon from '@mui/icons-material/EvStation';
 import SettingsSuggestRoundedIcon from '@mui/icons-material/SettingsSuggestRounded';
 import AddRoadRoundedIcon from '@mui/icons-material/AddRoadRounded';
@@ -25,6 +25,21 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
     const [totalPage,setTotalPage] = useState(total_pages)
     const [currentPage,setCurrentPage] = useState(current_page)
     const [totalListings,setTotalListings] = useState(total_listings)
+
+
+    useEffect(()=>{
+        
+        
+
+
+
+    },[selectedMake,selectedModel,selectedTrim])
+
+    useEffect(()=>{
+        
+
+
+    },[currentPage])
 
     async function fetchModels(make)
     {   setSelectedMake(make)
