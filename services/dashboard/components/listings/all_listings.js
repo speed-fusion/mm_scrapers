@@ -57,7 +57,7 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
 
     useEffect(()=>{
         setShowProgressBar(true)
-        axios.post("http://195.181.164.37:5000/dropdown",{
+        axios.post(`${api_endpoint}/dropdown`,{
             "what":"model",
             "where":{"make":selectedMake}
         }).then(res => {
@@ -74,7 +74,7 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
 
     useEffect(()=>{
         setShowProgressBar(true)
-        axios.post("http://195.181.164.37:5000/dropdown",{
+        axios.post(`${api_endpoint}/dropdown`,{
             "what":"trim",
             "where":{"make":selectedMake,"model":selectedModel}
         }).then(res => {
@@ -89,7 +89,7 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
 
     useEffect(()=>{
         setShowProgressBar(true)
-        axios.post("http://195.181.164.37:5000/dropdown",{
+        axios.post(`${api_endpoint}/dropdown`,{
             "what":"trim",
             "where":{"make":selectedMake,"model":selectedModel}
         }).then(res => {
