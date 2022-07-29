@@ -133,7 +133,7 @@ def add_to_mm():
                 "website_id":18,
                 "data":None
             }
-            mongo_db.da
+            
             publisher = pm.create_producer(pm.topics.MANUAL_TRANSFORM)
             publisher.produce_message(data)
             message = "listing added in queue."
