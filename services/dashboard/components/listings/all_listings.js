@@ -81,11 +81,11 @@ const AllListings = ({}) => {
 
     },[selectedMake])
 
-    useEffect(()=>{
+    // useEffect(()=>{
 
-        window.scrollTo({ top: 900, behavior: 'smooth' })
+    //     window.scrollTo({ top: 0, behavior: 'smooth' })
 
-    },[currentPage])
+    // },[currentPage])
 
     // window.scrollTo({ top: 900, behavior: 'smooth' })
 
