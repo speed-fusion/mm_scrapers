@@ -70,14 +70,14 @@ class MarketCheckLtvCalculationRules:
             
             percent_source_price = (percentage/100) * source_price
             
-            margin_1 = percent_source_price
-            
             min_margin_1 = 1000
             
-            if margin_1 <= min_margin_1:
-                margin_1 = min_margin_1
+            if percent_source_price <= min_margin_1:
+                percent_source_price = min_margin_1
             
             provisional_mm_price =int(source_price + percent_source_price)
+            
+            margin_1 = percent_source_price
             
             ltv_percentage = (provisional_mm_price / forecourt_value) * 100
             
@@ -114,19 +114,19 @@ class MarketCheckLtvCalculationRules:
                 
             
             if ltv_percentage < 110:
-                max_margin = float(forecourt_value) * 1.10
-                profit_booster = max_margin - provisional_mm_price
+                add_upto = float(forecourt_value) * 1.10
+                profit_booster = add_upto - provisional_mm_price
             else:
                 profit_booster = 0
             
-            margin = margin_1 + profit_booster
-            
             max_margin = 3000
             
-            if margin >= max_margin:
-                margin = max_margin
+            if profit_booster >= max_margin:
+                profit_booster = max_margin
             
-            mm_price = provisional_mm_price + margin
+            mm_price = provisional_mm_price + profit_booster
+            
+            margin = margin_1 + profit_booster
             
             final_ltv = self.old_ltv.calculate(mm_price,forecourt_value)
             
@@ -159,22 +159,21 @@ class MarketCheckLtvCalculationRules:
             
             percent_source_price = float(percentage/100) * source_price
             
-            margin_1 = percent_source_price
-            
-            
             min_margin_1 = 1000
             
-            if margin_1 <= min_margin_1:
-                margin_1 = min_margin_1
+            if percent_source_price <= min_margin_1:
+                percent_source_price = min_margin_1
             
             max_margin = 3000
             
-            if margin_1 >= max_margin:
-                margin = max_margin
+            if percent_source_price >= max_margin:
+                percent_source_price = max_margin
             else:
-                margin = margin_1
+                percent_source_price = margin_1
             
-            mm_price = source_price + margin
+            mm_price = source_price + percent_source_price
+            
+            margin = percent_source_price
             
             return  {
                     "status":True,
