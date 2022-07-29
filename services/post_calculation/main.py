@@ -56,13 +56,13 @@ class TopicHandler:
                 
                 # self.mc_calculation.calculate_motor_market_price(data)
                 
-                status,message = self.mc_calculation.calculate_ltv(data)
+                status,error_message = self.mc_calculation.calculate_ltv(data)
                 if status == False:
                     
                     if self.pulsar_manager.PIPELINE == "manual":
                         self.mongodb.recent_listings_collection.update_one({"listing_id":listing_id},{
                             "$set":{
-                                "message":message,
+                                "message":error_message,
                                 "status":"expired"
                             }
                         })
