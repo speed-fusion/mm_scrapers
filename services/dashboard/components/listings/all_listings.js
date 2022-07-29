@@ -26,7 +26,7 @@ const AllListings = ({}) => {
     const [showProgressBar,setShowProgressBar] = useState(false);
 
     const [totalPage,setTotalPage] = useState(0)
-    const [currentPage,setCurrentPage] = useState(0)
+    const [currentPage,setCurrentPage] = useState(1)
     const [totalListings,setTotalListings] = useState(0)
 
 
@@ -115,7 +115,7 @@ const AllListings = ({}) => {
     useEffect(()=>{
         setShowProgressBar(true)
 
-        let what = {"raw":1}
+        let what = {"raw":1,"raw.location":0}
 
         let where = {}
         if(selectedMake != null)
@@ -136,7 +136,7 @@ const AllListings = ({}) => {
         axios.post(`${api_endpoint}/listings`,{
             "what":what,
             "where":where,
-            "page":currentPage
+            "page":currentPage - 1
         }).then(res => {
             setListingList(res.data.data)
             setTotalListings(res.data.listing_count)
@@ -207,7 +207,7 @@ const AllListings = ({}) => {
         </Stack>
 
         <Stack marginY={2}>
-        <Pagination onChange={(event,page) => setCurrentPage(page)} defaultPage={0} page={currentPage} count={totalPage} shape="rounded" siblingCount={0}/>
+        <Pagination onChange={(event,page) => setCurrentPage(page)} size='small' page={currentPage} count={totalPage} shape="rounded" siblingCount={1}/>
         </Stack>
 
         <Stack justify = "center">
@@ -299,7 +299,7 @@ const AllListings = ({}) => {
         </Stack>
 
         <Stack marginY={2}>
-        <Pagination onChange={(event,page) => setCurrentPage(page)} defaultPage={1} page={currentPage} count={totalPage} shape="rounded" siblingCount={2}/>
+        <Pagination onChange={(event,page) => setCurrentPage(page)} page={currentPage} count={totalPage} shape="rounded" size='small' siblingCount={1}/>
         </Stack>
     </Stack>
   )

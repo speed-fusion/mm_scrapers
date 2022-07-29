@@ -158,13 +158,13 @@ class MarketCheck:
                 tmp["imported"] = self.replace_na_with_none(row_dict["imported"])
                 tmp["scrapped"] = self.replace_na_with_none(row_dict["scrapped"])
                 
-                tmp["location"] = json.dumps({
+                tmp["location"] = {
                     "street":row_dict["street"],
                     "city":row_dict["city"],
                     "county":row_dict["county"],
                     "postal_code":row_dict["postal_code"],
                     "country":row_dict["country"]
-                })
+                }
                 
                 tmp["dealer_location"] = self.replace_na_with_none(row_dict["postal_code"])
                 tmp["images"] = []
