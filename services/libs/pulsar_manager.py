@@ -54,7 +54,7 @@ class PulsarManager:
         self.topics = Topics
         self.uri =  PULSAR_HOST
         self.client = pulsar.Client(self.uri)
-        self.PIPELINE = os.environ.get("PIPELINE",None)
+        self.PIPELINE = os.environ.get("PIPELINE_NAME",None)
         
     def create_producer(self,topic:Topics):
         return Producer(self.client.create_producer(topic.value))
