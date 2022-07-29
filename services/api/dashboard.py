@@ -110,12 +110,7 @@ def recently_added():
         item.update(tmp)
         item["images"] = images
     
-    response = Response(
-        response=json.dumps({"status":200,"listing_count":listing_count,"page_count":page_count,"per_page":per_page,"data":data}),
-        status=200,
-        mimetype='application/json'
-    )
-    return response
+    return jsonify({"status":200,"listing_count":listing_count,"page_count":page_count,"per_page":per_page,"data":data})
 
 
 
