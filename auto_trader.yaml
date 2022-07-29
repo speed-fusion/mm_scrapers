@@ -1,0 +1,13 @@
+version: '3.1'
+
+services:
+  manual_transform:
+    build: ./services/scrapers/auto_trader/listing/validator
+
+    volumes:
+      - ./services/libs:/libs
+
+    env_file:
+      - .prod.env
+    
+    network_mode : host

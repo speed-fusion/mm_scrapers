@@ -274,6 +274,7 @@ const AllListings = ({}) => {
                                             src={`${api_endpoint}/resize?url=${img.url}&width=400&height=300`}
                                             loading="lazy"
                                             onError={(e)=>{e.target.src="/default-image.jpg"}}
+                                            
                                         />
                                     </ImageListItem>
                                         )
