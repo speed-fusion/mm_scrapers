@@ -123,7 +123,7 @@ class TopicHandler:
                 if self.pulsar_manager.PIPELINE == "manual":
                     self.mongodb.recent_listings_collection.update_one({"listing_id":listing_id},{
                         "$set":{
-                            "message":f'image background removed...',
+                            "message":f'car cutter : images submitted',
                         }
                     })
                 

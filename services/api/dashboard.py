@@ -1,6 +1,8 @@
 from crypt import methods
+from datetime import datetime
 from flask import Blueprint, abort,jsonify,request,send_file, send_from_directory,Response
 import sys
+import pymongo
 import requests
 from PIL import Image
 from io import StringIO,BytesIO
@@ -75,6 +77,47 @@ def listings():
         mimetype='application/json'
     )
     return response
+
+@Dashboard.route('/recently-added',methods=["POST"])
+def recently_added():
+    per_page = 10
+    
+    body = request.get_json()
+    
+    page = body["page"]
+    
+    skip = per_page * page
+    
+    listing_count = mongo_db.recent_listings_collection.count_documents({})
+    
+    page_count = int(listing_count/per_page)
+    
+    data = list(mongo_db.recent_listings_collection.find({}).sort("created_at",pymongo.DESCENDING).skip(skip).limit(per_page))
+    
+    for item in data:
+        tmp = mongo_db.listings_collection.find_one({"_id":item["listing_id"]},{"raw":1,"margin":1,"mm_price":1,"mm_url":1,"ltv_percentage":1,"source_mrp":1,"created_at":1})
+        
+        if tmp == None:
+            continue
+        
+        created_at:datetime = tmp["created_at"]
+        
+        current_month_collection_name = f'{created_at.month}-{created_at.year}'
+        
+        # {mongo_listing_id:"a24d06fe-cad3-4229-84be-e284d721605c",car_cutter_downloaded:true}
+        images = list(mongo_db.car_cutter_logs[current_month_collection_name].find({"mongo_listing_id":item["listing_id"],"car_cutter_downloaded":True},{"url":1}).sort("position",pymongo.ASCENDING))
+        
+        item.update(tmp)
+        item["images"] = images
+    
+    response = Response(
+        response=json.dumps({"status":200,"listing_count":listing_count,"page_count":page_count,"per_page":per_page,"data":data}),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
+
 
 
 
