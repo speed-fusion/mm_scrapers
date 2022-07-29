@@ -38,6 +38,19 @@ services:
     
     network_mode : host
 
+  
+  dashboard:
+    build: ./services/dashboard
+
+    restart: always
+    depends_on:
+      - api
+      
+    ports:
+        - "3000:3000"
+
+    env_file: .env
+
   transform:
     build: ./services/transform
 
