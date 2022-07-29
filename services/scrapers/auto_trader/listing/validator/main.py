@@ -17,7 +17,7 @@ wd.start()
 
 # wd.page.route("*",block_requets)
 
-wd.page.goto("https://www.autotrader.co.uk/car-details/202207248089066")
+wd.page.goto("https://www.autotrader.co.uk/car-details/202207238072666")
 wd.page.wait_for_load_state("networkidle")
 print(wd.page.url)
 

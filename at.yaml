@@ -1,7 +1,7 @@
 version: '3.1'
 
 services:
-  manual_transform:
+  at_listing_validator:
     build: ./services/scrapers/auto_trader/listing/validator
 
     volumes:
