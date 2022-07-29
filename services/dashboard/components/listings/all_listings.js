@@ -6,12 +6,15 @@ import SettingsSuggestRoundedIcon from '@mui/icons-material/SettingsSuggestRound
 import AddRoadRoundedIcon from '@mui/icons-material/AddRoadRounded';
 import ClosedCaptionOffRoundedIcon from '@mui/icons-material/ClosedCaptionOffRounded';
 import axios from 'axios';
+import { useRouter } from "next/router";
 
 const AllListings = ({}) => {
 
     // let test = JSON.parse(raw)
 
     // console.log(test)
+
+
 
     const api_endpoint = "https://dashboard.motor.market/api/dashboard"
 
@@ -36,8 +39,14 @@ const AllListings = ({}) => {
     const [snackbarMessage,SetSnackbarMessage] = useState("")
 
 
+    const goToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+        });
+    };
+  
 
-   
 
     useEffect(()=>{
 
@@ -81,13 +90,8 @@ const AllListings = ({}) => {
 
     },[selectedMake])
 
-    // useEffect(()=>{
-
-    //     window.scrollTo({ top: 0, behavior: 'smooth' })
-
-    // },[currentPage])
-
-    // window.scrollTo({ top: 900, behavior: 'smooth' })
+   
+    const router = useRouter();
 
     useEffect(()=>{
 
@@ -156,9 +160,15 @@ const AllListings = ({}) => {
             setTotalListings(res.data.listing_count)
             setTotalPage(res.data.page_count)
             setShowProgressBar(false)
+            setTimeout(function () {
+                goToTop()
+            }, 1000);
+           
         }).catch(err => {
             console.log(err)
             setShowProgressBar(false)
+            goToTop()
+            
             
         })
 
@@ -175,7 +185,7 @@ const AllListings = ({}) => {
             </Alert>
         </Snackbar>
                     
-        <Stack marginY={2}>
+        <Stack id="top" marginY={2}>
                 <Modal
                 open={showProgressBar}
                 onClose={setShowProgressBar}
@@ -261,7 +271,7 @@ const AllListings = ({}) => {
                                         index < 15 &&(
                                     <ImageListItem key={index}>
                                         <img
-                                            src={img.url}
+                                            src={`${api_endpoint}/resize?url=${img.url}&width=400&height=300`}
                                             loading="lazy"
                                             onError={(e)=>{e.target.src="/default-image.jpg"}}
                                         />

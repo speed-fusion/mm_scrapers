@@ -142,11 +142,11 @@ def resize():
     
     im = Image.open(BytesIO(response.content))
     
-    im = im.resize((width,height))
+    # im = im.resize((width,height))
     
     im =  im.convert('RGB')
     
-    im.save(str(file_path))
+    im.save(str(file_path),quality=25)
     
     return send_from_directory(str(tmp_dir),file_path.name)
 
