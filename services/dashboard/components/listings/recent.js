@@ -31,74 +31,6 @@ const RecentListings = ({}) => {
 
 
 
-   
-
-    useEffect(()=>{
-
-        setShowProgressBar(true)
-        axios.post(`${api_endpoint}/dropdown`,{
-            "what":"make",
-            "where":{}
-        }).then(res => {
-            console.log(res.data.data)
-            setMakeList(res.data.data)
-            setSelectedModel(null)
-            setSelectedTrim(null)
-            setShowProgressBar(false)
-        }).catch(err => {
-            console.log(err)
-            setShowProgressBar(false)
-        })
-
-    },[])
-
-    useEffect(()=>{
-
-        if (selectedMake == null)
-        {
-            return
-        }
-
-        setShowProgressBar(true)
-        axios.post(`${api_endpoint}/dropdown`,{
-            "what":"model",
-            "where":{"make":selectedMake}
-        }).then(res => {
-            setModelList(res.data.data)
-            setSelectedModel(null)
-            setSelectedTrim(null)
-            setShowProgressBar(false)
-        }).catch(err => {
-            console.log(err)
-            setShowProgressBar(false)
-        })
-
-    },[selectedMake])
-
-    useEffect(()=>{
-
-        if (selectedModel == null)
-        {
-            return
-        }
-
-        setShowProgressBar(true)
-        axios.post(`${api_endpoint}/dropdown`,{
-            "what":"trim",
-            "where":{"make":selectedMake,"model":selectedModel}
-        }).then(res => {
-            setTrimList(res.data.data)
-            setShowProgressBar(false)
-        }).catch(err => {
-            console.log(err)
-            setShowProgressBar(false)
-        })
-
-        // return () => {
-        //     setShowProgressBar(false)
-        //   };
-
-    },[selectedModel])
 
     function add_mm_url(id,registration)
     {
@@ -115,27 +47,7 @@ const RecentListings = ({}) => {
     useEffect(()=>{
         setShowProgressBar(true)
 
-        let what = {"raw":1}
-
-        let where = {}
-        if(selectedMake != null)
-        {
-            where["raw.make"] = {"$regex":selectedMake,"$options" : "i"}
-        }
-
-        if(selectedModel != null)
-        {
-            where["raw.model"] = {"$regex":selectedModel,"$options" : "i"}
-        }
-
-        if(selectedTrim != null)
-        {
-            where["raw.trim"] =  {"$regex":selectedTrim,"$options" : "i"}
-        }
-
-        axios.post(`${api_endpoint}/listings`,{
-            "what":what,
-            "where":where,
+        axios.post(`${api_endpoint}/recently-added`,{
             "page":currentPage - 1
         }).then(res => {
             setListingList(res.data.data)
@@ -152,7 +64,7 @@ const RecentListings = ({}) => {
         //     setShowProgressBar(false)
         //   };
 
-    },[currentPage,selectedMake,selectedModel,selectedTrim])
+    },[currentPage])
 
   return (
     <Stack alignItems="center">
@@ -228,7 +140,7 @@ const RecentListings = ({}) => {
                                <Stack justify = "center" alignItems={"center"}>
                                <ImageList key={item._id} sx={{ width: {xs:300,md:450,lg:550}, height: {xs:300,md:450,lg:550} }} cols={2}>
                                 {
-                                    item.raw.images.map((img,index)=>(
+                                    item.images.map((img,index)=>(
                                         index < 15 &&(
                                     <ImageListItem key={index}>
                                         <img

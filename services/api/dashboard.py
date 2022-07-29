@@ -105,7 +105,7 @@ def recently_added():
         current_month_collection_name = f'{created_at.month}-{created_at.year}'
         
         # {mongo_listing_id:"a24d06fe-cad3-4229-84be-e284d721605c",car_cutter_downloaded:true}
-        images = list(mongo_db.car_cutter_logs[current_month_collection_name].find({"mongo_listing_id":item["listing_id"],"car_cutter_downloaded":True},{"url":1}).sort("position",pymongo.ASCENDING))
+        images = list(mongo_db.car_cutter_logs[current_month_collection_name].find({"mongo_listing_id":item["listing_id"],"status":"added"},{"url":1}).sort("position",pymongo.ASCENDING))
         
         item.update(tmp)
         item["images"] = images
