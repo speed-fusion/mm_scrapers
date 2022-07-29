@@ -70,6 +70,11 @@ class MarketCheckLtvCalculationRules:
             
             percent_source_price = (percentage/100) * source_price
             
+            min_margin = 1000
+            
+            if percent_source_price <= min_margin:
+                percent_source_price = min_margin
+            
             provisional_mm_price =int(source_price + percent_source_price)
             
             ltv_percentage = (provisional_mm_price / forecourt_value) * 100
@@ -111,13 +116,11 @@ class MarketCheckLtvCalculationRules:
                 margin = max_margin - provisional_mm_price
             else:
                 margin = 0
-                
-            max_margin = 3000
-            
-            min_margin = 1000
             
             if margin <= min_margin:
                 margin = min_margin
+            
+            max_margin = 3000
             
             if margin >= max_margin:
                 margin = max_margin
@@ -155,14 +158,17 @@ class MarketCheckLtvCalculationRules:
             
             percent_source_price = float(percentage/100) * source_price
             
+            min_margin = 1000
+            
+            if percent_source_price <= min_margin:
+                percent_source_price = min_margin
+            
             max_margin = 3000
             
             if percent_source_price >= max_margin:
                 margin = max_margin
             else:
                 margin = percent_source_price
-            
-            min_margin = 1000
             
             if margin <= min_margin:
                 margin = min_margin
