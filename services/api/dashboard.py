@@ -174,7 +174,6 @@ def add_to_mm():
             data = {
                 "listing_id":id,
                 "website_id":18,
-                "created_at":get_current_datetime()
             }
             
             publisher = pm.create_producer(pm.topics.MANUAL_TRANSFORM)
@@ -183,7 +182,8 @@ def add_to_mm():
             
             mongo_db.recent_listings_collection.insert_one({
                 "listing_id":id,
-                "status":"to_parse"
+                "status":"to_parse",
+                "created_at":get_current_datetime()
             })
             
             return jsonify({"status":True,"data":data,"message":message})
