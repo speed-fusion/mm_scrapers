@@ -45,11 +45,12 @@ services:
     restart: always
     depends_on:
       - api
-      
+
     ports:
         - "3000:3000"
 
-    env_file: .env
+    env_file:
+      - .prod.env
 
   transform:
     build: ./services/transform
