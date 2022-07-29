@@ -134,7 +134,7 @@ class MarketCheckCalculation:
             data["ltv_percentage"] = round(ltv_percentage,1)
             data["ltv"] = old_ltv_values
             data["ltv_status"] = ltv_status
-            return True
+            return True,None
         else:
             return False,ltv_resp["message"]
         
