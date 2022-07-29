@@ -1,4 +1,4 @@
-import { Autocomplete, Avatar, Button, Card, CardActions, CardContent, CardHeader, CardMedia, Chip, CircularProgress, Grid, Icon, IconButton, ImageList, ImageListItem, LinearProgress, Link, List, ListItem, ListItemAvatar, ListItemText, Modal, Pagination, SpeedDialIcon, Stack, TextField, Typography } from '@mui/material'
+import { Alert, Autocomplete, Avatar, Button, Card, CardActions, CardContent, CardHeader, CardMedia, Chip, CircularProgress, Grid, Icon, IconButton, ImageList, ImageListItem, LinearProgress, Link, List, ListItem, ListItemAvatar, ListItemText, Modal, Pagination, Snackbar, SpeedDialIcon, Stack, TextField, Typography } from '@mui/material'
 import { Box, height } from '@mui/system';
 import React, { useEffect, useState } from 'react'
 import EvStationIcon from '@mui/icons-material/EvStation';
@@ -31,6 +31,9 @@ const AllListings = ({}) => {
     const [totalPage,setTotalPage] = useState(0)
     const [currentPage,setCurrentPage] = useState(1)
     const [totalListings,setTotalListings] = useState(0)
+
+    const [showSnackbar,SetShowSnackbar] = useState(false)
+    const [snackbarMessage,SetSnackbarMessage] = useState("")
 
 
 
@@ -105,8 +108,10 @@ const AllListings = ({}) => {
 
     function add_mm_url(id,registration)
     {
-        axios.post(`${api_endpoint}/add-to-mm`).then(res => {
-            setTrimList(res.data.data)
+        setShowProgressBar(true)
+        axios.get(`${api_endpoint}/add-to-mm?id=${id}&registration=${registration}`).then(res => {
+            SetSnackbarMessage(res.data.message)
+            SetShowSnackbar(true)
             setShowProgressBar(false)
         }).catch(err => {
             console.log(err)
@@ -159,6 +164,13 @@ const AllListings = ({}) => {
 
   return (
     <Stack alignItems="center">
+        
+        <Snackbar  anchorOrigin={{ vertical:"top", horizontal:"center" }} open={showSnackbar} onClose={()=>SetShowSnackbar(false)} autoHideDuration={6000}>
+            <Alert severity="success" sx={{ width: '100%' }}>
+                {snackbarMessage}
+            </Alert>
+        </Snackbar>
+                    
         <Stack marginY={2}>
                 <Modal
                 open={showProgressBar}
@@ -299,7 +311,7 @@ const AllListings = ({}) => {
                                         <Link  target={"_blank"} href={item.mm_url} sx={{ textDecoration:'none' }} variant='outlined'>MM URL</Link>
                                         }
                                         
-                                        <Button size='small' variant='contained'>ADD TO MM</Button>
+                                        <Button size='small' onClick={()=> add_mm_url(item._id,item.raw.registration)} variant='contained'>ADD TO MM</Button>
                                         
                                 
                                 </Stack>
