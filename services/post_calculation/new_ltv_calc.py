@@ -77,7 +77,7 @@ class MarketCheckLtvCalculationRules:
             if margin_1 <= min_margin_1:
                 margin_1 = min_margin_1
             
-            provisional_mm_price =int(source_price + margin_1)
+            provisional_mm_price =int(source_price + percent_source_price)
             
             ltv_percentage = (provisional_mm_price / forecourt_value) * 100
             
