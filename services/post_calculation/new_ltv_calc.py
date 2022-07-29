@@ -117,8 +117,8 @@ class MarketCheckLtvCalculationRules:
             else:
                 margin = 0
             
-            if margin <= min_margin:
-                margin = min_margin
+            # if margin <= min_margin:
+            #     margin = min_margin
             
             max_margin = 3000
             
@@ -170,8 +170,8 @@ class MarketCheckLtvCalculationRules:
             else:
                 margin = percent_source_price
             
-            if margin <= min_margin:
-                margin = min_margin
+            # if margin <= min_margin:
+            #     margin = min_margin
             
             mm_price = source_price + margin
             
