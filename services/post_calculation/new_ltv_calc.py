@@ -168,8 +168,6 @@ class MarketCheckLtvCalculationRules:
             
             if percent_source_price >= max_margin:
                 percent_source_price = max_margin
-            else:
-                percent_source_price = margin_1
             
             mm_price = source_price + percent_source_price
             
