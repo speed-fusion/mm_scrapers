@@ -131,7 +131,6 @@ def add_to_mm():
             data = {
                 "listing_id":id,
                 "website_id":18,
-                "data":None
             }
             
             publisher = pm.create_producer(pm.topics.MANUAL_TRANSFORM)
@@ -143,7 +142,7 @@ def add_to_mm():
                 "status":"to_parse"
             })
             
-            return jsonify({"status":True,"message":message})
+            return jsonify({"status":True,"data":data,"message":message})
         
     except Exception as e:
         print(f'error : {str(e)}')
