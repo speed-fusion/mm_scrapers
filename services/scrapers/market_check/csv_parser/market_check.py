@@ -200,8 +200,6 @@ class MarketCheck:
         # registration should not be null
         df = df[df.vehicle_registration_mark.notna()]
         
-        df = df[df.vehicle_registration_mark == "SA68MUP"]
-        
         # min price should be 30000
         df = df[df.price < 30000]
         
@@ -312,12 +310,12 @@ class MarketCheck:
         self.insert_dropdown_data(dropdown_data)
         
         print("getting unique registration...")
-        # unique_reg = self.get_unique_registration(df)
+        unique_reg = self.get_unique_registration(df)
         
         print("deactivating expired listings")
-        # self.deactivate_expired_listings(unique_reg)
+        self.deactivate_expired_listings(unique_reg)
         
-        # df = df[df.dealer_id.apply(lambda x:self.is_clean_dealer(x))]
+        df = df[df.dealer_id.apply(lambda x:self.is_clean_dealer(x))]
         print("parsing dealers...")
         dealers = self.parse_dealers(df)
         
