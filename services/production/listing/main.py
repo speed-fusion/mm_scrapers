@@ -16,11 +16,11 @@ class TopicHandler:
     def __init__(self):
         print("transform topic handler init")
         
-        pulsar_manager = PulsarManager()
+        self.pulsar_manager = PulsarManager()
         
-        self.consumer = pulsar_manager.create_consumer(pulsar_manager.topics.LISTINGS_UPSERT_PROD_DB)
+        self.consumer = self.pulsar_manager.create_consumer(self.pulsar_manager.topics.LISTINGS_UPSERT_PROD_DB)
         
-        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.DOWNLOAD_IMAGE)
+        self.producer = self.pulsar_manager.create_producer(self.pulsar_manager.topics.DOWNLOAD_IMAGE)
         
         self.mongodb = MongoDatabase()
         
@@ -88,6 +88,15 @@ class TopicHandler:
                             }
                         })
                         
+                        if self.pulsar_manager.PIPELINE == "manual":
+                            self.mongodb.recent_listings_collection.update_one({"listing_id":listing_id},{
+                                "$set":{
+                                    "message":"processing images...",
+                                    "mm_url":mm_url,
+                                    "mysql_listing_id":id
+                                }
+                            })
+                        
                     else:
                         mysql_entry = result[0]
                         
@@ -119,21 +128,59 @@ class TopicHandler:
                         elif mysql_entry["Website_ID"] == 18:
                             if status in ["manual_expire","pending","sold"]:
                                 self.mongodb.listings_collection.update_one(where,{"$set":{"status":status}})
+                                
+                                if self.pulsar_manager.PIPELINE == "manual":
+                                    self.mongodb.recent_listings_collection.update_one({"listing_id":listing_id},{
+                                        "$set":{
+                                            "message":f'the status in fl_listings is {status}.',
+                                            "status":"expired"
+                                        }
+                                    })
+                                
                                 continue
                             
                             if status in ["active"]:
                                 mapped_data["Status"] = status
                                 self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
                                 self.mongodb.listings_collection.update_one(where,{"$set":{"status":status}})
+                                
+                                if self.pulsar_manager.PIPELINE == "manual":
+                                    self.mongodb.recent_listings_collection.update_one({"listing_id":listing_id},{
+                                        "$set":{
+                                            "message":f'listing already exists.',
+                                            "status":"active",
+                                            "mm_url":result[0]["mm_product_url"]
+                                        }
+                                    })
+                                
                                 continue
                             
                             if status == "expired":
                                 mapped_data["Status"] = "active"
                                 self.mysqldb.recUpdate("fl_listings",mapped_data,update_at)
                                 self.mongodb.listings_collection.update_one(where,{"$set":{"status":mapped_data["Status"]}})
+                                
+                                if self.pulsar_manager.PIPELINE == "manual":
+                                    self.mongodb.recent_listings_collection.update_one({"listing_id":listing_id},{
+                                        "$set":{
+                                            "message":f'listing already exists.',
+                                            "status":"active",
+                                            "mm_url":result[0]["mm_product_url"]
+                                        }
+                                    })
+                                
                                 continue
                             
                             if status == "to_parse":
+                                
+                                if self.pulsar_manager.PIPELINE == "manual":
+                                    self.mongodb.recent_listings_collection.update_one({"listing_id":listing_id},{
+                                        "$set":{
+                                            "message":f'processing images...',
+                                            "mm_url":result[0]["mm_product_url"]
+                                        }
+                                    })
+                                
                                 pass
                         else:
                             continue

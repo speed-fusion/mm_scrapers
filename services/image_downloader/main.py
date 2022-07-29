@@ -16,11 +16,11 @@ class TopicHandler:
     def __init__(self):
         print("transform topic handler init")
         
-        pulsar_manager = PulsarManager()
+        self.pulsar_manager = PulsarManager()
         
-        self.consumer = pulsar_manager.create_consumer(pulsar_manager.topics.DOWNLOAD_IMAGE)
+        self.consumer = self.pulsar_manager.create_consumer(self.pulsar_manager.topics.DOWNLOAD_IMAGE)
         
-        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.CAR_CUTTER_SUBMIT)
+        self.producer = self.pulsar_manager.create_producer(self.pulsar_manager.topics.CAR_CUTTER_SUBMIT)
         
         self.mongodb = MongoDatabase()
 
@@ -86,17 +86,13 @@ class TopicHandler:
                 for item in self.image_downloader.download_multiple_images(images):
                     item["path"] = str(item["path"])
                     downloaded_images.append(item)
-                    # try:
-                    #     item["listing_id"] = listing_id
-                    #     item["website_id"] = website_id
-                    #     item["car_cutter_classified"] = False
-                    #     item["car_cutter_ready"] = False
-                    #     item["car_cutter_downloaded"] = False
-                        
-                    #     self.mongodb.images_collection.insert_one(item)
-                        
-                    # except Exception as e:
-                    #     print(f'error : {str(e)}')
+                
+                if self.pulsar_manager.PIPELINE == "manual":
+                    self.mongodb.recent_listings_collection.update_one({"listing_id":listing_id},{
+                        "$set":{
+                            "message":f'images downloaded...',
+                        }
+                    })
                 
                 message["data"]["images"] = downloaded_images
                 

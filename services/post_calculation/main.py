@@ -12,11 +12,11 @@ class TopicHandler:
     def __init__(self):
         print("transform topic handler init")
         
-        pulsar_manager = PulsarManager()
+        self.pulsar_manager = PulsarManager()
         
-        self.consumer = pulsar_manager.create_consumer(pulsar_manager.topics.LISTING_POST_CALCULATION)
+        self.consumer = self.pulsar_manager.create_consumer(self.pulsar_manager.topics.LISTING_POST_CALCULATION)
         
-        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.LISTINGS_UPSERT_PROD_DB)
+        self.producer = self.pulsar_manager.create_producer(self.pulsar_manager.topics.LISTINGS_UPSERT_PROD_DB)
         
         self.mc_calculation = MarketCheckCalculation()
         
@@ -56,7 +56,16 @@ class TopicHandler:
                 
                 # self.mc_calculation.calculate_motor_market_price(data)
                 
-                if self.mc_calculation.calculate_ltv(data) == False:
+                status,message = self.mc_calculation.calculate_ltv(data)
+                if status == False:
+                    
+                    if self.pulsar_manager.PIPELINE == "manual":
+                        self.mongodb.recent_listings_collection.update_one({"listing_id":listing_id},{
+                            "$set":{
+                                "message":message,
+                                "status":"expired"
+                            }
+                        })
                     
                     continue
                 
@@ -83,6 +92,13 @@ class TopicHandler:
                 self.mongodb.listings_collection.update_one(where,{
                     "$set":data
                 })
+            
+                if self.pulsar_manager.PIPELINE == "manual":
+                        self.mongodb.recent_listings_collection.update_one({"listing_id":listing_id},{
+                            "$set":{
+                                "message":"post calculations : PASSED",
+                            }
+                        })
             
             self.producer.produce_message(message)  
             

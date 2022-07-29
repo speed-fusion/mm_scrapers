@@ -1,7 +1,7 @@
 import pulsar
 import json
 from mm_constants import Topics,PULSAR_HOST
-
+import os
 
 class Producer:
     def __init__(self,producer_client) -> None:
@@ -54,6 +54,7 @@ class PulsarManager:
         self.topics = Topics
         self.uri =  PULSAR_HOST
         self.client = pulsar.Client(self.uri)
+        self.PIPELINE = os.environ.get("PIPELINE",None)
         
     def create_producer(self,topic:Topics):
         return Producer(self.client.create_producer(topic.value))

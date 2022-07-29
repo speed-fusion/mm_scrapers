@@ -17,11 +17,11 @@ class TopicHandler:
     def __init__(self):
         print("transform topic handler init")
         
-        pulsar_manager = PulsarManager()
+        self.pulsar_manager = PulsarManager()
         
-        self.consumer = pulsar_manager.create_consumer(pulsar_manager.topics.CAR_CUTTER_SUBMIT)
+        self.consumer = self.pulsar_manager.create_consumer(self.pulsar_manager.topics.CAR_CUTTER_SUBMIT)
         
-        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.CAR_CUTTER_STATUS_CHECK)
+        self.producer = self.pulsar_manager.create_producer(self.pulsar_manager.topics.CAR_CUTTER_STATUS_CHECK)
         
         self.mongodb = MongoDatabase()
         
@@ -87,6 +87,15 @@ class TopicHandler:
                 
                 if len(images) <= 2:
                     self.delete_mysql_listing(mysql_listing_id)
+                    
+                    if self.pulsar_manager.PIPELINE == "manual":
+                        self.mongodb.recent_listings_collection.update_one({"listing_id":listing_id},{
+                            "$set":{
+                                "message":f'total images are less than two. can not add this listing...',
+                                "status":"expired"
+                            }
+                        })
+                    
                     continue
                 
                 submit_images = [i["mm_img_url"] for i in images]
@@ -110,6 +119,13 @@ class TopicHandler:
                     final_images.append(img_item)
                 
                 message["data"]["images"] = final_images
+                
+                if self.pulsar_manager.PIPELINE == "manual":
+                    self.mongodb.recent_listings_collection.update_one({"listing_id":listing_id},{
+                        "$set":{
+                            "message":f'image background removed...',
+                        }
+                    })
                 
                 self.producer.produce_message(message)
 

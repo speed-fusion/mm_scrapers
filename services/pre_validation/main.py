@@ -1,3 +1,4 @@
+import os
 import sys
 
 sys.path.append("/libs")
@@ -12,11 +13,11 @@ class TopicHandler:
     def __init__(self):
         print("transform topic handler init")
         
-        pulsar_manager = PulsarManager()
+        self.pulsar_manager = PulsarManager()
         
-        self.consumer = pulsar_manager.create_consumer(pulsar_manager.topics.LISTING_PRE_VALIDATION)
+        self.consumer = self.pulsar_manager.create_consumer(self.pulsar_manager.topics.LISTING_PRE_VALIDATION)
         
-        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.LISTING_PREDICT_MAKE_MODEL)
+        self.producer = self.pulsar_manager.create_producer(self.pulsar_manager.topics.LISTING_PREDICT_MAKE_MODEL)
         
         self.mc_validation = MarketCheckValidation()
         
@@ -63,10 +64,26 @@ class TopicHandler:
                     
                     self.mongodb.insert_event(self.mongodb.listing_event_collection,event_data)
                     
-                    
-                    
+                    # handle manual pipeline
+                    if self.pulsar_manager.PIPELINE == "manual":
+                        
+                        self.mongodb.recent_listings_collection.update_one({"listing_id":listing_id},{
+                            "$set":{
+                                "message":error["error_message"],
+                                "status":"expired"
+                            }
+                        })
                     
                     continue
+                
+                # handle manual pipeline
+                if self.pulsar_manager.PIPELINE == "manual":
+                    
+                    self.mongodb.recent_listings_collection.update_one({"listing_id":listing_id},{
+                        "$set":{
+                            "message":"pre-validation conditions : PASSED"
+                        }
+                    })
                 
             self.producer.produce_message(message)
             

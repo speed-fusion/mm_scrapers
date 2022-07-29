@@ -136,7 +136,7 @@ class MarketCheckCalculation:
             data["ltv_status"] = ltv_status
             return True
         else:
-            return False
+            return False,ltv_resp["message"]
         
         # ltv = {}
         

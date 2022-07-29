@@ -63,7 +63,8 @@ class MarketCheckLtvCalculationRules:
                     "margin":None,
                     "ltv":self.old_ltv.getNullValues(),
                     "response":json.dumps(forecourt_response),
-                    "ltv_status":0
+                    "ltv_status":0,
+                    "message":f'{registration} : forecourt fetch failed.'
                 }
             
             percentage = 12
@@ -109,7 +110,8 @@ class MarketCheckLtvCalculationRules:
                     "forecourt_price":forecourt_value,
                     "ltv":{},
                     "response": json.dumps(forecourt_response),
-                    "ltv_status":0
+                    "ltv_status":0,
+                    "message":f'{registration} ltv percentage >= 120'
                 }
                 
             
@@ -149,7 +151,8 @@ class MarketCheckLtvCalculationRules:
                     "response": json.dumps(forecourt_response),
                     "ltv":final_ltv,
                     "ltv_percentage":ltv_percentage,
-                    "ltv_status":1
+                    "ltv_status":1,
+                    "message":None
                 }
         
         else:
@@ -180,7 +183,8 @@ class MarketCheckLtvCalculationRules:
                     "margin":int(margin),
                     "ltv":self.old_ltv.getDefaultValues(),
                     "ltv_percentage":ltv_percentage,
-                    "ltv_status":None
+                    "ltv_status":None,
+                    "message":None
                 }
 
 

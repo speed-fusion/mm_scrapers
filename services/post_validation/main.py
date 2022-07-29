@@ -10,11 +10,11 @@ class TopicHandler:
     def __init__(self):
         print("transform topic handler init")
         
-        pulsar_manager = PulsarManager()
+        self.pulsar_manager = PulsarManager()
         
-        self.consumer = pulsar_manager.create_consumer(pulsar_manager.topics.LISTING_POST_VALIDATION)
+        self.consumer = self.pulsar_manager.create_consumer(self.pulsar_manager.topics.LISTING_POST_VALIDATION)
         
-        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.LISTING_PREDICT_NUMBERPLATE)
+        self.producer = self.pulsar_manager.create_producer(self.pulsar_manager.topics.LISTING_PREDICT_NUMBERPLATE)
         
         self.mongodb = MongoDatabase()
     
@@ -57,8 +57,27 @@ class TopicHandler:
                         
                     }
                     
+                    # handle manual pipeline
+                    if self.pulsar_manager.PIPELINE == "manual":
+                        
+                        self.mongodb.recent_listings_collection.update_one({"listing_id":listing_id},{
+                            "$set":{
+                                "message":"pre-validation conditions : FAILED (zero images)",
+                                "status":"expired"
+                            }
+                        })
+                    
                     self.mongodb.insert_event(self.mongodb.listing_event_collection,what)
                     continue
+                
+                # handle manual pipeline
+                if self.pulsar_manager.PIPELINE == "manual":
+                    
+                    self.mongodb.recent_listings_collection.update_one({"listing_id":listing_id},{
+                        "$set":{
+                            "message":"post-validation conditions : PASSED"
+                        }
+                    })
                 
                 self.mongodb.listings_collection.update_one(where,{"$set":{
                     "total_photos": image_count

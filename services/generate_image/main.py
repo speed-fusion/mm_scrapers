@@ -16,11 +16,11 @@ class TopicHandler:
     def __init__(self):
         print("transform topic handler init")
         
-        pulsar_manager = PulsarManager()
+        self.pulsar_manager = PulsarManager()
         
-        self.consumer = pulsar_manager.create_consumer(pulsar_manager.topics.GENERATE_IMAGE)
+        self.consumer = self.pulsar_manager.create_consumer(self.pulsar_manager.topics.GENERATE_IMAGE)
         
-        self.producer = pulsar_manager.create_producer(pulsar_manager.topics.FL_LISTING_PHOTOS_INSERT)
+        self.producer = self.pulsar_manager.create_producer(self.pulsar_manager.topics.FL_LISTING_PHOTOS_INSERT)
         
         self.mongodb = MongoDatabase()
         
@@ -64,10 +64,6 @@ class TopicHandler:
                 
                 images = message["data"]["images"]
                 
-                if len(images) < 2:
-                    self.delete_mysql_listing(mysql_listing_id)
-                    continue
-                
                 result = self.image_generator.processListing(images,website_id,mysql_listing_id)
                 
                 all_images = []
@@ -80,6 +76,14 @@ class TopicHandler:
                     all_images.append(img)
                 
                 message["data"]["images"] = all_images
+                
+                if self.pulsar_manager.PIPELINE == "manual":
+                    self.mongodb.recent_listings_collection.update_one({"listing_id":listing_id},{
+                        "$set":{
+                            "message":f'images generated.',
+                            "status":"active"
+                        }
+                    })
 
             self.producer.produce_message(message)
             
