@@ -17,6 +17,8 @@ class MongoDatabase:
         
         self.dropdown_collection = self.dashboard_db["dropdown"]
         
+        self.recent_listings_collection = self.dashboard_db["recent_listings"]
+        
         self.car_cutter_logs = client["car_cutter_logs"]
         
         self.listing_counts = self.db["listing-counts"]

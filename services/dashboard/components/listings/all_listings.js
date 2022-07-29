@@ -1,4 +1,4 @@
-import { Autocomplete, Avatar, Button, Card, CardActions, CardContent, CardHeader, CardMedia, Chip, CircularProgress, Grid, Icon, IconButton, LinearProgress, Link, List, ListItem, ListItemAvatar, ListItemText, Modal, Pagination, SpeedDialIcon, Stack, TextField, Typography } from '@mui/material'
+import { Autocomplete, Avatar, Button, Card, CardActions, CardContent, CardHeader, CardMedia, Chip, CircularProgress, Grid, Icon, IconButton, ImageList, ImageListItem, LinearProgress, Link, List, ListItem, ListItemAvatar, ListItemText, Modal, Pagination, SpeedDialIcon, Stack, TextField, Typography } from '@mui/material'
 import { Box, height } from '@mui/system';
 import React, { useEffect, useState } from 'react'
 import EvStationIcon from '@mui/icons-material/EvStation';
@@ -100,8 +100,20 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
 
     },[selectedModel])
 
+    function add_mm_url(id,registration)
+    {
+        axios.post(`${api_endpoint}/add-to-mm`).then(res => {
+            setTrimList(res.data.data)
+            setShowProgressBar(false)
+        }).catch(err => {
+            console.log(err)
+            setShowProgressBar(false)
+        })
+
+    }
+
     useEffect(()=>{
-        // setShowProgressBar(true)
+        setShowProgressBar(true)
 
         let what = {"raw":1}
 
@@ -129,8 +141,10 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
             setListingList(res.data.data)
             setTotalListings(res.data.listing_count)
             setTotalPage(res.data.page_count)
+            setShowProgressBar(false)
         }).catch(err => {
             console.log(err)
+            setShowProgressBar(false)
             
         })
 
@@ -193,7 +207,7 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
         </Stack>
 
         <Stack marginY={2}>
-        <Pagination onChange={(event,page) => setCurrentPage(page)} page={currentPage == 0 ? 1 : currentPage} count={totalPage} shape="rounded" siblingCount={0}/>
+        <Pagination onChange={(event,page) => setCurrentPage(page)} defaultPage={0} page={currentPage} count={totalPage} shape="rounded" siblingCount={0}/>
         </Stack>
 
         <Stack justify = "center">
@@ -202,53 +216,81 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
                     listingList.map((item)=>(
                         <Grid key={item._id} width={300} minWidth={300} justify = "center" alignItems={"center"} item xs={12} md={6} lg={6}>
                             <Card elevation={3}>
+                                <Stack my={2} mx={0} justifyContent="space-evenly" direction={"row"}>
+                                    <Stack>
+                                        <Typography variant='h5'>{item.raw.make} - {item.raw.model}</Typography>
+                                        <Typography color={"grey.700"} variant='subtitle1'>{item.raw.trim}</Typography>
+                                    </Stack>
                                 
-                                
-                                <CardHeader title={`${item.raw.make} - ${item.raw.model}`} subheader={item.raw.trim} ></CardHeader>
-                                <Stack my={1} mx={2} justifyContent="right" direction={"row"}>
                                     <Chip label={`${item.raw.price}$`} variant='filled' color='secondary' />
                                 </Stack>
-                                <CardMedia
-                                onError={(e)=>{e.target.src="/default-image.jpg"}}
-                                height={250}
-                                component={"img"}
-                                
-                                // image={item.main_img}
-                                />
-                                <CardContent>
-                                    <Stack spacing={1}>
-                                        <Stack spacing={1} justifyContent="center" direction={"row"}>
-                                            <Chip icon={<SettingsSuggestRoundedIcon/>} label={item.raw.transmission}/>
-                                            <Chip icon={<AddRoadRoundedIcon/>} label={item.raw.mileage}/>
-                                            <Chip icon={<EvStationIcon/>} label={item.raw.fuel}/>
-                                        </Stack>
-                                        <Stack spacing={1} justifyContent="center" direction={"row"}>
-                                            {item.raw.engine_cylinders_cc != null && item.raw.engine_cylinders_cc != 0 &&
-                                                <Chip icon={<ClosedCaptionOffRoundedIcon/>} label={item.raw.engine_cylinders_cc}/>
-                                            }
-                                            
-                                            
-                                        </Stack>
 
-                                    </Stack>
-                                </CardContent>
-                                <CardActions>
-                                    <Stack>
-                                        <Stack direction={"row"} spacing={2} justifyContent="center" alignItems={"center"}>
-                                            <Box>
-                                                <Link sx={{ textDecoration:'none' }} target={"_blank"} href={item.source_url} size="small" variant='outlined' >SOURCE URL</Link>
-                                            </Box>
-                                            <Box>
-                                            {item.mm_url != null &&
-                                            <Link  target={"_blank"} href={item.mm_url} sx={{ textDecoration:'none' }} variant='outlined'>MM URL</Link>
-                                            }
-                                            </Box>
-                                            <Button size='small' variant='contained'>ADD TO MM</Button>
+                               <Stack justify = "center" alignItems={"center"}>
+                               <ImageList key={item._id} sx={{ width: {xs:300,md:450,lg:550}, height: {xs:300,md:450,lg:550} }} cols={2}>
+                                {
+                                    item.raw.images.map((img,index)=>(
+                                        index < 15 &&(
+                                    <ImageListItem key={index}>
+                                        <img
+                                            src={img.url}
+                                            loading="lazy"
+                                            onError={(e)=>{e.target.src="/default-image.jpg"}}
+                                        />
+                                    </ImageListItem>
+                                        )
+                                    ))
+                                }
+                                
+
+                                </ImageList>
+                               </Stack>
+                             
+                                    <Grid my={2} justifyContent={"center"} spacing={1} container>
+                                        {/* <Stack spacing={1} justifyContent="center" direction={"row"}> */}
+                                            <Grid item>
+                                            <Chip icon={<SettingsSuggestRoundedIcon/>} label={item.raw.transmission}/>
+                                            </Grid>
+
+                                            <Grid item>
+                                            <Chip icon={<AddRoadRoundedIcon/>} label={item.raw.mileage}/>
+                                            </Grid>
+
+                                            <Grid item>
+                                            <Chip icon={<EvStationIcon/>} label={item.raw.fuel}/>
+                                            </Grid>
+
+                                            <Grid  item>
+                                            <Chip icon={<ClosedCaptionOffRoundedIcon/>} label={item.raw.engine_cylinders_cc}/>
+                                            </Grid>
                                             
-                                        </Stack>
-                                    </Stack>
+                                          
+                                        {/* </Stack> */}
+                                        {/* <Stack spacing={1} justifyContent="center" direction={"row"}> */}
+                                            {/* {item.raw.engine_cylinders_cc != null && item.raw.engine_cylinders_cc != 0 &&
+                                                <Chip icon={<ClosedCaptionOffRoundedIcon/>} label={item.raw.engine_cylinders_cc}/>
+                                            } */}
+                                            
+                                            
+                                        {/* </Stack> */}
+
+                                    </Grid>
+                           
+                     
+                                <Stack my={2} spacing={1} justifyContent={"space-evenly"} direction="row" alignItems={"center"}>
                                     
-                                </CardActions>
+                                            
+                                        <Link sx={{ textDecoration:'none' }} target={"_blank"} href={item.raw.source_url} size="small" variant='outlined' >SOURCE URL</Link>
+                                        
+                                
+                                        {item.mm_url != null &&
+                                        <Link  target={"_blank"} href={item.mm_url} sx={{ textDecoration:'none' }} variant='outlined'>MM URL</Link>
+                                        }
+                                        
+                                        <Button size='small' variant='contained'>ADD TO MM</Button>
+                                        
+                                
+                                </Stack>
+                      
                             </Card>
                         </Grid>
                     ))
@@ -257,7 +299,7 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
         </Stack>
 
         <Stack marginY={2}>
-        <Pagination onChange={(event,page) => setCurrentPage(page)} page={currentPage == 0 ? 1 : currentPage} count={totalPage} shape="rounded" siblingCount={0}/>
+        <Pagination onChange={(event,page) => setCurrentPage(page)} defaultPage={1} page={currentPage} count={totalPage} shape="rounded" siblingCount={2}/>
         </Stack>
     </Stack>
   )

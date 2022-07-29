@@ -19,11 +19,15 @@ headers =   {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKi
 
 mongo_db = MongoDatabase()
 
+mysql_db = MysqlDatabase()
+
 Dashboard = Blueprint('dashboard', __name__,url_prefix="/dashboard")
 
 from pathlib import Path
 
 tmp_dir = Path("/tmp")
+
+pm = PulsarManager()
 
 
 
@@ -89,6 +93,54 @@ def resize():
     im.save(str(file_path))
     
     return send_from_directory(str(tmp_dir),file_path.name)
+
+@Dashboard.route('/add-to-mm',methods=["GET"])
+def add_to_mm():
+    
+    id = request.args.get("id")
+    
+    registration = request.args.get("registration")
+    
+    mysql_db.connect()
+    
+    message = None
+    
+    try:
+        
+        result = mysql_db.recCustomQuery(f'SELECT ID,Status,mm_product_url FROM fl_listings WHERE registration="{registration}"')
+        
+        if len(result) > 0:
+            
+            if result[0]["Status"] in ["active","manual_expire","to_parse","pending"]:
+                message = f'listing already present in database. reference number : {result[0]["ID"]}, status : {result[0]["Status"]}'
+            return jsonify({"status":False,"message":message})
+        else:
+            data = {
+                "listing_id":id,
+                "website_id":18,
+                "data":None
+            }
+            mongo_db.da
+            publisher = pm.create_producer(pm.topics.MANUAL_TRANSFORM)
+            publisher.produce_message(data)
+            message = "listing added in queue."
+            
+            mongo_db.recent_listings_collection.insert_one({
+                "listing_id":id,
+                "status":"to_parse"
+            })
+            
+            return jsonify({"status":True,"message":message})
+        
+    except Exception as e:
+        print(f'error : {str(e)}')
+        message = str(e)
+    
+    mysql_db.disconnect()
+    
+    return jsonify({"status":False,"message":message})
+    
+    
     
     
     
