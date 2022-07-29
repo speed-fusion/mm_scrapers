@@ -70,12 +70,14 @@ class MarketCheckLtvCalculationRules:
             
             percent_source_price = (percentage/100) * source_price
             
-            min_margin = 1000
+            margin_1 = percent_source_price
             
-            if percent_source_price <= min_margin:
-                percent_source_price = min_margin
+            min_margin_1 = 1000
             
-            provisional_mm_price =int(source_price + percent_source_price)
+            if margin_1 <= min_margin_1:
+                margin_1 = min_margin_1
+            
+            provisional_mm_price =int(source_price + margin_1)
             
             ltv_percentage = (provisional_mm_price / forecourt_value) * 100
             
@@ -113,12 +115,11 @@ class MarketCheckLtvCalculationRules:
             
             if ltv_percentage < 110:
                 max_margin = float(forecourt_value) * 1.10
-                margin = max_margin - provisional_mm_price
+                profit_booster = max_margin - provisional_mm_price
             else:
-                margin = 0
+                profit_booster = 0
             
-            # if margin <= min_margin:
-            #     margin = min_margin
+            margin = margin_1 + profit_booster
             
             max_margin = 3000
             
@@ -158,20 +159,20 @@ class MarketCheckLtvCalculationRules:
             
             percent_source_price = float(percentage/100) * source_price
             
-            min_margin = 1000
+            margin_1 = percent_source_price
             
-            if percent_source_price <= min_margin:
-                percent_source_price = min_margin
+            
+            min_margin_1 = 1000
+            
+            if margin_1 <= min_margin_1:
+                margin_1 = min_margin_1
             
             max_margin = 3000
             
-            if percent_source_price >= max_margin:
+            if margin_1 >= max_margin:
                 margin = max_margin
             else:
-                margin = percent_source_price
-            
-            # if margin <= min_margin:
-            #     margin = min_margin
+                margin = margin_1
             
             mm_price = source_price + margin
             
