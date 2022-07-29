@@ -8,9 +8,9 @@ import ClosedCaptionOffRoundedIcon from '@mui/icons-material/ClosedCaptionOffRou
 import axios from 'axios';
 
 
-const AllListings = ({makes,listings,total_pages,current_page,total_listings}) => {
+const AllListings = ({}) => {
 
-    const api_endpoint = "http://195.181.164.37:5000/dashboard"
+    const api_endpoint = "https://dashboard.motor.market/api/dashboard"
 
     const [selectedMake,setSelectedMake] = useState(null);
     const [makeList,setMakeList] = useState([]);
@@ -21,13 +21,13 @@ const AllListings = ({makes,listings,total_pages,current_page,total_listings}) =
     const [selectedTrim,setSelectedTrim] = useState(null);
     const [trimList,setTrimList] = useState([]);
 
-    const [listingList,setListingList] = useState(listings)
+    const [listingList,setListingList] = useState([])
 
     const [showProgressBar,setShowProgressBar] = useState(false);
 
-    const [totalPage,setTotalPage] = useState(total_pages)
-    const [currentPage,setCurrentPage] = useState(current_page)
-    const [totalListings,setTotalListings] = useState(total_listings)
+    const [totalPage,setTotalPage] = useState(0)
+    const [currentPage,setCurrentPage] = useState(0)
+    const [totalListings,setTotalListings] = useState(0)
 
 
 

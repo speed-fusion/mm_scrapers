@@ -29,6 +29,9 @@ tmp_dir = Path("/tmp")
 
 pm = PulsarManager()
 
+import json
+
+
 
 
 @Dashboard.route('/dropdown',methods=["POST"])
@@ -41,7 +44,12 @@ def dropdown():
     
     data = list(mongo_db.dropdown_collection.distinct(what,where))
     
-    return jsonify({"status":200,"data":data})
+    response = Dashboard.response_class(
+        response=json.dumps({"status":200,"data":data}),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
 
 @Dashboard.route('/listings',methods=["POST"])
 def listings():
@@ -61,7 +69,12 @@ def listings():
     
     data = list(mongo_db.listings_collection.find(where,what).skip(skip).limit(per_page))
     
-    return jsonify({"status":200,"listing_count":listing_count,"page_count":page_count,"per_page":per_page,"data":data})
+    response = Dashboard.response_class(
+        response=json.dumps({"status":200,"listing_count":listing_count,"page_count":page_count,"per_page":per_page,"data":data}),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
 
 
 
