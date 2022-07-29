@@ -95,20 +95,20 @@ def recently_added():
     data = list(mongo_db.recent_listings_collection.find({}).sort("created_at",pymongo.DESCENDING).skip(skip).limit(per_page))
     
     for item in data:
-        tmp = mongo_db.listings_collection.find_one({"_id":item["listing_id"]},{"raw":1,"margin":1,"mm_price":1,"mm_url":1,"ltv_percentage":1,"source_mrp":1,"created_at":1})
+        tmp = mongo_db.listings_collection.find_one({"_id":item["listing_id"]},{"raw":1,"margin":1,"mm_price":1,"mm_url":1,"ltv_percentage":1,"source_mrp":1})
         
         if tmp == None:
             continue
         
-        created_at:datetime = tmp["created_at"]
+        # created_at:datetime = tmp["created_at"]
         
-        current_month_collection_name = f'{created_at.month}-{created_at.year}'
+        # current_month_collection_name = f'{created_at.month}-{created_at.year}'
         
         # {mongo_listing_id:"a24d06fe-cad3-4229-84be-e284d721605c",car_cutter_downloaded:true}
-        images = list(mongo_db.car_cutter_logs[current_month_collection_name].find({"mongo_listing_id":item["listing_id"],"status":"added"},{"url":1}).sort("position",pymongo.ASCENDING))
+        # images = list(mongo_db.car_cutter_logs[current_month_collection_name].find({"mongo_listing_id":item["listing_id"],"status":"added"},{"url":1}).sort("position",pymongo.ASCENDING))
         
         item.update(tmp)
-        item["images"] = images
+        # item["images"] = images
     
     response = Response(
         response=json.dumps({"status":200,"listing_count":listing_count,"page_count":page_count,"per_page":per_page,"data":data},default=str),
@@ -174,6 +174,7 @@ def add_to_mm():
             data = {
                 "listing_id":id,
                 "website_id":18,
+                "created_at":get_current_datetime()
             }
             
             publisher = pm.create_producer(pm.topics.MANUAL_TRANSFORM)
@@ -194,12 +195,3 @@ def add_to_mm():
     mysql_db.disconnect()
     
     return jsonify({"status":False,"message":message})
-    
-    
-    
-    
-    
-    
-    
-    
-    

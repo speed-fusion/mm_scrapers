@@ -6,6 +6,8 @@ import SettingsSuggestRoundedIcon from '@mui/icons-material/SettingsSuggestRound
 import AddRoadRoundedIcon from '@mui/icons-material/AddRoadRounded';
 import ClosedCaptionOffRoundedIcon from '@mui/icons-material/ClosedCaptionOffRounded';
 import axios from 'axios';
+import TimeAgo from 'javascript-time-ago'
+import en from 'javascript-time-ago/locale/en'
 
 const RecentListings = ({}) => {
 
@@ -29,6 +31,13 @@ const RecentListings = ({}) => {
     const [currentPage,setCurrentPage] = useState(1)
     const [totalListings,setTotalListings] = useState(0)
 
+    // English.
+    
+
+    TimeAgo.addDefaultLocale(en)
+
+    // Create formatter (English).
+    const timeAgo = new TimeAgo('en-US')
 
 
 
@@ -68,55 +77,6 @@ const RecentListings = ({}) => {
 
   return (
     <Stack alignItems="center">
-        <Stack marginY={2}>
-                <Modal
-                open={showProgressBar}
-                onClose={setShowProgressBar}
-                >
-                <Stack sx={{width:"100%" ,height:"100%"}} alignItems="center" justifyContent={"center"}>
-                    <CircularProgress />
-                </Stack>
-               
-                </Modal>
-                
-            
-        </Stack>
-        <Stack direction={{xs:"column",lg:"row"}} marginY={2}>
-            <Stack margin={1}>
-                <Autocomplete
-                    disablePortal
-                    id="make_list"
-                    onChange={(event,value,reason,detail)=>setSelectedMake(value)}
-                    options={makeList}
-                    sx={{ width: 300 }}
-                    value={selectedMake}
-                    renderInput={(params) => <TextField {...params} label="Select Make" />}
-                />
-            </Stack>
-            <Stack margin={1}>
-                <Autocomplete
-                    disablePortal
-                    id="model_list"
-                    options={modelList}
-                    onChange={(event,value,reason,detail)=>setSelectedModel(value)}
-                    value={selectedModel}
-                    sx={{ width: 300 }}
-                    renderInput={(params) => <TextField {...params} label="Select Model" />}
-                />
-            </Stack>
-
-            <Stack margin={1}>
-                <Autocomplete
-                    disablePortal
-                    id="trim_list"
-                    onChange={(event,value,reason,detail)=>setSelectedTrim(value)}
-                    options={trimList}
-                    sx={{ width: 300 }}
-                    value={selectedTrim}
-                    renderInput={(params) => <TextField {...params} label="Select Trim" />}
-                />
-            </Stack>
-        </Stack>
 
         <Stack marginY={2}>
         <Pagination onChange={(event,page) => setCurrentPage(page)} size='small' page={currentPage} count={totalPage} shape="rounded" siblingCount={1}/>
@@ -134,27 +94,43 @@ const RecentListings = ({}) => {
                                         <Typography color={"grey.700"} variant='subtitle1'>{item.raw.trim}</Typography>
                                     </Stack>
                                 
-                                    <Chip label={`${item.raw.price}$`} variant='filled' color='secondary' />
+                                    
                                 </Stack>
 
-                               <Stack justify = "center" alignItems={"center"}>
-                               <ImageList key={item._id} sx={{ width: {xs:300,md:450,lg:550}, height: {xs:300,md:450,lg:550} }} cols={2}>
-                                {
-                                    item.images.map((img,index)=>(
-                                        index < 15 &&(
-                                    <ImageListItem key={index}>
-                                        <img
-                                            src={img.url}
-                                            loading="lazy"
-                                            onError={(e)=>{e.target.src="/default-image.jpg"}}
-                                        />
-                                    </ImageListItem>
-                                        )
-                                    ))
-                                }
-                                
+                                <Stack px={6} my={2} justifyContent={"center"}>
+                                  
+                                  <Grid container justifyContent={"center"} spacing={1}>
+                                  <Grid item>
+                                    <Chip label={item.status} variant='filled' color={item.status == "active" ? 'secondary' : 'error'} />
+                                    </Grid>
+                                  <Grid item>
+                                        <Chip label={`${item.raw.registration}`}  variant='outlined' color='secondary' />
+                                    </Grid>
+                                  </Grid>
+                                  <Typography textAlign={"center"} my={1} variant="body2">current status : {item.message}</Typography>
+                                </Stack>
 
-                                </ImageList>
+                                {
+                                  <Grid justifyContent={"center"} container spacing={1}>
+                                    
+                                  <Grid item>
+                                  <Chip label={`mm price : ${item.mm_price == null ? "NA" : `${item.mm_price}$` }`} variant='filled' color='secondary' />
+                                  </Grid>
+
+                                  <Grid item>
+                                  <Chip label={`margin : ${item.margin == null ? "NA" : `${item.margin}$` }`}  variant='filled' color='secondary' />
+                                  </Grid>
+
+                                  <Grid item>
+                                  <Chip label={`source price : ${item.source_mrp == null ? "NA" : `${item.source_mrp}$` }`}  variant='filled' color='secondary' />
+                                  </Grid>
+                              
+                              </Grid>
+                                }
+
+
+                               <Stack justify = "center" alignItems={"center"}>
+                              
                                </Stack>
                              
                                     <Grid my={2} justifyContent={"center"} spacing={1} container>
@@ -197,10 +173,15 @@ const RecentListings = ({}) => {
                                         {item.mm_url != null &&
                                         <Link  target={"_blank"} href={item.mm_url} sx={{ textDecoration:'none' }} variant='outlined'>MM URL</Link>
                                         }
-                                      
-                                      
-                                
+
+                                  
                                 </Stack>
+                               
+                                   {item.created_at != null &&
+                                   <Typography my={1} textAlign={"center"}>{timeAgo.format(new Date(item.created_at))}</Typography>
+                                   }
+                                
+                               
                       
                             </Card>
                         </Grid>
