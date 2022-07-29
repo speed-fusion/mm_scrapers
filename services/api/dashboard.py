@@ -1,5 +1,5 @@
 from crypt import methods
-from flask import Blueprint, abort,jsonify,request,send_file, send_from_directory
+from flask import Blueprint, abort,jsonify,request,send_file, send_from_directory,Response
 import sys
 import requests
 from PIL import Image
@@ -44,7 +44,7 @@ def dropdown():
     
     data = list(mongo_db.dropdown_collection.distinct(what,where))
     
-    response = Dashboard.response_class(
+    response = Response(
         response=json.dumps({"status":200,"data":data}),
         status=200,
         mimetype='application/json'
@@ -69,7 +69,7 @@ def listings():
     
     data = list(mongo_db.listings_collection.find(where,what).skip(skip).limit(per_page))
     
-    response = Dashboard.response_class(
+    response = Response(
         response=json.dumps({"status":200,"listing_count":listing_count,"page_count":page_count,"per_page":per_page,"data":data}),
         status=200,
         mimetype='application/json'
