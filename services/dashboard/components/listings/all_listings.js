@@ -83,6 +83,14 @@ const AllListings = ({}) => {
 
     useEffect(()=>{
 
+        window.scrollTo({ top: 900, behavior: 'smooth' })
+
+    },[currentPage])
+
+    // window.scrollTo({ top: 900, behavior: 'smooth' })
+
+    useEffect(()=>{
+
         if (selectedModel == null)
         {
             return
@@ -100,9 +108,7 @@ const AllListings = ({}) => {
             setShowProgressBar(false)
         })
 
-        // return () => {
-        //     setShowProgressBar(false)
-        //   };
+      
 
     },[selectedModel])
 
@@ -156,9 +162,7 @@ const AllListings = ({}) => {
             
         })
 
-        // return () => {
-        //     setShowProgressBar(false)
-        //   };
+   
 
     },[currentPage,selectedMake,selectedModel,selectedTrim])
 
