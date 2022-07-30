@@ -185,7 +185,7 @@ def add_to_mm():
             if listing_data != None:
                 recent.update(listing_data)
             
-            mongo_db.recent_listings_collection.insert_one()
+            mongo_db.recent_listings_collection.insert_one(recent)
             
             return jsonify({"status":True,"data":data,"message":message})
         

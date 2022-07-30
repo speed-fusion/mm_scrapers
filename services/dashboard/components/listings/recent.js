@@ -9,18 +9,13 @@ import axios from 'axios';
 import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
 
+TimeAgo.addDefaultLocale(en)
+
 const RecentListings = ({}) => {
 
 
     const api_endpoint = "https://dashboard.motor.market/api/dashboard"
 
-    const [selectedMake,setSelectedMake] = useState(null);
-    const [makeList,setMakeList] = useState([]);
-
-    const [selectedModel,setSelectedModel] = useState(null);
-    const [modelList,setModelList] = useState([]);
-
-    const [selectedTrim,setSelectedTrim] = useState(null);
     const [trimList,setTrimList] = useState([]);
 
     const [listingList,setListingList] = useState([])
@@ -32,26 +27,13 @@ const RecentListings = ({}) => {
     const [totalListings,setTotalListings] = useState(0)
 
     // English.
-    
-
-    TimeAgo.addDefaultLocale(en)
 
     // Create formatter (English).
     const timeAgo = new TimeAgo('en-US')
 
 
 
-    function add_mm_url(id,registration)
-    {
-        axios.post(`${api_endpoint}/add-to-mm`).then(res => {
-            setTrimList(res.data.data)
-            setShowProgressBar(false)
-        }).catch(err => {
-            console.log(err)
-            setShowProgressBar(false)
-        })
 
-    }
 
     useEffect(()=>{
         setShowProgressBar(true)
@@ -63,15 +45,12 @@ const RecentListings = ({}) => {
             setTotalListings(res.data.listing_count)
             setTotalPage(res.data.page_count)
             setShowProgressBar(false)
+            // console.log(res.data)
         }).catch(err => {
             console.log(err)
             setShowProgressBar(false)
             
         })
-
-        // return () => {
-        //     setShowProgressBar(false)
-        //   };
 
     },[currentPage])
 
@@ -90,8 +69,8 @@ const RecentListings = ({}) => {
                             <Card elevation={3}>
                                 <Stack my={2} mx={0} justifyContent="space-evenly" direction={"row"}>
                                     <Stack>
-                                        <Typography variant='h5'>{item.raw.make} - {item.raw.model}</Typography>
-                                        <Typography color={"grey.700"} variant='subtitle1'>{item.raw.trim}</Typography>
+                                        <Typography variant='h5'>{item.raw?.make} - {item.raw?.model}</Typography>
+                                        <Typography color={"grey.700"} variant='subtitle1'>{item.raw?.trim}</Typography>
                                     </Stack>
                                 
                                     
@@ -107,7 +86,10 @@ const RecentListings = ({}) => {
                                         <Chip label={`${item.raw.registration}`}  variant='outlined' color='secondary' />
                                     </Grid>
                                   </Grid>
-                                  <Typography textAlign={"center"} my={1} variant="body2">current status : {item.message}</Typography>
+                                  <Typography textAlign={"center"} my={1} variant="body2">{item.message}</Typography>
+                                  {item.status == "to_parse"&&
+                                    <LinearProgress color='success' />
+                                  }
                                 </Stack>
 
                                 {
