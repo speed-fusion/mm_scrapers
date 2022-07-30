@@ -297,9 +297,9 @@ const AllListings = ({}) => {
             <Grid container rowSpacing={3} columnSpacing={3} justify = "center">
                 {listingList &&
                     listingList.map((item)=>(
-                        <Grid key={item._id} width={300} minWidth={totalListings <= 2 ? 500 : 300} justify = "center" alignItems={"center"} item xs={12} md={6} lg={6}>
+                        <Grid key={item._id} width={200} minWidth={totalListings <= 2 ? 500 : 200} justify = "center" alignItems={"center"} item xs={12} md={6} lg={6}>
                             <Card elevation={3}>
-                                <Stack my={2} mx={0} justifyContent="space-evenly" direction={"row"}>
+                                <Stack my={1} mx={0} justifyContent="space-evenly" direction={"row"}>
                                     <Stack>
                                         <Typography variant='h5'>{item.raw.make} - {item.raw.model}</Typography>
                                         <Typography color={"grey.700"} variant='subtitle1'>{item.raw.trim}</Typography>
@@ -319,7 +319,7 @@ const AllListings = ({}) => {
                                 </Grid>
 
                                <Stack justify = "center" alignItems={"center"}>
-                               <ImageList key={item._id} sx={{ width: {xs:300,md:450,lg:550}, height: {xs:300,md:450,lg:550} }} cols={2}>
+                               <ImageList key={item._id} sx={{ width: {xs:300,md:450,lg:550}, height: {xs:300,md:450,lg:400} }} cols={2}>
                                 {
                                     item.raw.images.map((img,index)=>(
                                         index < 15 &&(
@@ -341,7 +341,7 @@ const AllListings = ({}) => {
                                 </ImageList>
                                </Stack>
                              
-                                    <Grid my={2} justifyContent={"center"} spacing={1} container>
+                                    <Grid my={1} justifyContent={"center"} spacing={1} container>
                                         {/* <Stack spacing={1} justifyContent="center" direction={"row"}> */}
                                             <Grid item>
                                            {item.raw.transmission != null &&
@@ -419,7 +419,7 @@ const AllListings = ({}) => {
                                     </AccordionDetails>
                                 </Accordion>
                                 </Stack>
-                                <Stack my={2} spacing={1} justifyContent={"space-evenly"} direction="row" alignItems={"center"}>
+                                <Stack my={1} spacing={1} justifyContent={"space-evenly"} direction="row" alignItems={"center"}>
                                     
                                             
                                         <Link sx={{ textDecoration:'none' }} target={"_blank"} href={item.raw.source_url} size="small" variant='outlined' >SOURCE URL</Link>
