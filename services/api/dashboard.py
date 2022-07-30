@@ -69,7 +69,7 @@ def listings():
     
     page_count = int(listing_count/per_page)
     
-    data = list(mongo_db.listings_collection.find(where,what).skip(skip).limit(per_page))
+    data = list(mongo_db.listings_collection.find(where,what).sort("raw.price").skip(skip).limit(per_page))
     
     response = Response(
         response=json.dumps({"status":200,"listing_count":listing_count,"page_count":page_count,"per_page":per_page,"data":data}),

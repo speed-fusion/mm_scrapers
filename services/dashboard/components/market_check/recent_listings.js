@@ -8,6 +8,7 @@ import ClosedCaptionOffRoundedIcon from '@mui/icons-material/ClosedCaptionOffRou
 import axios from 'axios';
 import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 TimeAgo.addDefaultLocale(en)
 
@@ -26,14 +27,18 @@ const RecentListings = ({}) => {
     const [currentPage,setCurrentPage] = useState(1)
     const [totalListings,setTotalListings] = useState(0)
 
+
+    const timeAgo = new TimeAgo('en-US')
+
+  
     // English.
 
     // Create formatter (English).
-    const timeAgo = new TimeAgo('en-US')
+    
 
 
 
-
+    
 
     useEffect(()=>{
         setShowProgressBar(true)
@@ -57,11 +62,16 @@ const RecentListings = ({}) => {
   return (
     <Stack alignItems="center">
 
-        <Stack marginY={2}>
-        <Pagination onChange={(event,page) => setCurrentPage(page)} size='small' page={currentPage} count={totalPage} shape="rounded" siblingCount={1}/>
-        </Stack>
 
-        <Stack justify = "center">
+        {totalPage > 1 &&
+            <Stack marginY={2}>
+            <Pagination onChange={(event,page) => setCurrentPage(page)} size='small' page={currentPage} count={totalPage} shape="rounded" siblingCount={1}/>
+            </Stack>
+        }
+
+        
+
+        <Stack my={2} justify = "center">
             <Grid container rowSpacing={3} columnSpacing={3} justify = "center">
                 {listingList &&
                     listingList.map((item)=>(
@@ -69,8 +79,8 @@ const RecentListings = ({}) => {
                             <Card elevation={3}>
                                 <Stack my={2} mx={0} justifyContent="space-evenly" direction={"row"}>
                                     <Stack>
-                                        <Typography variant='h5'>{item.raw?.make} - {item.raw?.model}</Typography>
-                                        <Typography color={"grey.700"} variant='subtitle1'>{item.raw?.trim}</Typography>
+                                        <Typography textAlign={"center"} variant='h5'>{item.raw?.make} - {item.raw.model}</Typography>
+                                        <Typography textAlign={"center"} height={20} color={"grey.700"} variant='subtitle1'>{item.raw.trim}</Typography>
                                     </Stack>
                                 
                                     
@@ -86,10 +96,16 @@ const RecentListings = ({}) => {
                                         <Chip label={`${item.raw.registration}`}  variant='outlined' color='secondary' />
                                     </Grid>
                                   </Grid>
-                                  <Typography textAlign={"center"} my={1} variant="body2">{item.message}</Typography>
-                                  {item.status == "to_parse"&&
+                                  
+                                  {item.status == "to_parse" &&
+                                    <Stack my={2}>
                                     <LinearProgress color='success' />
+                                    
+                                    </Stack>
                                   }
+                                
+                                    <Typography textAlign={"center"} my={1} variant="body2">{item.message}</Typography>
+                                  
                                 </Stack>
 
                                 {
@@ -152,7 +168,7 @@ const RecentListings = ({}) => {
                                         <Link sx={{ textDecoration:'none' }} target={"_blank"} href={item.raw.source_url} size="small" variant='outlined' >SOURCE URL</Link>
                                         
                                 
-                                        {item.mm_url != null &&
+                                        {item.status == "active" &&
                                         <Link  target={"_blank"} href={item.mm_url} sx={{ textDecoration:'none' }} variant='outlined'>MM URL</Link>
                                         }
 
@@ -171,10 +187,11 @@ const RecentListings = ({}) => {
                 }
             </Grid>
         </Stack>
-
+        {totalPage > 1 &&
         <Stack marginY={2}>
         <Pagination onChange={(event,page) => setCurrentPage(page)} page={currentPage} count={totalPage} shape="rounded" size='small' siblingCount={1}/>
         </Stack>
+        }
     </Stack>
   )
 }

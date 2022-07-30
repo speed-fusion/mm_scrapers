@@ -1,4 +1,4 @@
-import { Alert, Autocomplete, Avatar, Button, Card, CardActions, CardContent, CardHeader, CardMedia, Chip, CircularProgress, Grid, Icon, IconButton, ImageList, ImageListItem, LinearProgress, Link, List, ListItem, ListItemAvatar, ListItemText, Modal, Pagination, Snackbar, SpeedDialIcon, Stack, TextField, Typography } from '@mui/material'
+import { Accordion, AccordionDetails, AccordionSummary, Alert, Autocomplete, Avatar, Button, Card, CardActions, CardContent, CardHeader, CardMedia, Chip, CircularProgress, Grid, Icon, IconButton, ImageList, ImageListItem, LinearProgress, Link, List, ListItem, ListItemAvatar, ListItemText, Modal, Pagination, Snackbar, SpeedDialIcon, Stack, TextField, Typography } from '@mui/material'
 import { Box, height } from '@mui/system';
 import React, { useEffect, useState } from 'react'
 import EvStationIcon from '@mui/icons-material/EvStation';
@@ -7,6 +7,9 @@ import AddRoadRoundedIcon from '@mui/icons-material/AddRoadRounded';
 import ClosedCaptionOffRoundedIcon from '@mui/icons-material/ClosedCaptionOffRounded';
 import axios from 'axios';
 import { useRouter } from "next/router";
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
 
 const AllListings = ({}) => {
 
@@ -35,6 +38,20 @@ const AllListings = ({}) => {
     const [showSnackbar,SetShowSnackbar] = useState(false)
     const [snackbarMessage,SetSnackbarMessage] = useState("")
 
+
+    const [minPrice,setMinPrice] = useState(null);
+    const [maxPrice,setMaxPrice] = useState(null);
+
+    let price_options = []
+
+    const price_options_min = 3
+
+    const price_options_max = 50
+
+    for (let i =price_options_min;i<= price_options_max;i++)
+    {
+        price_options.push(i * 1000)
+    }
 
     const goToTop = () => {
         window.scrollTo({
@@ -144,6 +161,24 @@ const AllListings = ({}) => {
         {
             where["raw.trim"] =  {"$regex":selectedTrim,"$options" : "i"}
         }
+        
+        if (maxPrice != null && maxPrice != 0)
+        {
+                where["raw.price"] = {"$lt":maxPrice};
+        }
+
+        if(minPrice != null)
+        {
+            where["raw.price"] = {"$gt":minPrice}
+
+            if (maxPrice != null && maxPrice != 0)
+            {
+                where["raw.price"]["$lt"] = maxPrice;
+            }
+        }
+
+        
+
 
         axios.post(`${api_endpoint}/listings`,{
             "what":what,
@@ -154,9 +189,7 @@ const AllListings = ({}) => {
             setTotalListings(res.data.listing_count)
             setTotalPage(res.data.page_count)
             setShowProgressBar(false)
-            setTimeout(function () {
-                goToTop()
-            }, 1000);
+            
            
         }).catch(err => {
             console.log(err)
@@ -168,7 +201,7 @@ const AllListings = ({}) => {
 
    
 
-    },[currentPage,selectedMake,selectedModel,selectedTrim])
+    },[minPrice,maxPrice,currentPage,selectedMake,selectedModel,selectedTrim])
 
   return (
     <Stack alignItems="center">
@@ -192,6 +225,7 @@ const AllListings = ({}) => {
                 
             
         </Stack>
+       
         <Stack direction={{xs:"column",lg:"row"}} marginY={2}>
             <Stack margin={1}>
                 <Autocomplete
@@ -229,6 +263,32 @@ const AllListings = ({}) => {
             </Stack>
         </Stack>
 
+        <Stack direction={{xs:"column",lg:"row"}} marginY={2}>
+            <Stack margin={1}>
+                <Autocomplete
+                    disablePortal
+                    id="min_price"
+                    onChange={(event,value,reason,detail)=>setMinPrice(value)}
+                    options={price_options}
+                    sx={{ width: 300 }}
+                    value={minPrice}
+                    renderInput={(params) => <TextField {...params} label="Min Price" />}
+                />
+            </Stack>
+            <Stack margin={1}>
+                <Autocomplete
+                    disablePortal
+                    id="max_price"
+                    options={price_options}
+                    onChange={(event,value,reason,detail)=>setMaxPrice(value)}
+                    value={maxPrice}
+                    sx={{ width: 300 }}
+                    renderInput={(params) => <TextField {...params} label="Max Price" />}
+                />
+            </Stack>
+
+        </Stack>
+
         <Stack marginY={2}>
         <Pagination onChange={(event,page) => setCurrentPage(page)} size='small' page={currentPage} count={totalPage} shape="rounded" siblingCount={1}/>
         </Stack>
@@ -237,7 +297,7 @@ const AllListings = ({}) => {
             <Grid container rowSpacing={3} columnSpacing={3} justify = "center">
                 {listingList &&
                     listingList.map((item)=>(
-                        <Grid key={item._id} width={300} minWidth={300} justify = "center" alignItems={"center"} item xs={12} md={6} lg={6}>
+                        <Grid key={item._id} width={300} minWidth={totalListings <= 2 ? 600 : 300} justify = "center" alignItems={"center"} item xs={12} md={6} lg={6}>
                             <Card elevation={3}>
                                 <Stack my={2} mx={0} justifyContent="space-evenly" direction={"row"}>
                                     <Stack>
@@ -265,6 +325,8 @@ const AllListings = ({}) => {
                                         index < 15 &&(
                                     <ImageListItem key={index}>
                                         <img
+                                            width={"100%"}
+                                            height={"100%"}
                                             src={`${api_endpoint}/resize?url=${img.url}&width=400&height=300`}
                                             loading="lazy"
                                             onError={(e)=>{e.target.src="/default-image.jpg"}}
@@ -282,19 +344,33 @@ const AllListings = ({}) => {
                                     <Grid my={2} justifyContent={"center"} spacing={1} container>
                                         {/* <Stack spacing={1} justifyContent="center" direction={"row"}> */}
                                             <Grid item>
-                                            <Chip icon={<SettingsSuggestRoundedIcon/>} label={item.raw.transmission}/>
+                                           {item.raw.transmission != null &&
+                                             <Chip icon={<SettingsSuggestRoundedIcon/>} label={item.raw.transmission}/>
+                                           }
                                             </Grid>
 
                                             <Grid item>
+                                            {item.raw.mileage != null &&
                                             <Chip icon={<AddRoadRoundedIcon/>} label={item.raw.mileage}/>
+}
                                             </Grid>
 
                                             <Grid item>
+                                            {item.raw.fuel != null &&
                                             <Chip icon={<EvStationIcon/>} label={item.raw.fuel}/>
+}
                                             </Grid>
 
                                             <Grid  item>
+                                            {item.raw.engine_cylinders_cc != null &&
                                             <Chip icon={<ClosedCaptionOffRoundedIcon/>} label={item.raw.engine_cylinders_cc}/>
+}
+                                            </Grid>
+                                            
+                                            <Grid  item>
+                                            {item.raw.built != null &&
+                                            <Chip icon={<CalendarMonthIcon/>} label={item.raw.built}/>
+}
                                             </Grid>
                                             
                                           
@@ -309,7 +385,40 @@ const AllListings = ({}) => {
 
                                     </Grid>
                            
-                     
+                                <Stack>
+                                <Accordion  elevation={0}>
+                                    <AccordionSummary
+
+                                    expandIcon={<ExpandMoreIcon />}
+                                    aria-controls="panel1a-content"
+                                    id="panel1a-header"
+                                    >
+                                    <Typography textAlign={"center"}>DEALER INFORMATION</Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                    
+                                    <Grid justifyContent={"center"} spacing={1} container>
+                                       
+                                            <Grid item>
+                                             <Chip variant='outlined' label={`DEALER ID : ${item.raw.dealer_id}`}/>
+                                            </Grid>
+
+                                            <Grid item>
+                                             <Chip variant='outlined' label={`DEALER NAME : ${item.raw.dealer_name}`}/>
+                                            </Grid>
+
+                                            <Grid item>
+                                             <Chip variant='outlined' label={`DEALER PHONE : ${item.raw.dealer_number}`}/>
+                                            </Grid>
+
+                                            <Grid item>
+                                             <Chip variant='outlined' label={`POST CODE : ${item.raw.dealer_location}`}/>
+                                            </Grid>
+                                    </Grid>
+                                
+                                    </AccordionDetails>
+                                </Accordion>
+                                </Stack>
                                 <Stack my={2} spacing={1} justifyContent={"space-evenly"} direction="row" alignItems={"center"}>
                                     
                                             

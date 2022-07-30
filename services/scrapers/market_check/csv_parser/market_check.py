@@ -224,20 +224,21 @@ class MarketCheck:
         df = df[df.vehicle_registration_mark.notna()]
         
         # min price should be 30000
-        df = df[df.price < 30000]
+        # df = df[df.price < 30000]
         
         # max miles should be 120000
-        df = df[df.miles < 120000]
+        # df = df[df.miles < 120000]
         
         # min year should be 2012
-        df = df[df.year > 2012]
+        # df = df[df.year > 2012]
+        
         
         # registration length should be 7
         df["registration_length"] = df.vehicle_registration_mark.apply(lambda x: len(str(x)))
         df = df[df.registration_length == 7]
         
         # min price should be 4700
-        df = df[df.price >= 4700]
+        # df = df[df.price >= 4700]
         
         # make should not be null
         df = df[df.make.notna()]
