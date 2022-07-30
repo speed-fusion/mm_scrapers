@@ -96,6 +96,6 @@ class MarginCalculator:
 if __name__ == "__main__":
     mc = MarginCalculator()
     
-    data = mc.calculate(10000,5000)
+    data = mc.calculate(11491,11950)
     
     print(data)

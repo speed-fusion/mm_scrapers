@@ -437,7 +437,7 @@ class MarketCheck:
             
             what = listing
             
-            where = {"registration":listing["raw"]["registration"]}
+            where = {"raw.registration":listing["raw"]["registration"]}
             
             if len(listing["raw"]["images"]) <= 2:
                 self.mongodb.listings_collection.delete_one(where)
