@@ -395,6 +395,9 @@ class MarketCheck:
             
             what["updated_at"] = get_current_datetime()
             
+            
+            
+            
             if result == None:
                 what["created_at"] = get_current_datetime()
                 id = generate_unique_uuid()
@@ -436,11 +439,16 @@ class MarketCheck:
             
             where = {"registration":listing["raw"]["registration"]}
             
+            if len(listing["raw"]["images"]) <= 2:
+                self.mongodb.listings_collection.delete_one(where)
+                continue
+            
             result = self.mongodb.listings_collection.find_one(where)
         
             what["updated_at"] = get_current_datetime()
             
             id = None
+            
             
             if result == None:
                 what["created_at"] = get_current_datetime()

@@ -12,14 +12,6 @@ const AllListings = ({}) => {
 
     const router = useRouter();
 
-    let current_page = router.query.page;
-
-    if (current_page == null)
-    {
-        current_page = 1
-    }
-
-
 
     const api_endpoint = "https://dashboard.motor.market/api/dashboard"
 
@@ -37,7 +29,7 @@ const AllListings = ({}) => {
     const [showProgressBar,setShowProgressBar] = useState(false);
 
     const [totalPage,setTotalPage] = useState(0)
-    const [currentPage,setCurrentPage] = useState(current_page)
+    const [currentPage,setCurrentPage] = useState(1)
     const [totalListings,setTotalListings] = useState(0)
 
     const [showSnackbar,SetShowSnackbar] = useState(false)
@@ -253,7 +245,7 @@ const AllListings = ({}) => {
                                         <Typography color={"grey.700"} variant='subtitle1'>{item.raw.trim}</Typography>
                                     </Stack>
                                 
-                                    
+                                
                                 </Stack>
                                 <Grid container spacing={1} justifyContent="center">
                                     <Grid item>
