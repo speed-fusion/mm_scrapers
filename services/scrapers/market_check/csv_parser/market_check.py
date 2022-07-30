@@ -349,21 +349,21 @@ class MarketCheck:
         df = self.apply_filters(df)
         
         print("generating dropdown values...")
-        dropdown_data = self.get_dropdown_data(df)
+        # dropdown_data = self.get_dropdown_data(df)
         
-        print("inserting dropdown values ...")
-        self.insert_dropdown_data(dropdown_data)
+        # print("inserting dropdown values ...")
+        # self.insert_dropdown_data(dropdown_data)
         
-        print("getting unique registration...")
-        unique_reg = self.get_unique_registration(df)
+        # print("getting unique registration...")
+        # unique_reg = self.get_unique_registration(df)
         
-        print("deactivating expired listings")
-        self.deactivate_mysql_expired_listings(unique_reg)
+        # print("deactivating expired listings")
+        # self.deactivate_mysql_expired_listings(unique_reg)
         
-        print("deleting mongo expired listings...")
-        self.deactivate_mongo_expired_listings(unique_reg)
+        # print("deleting mongo expired listings...")
+        # self.deactivate_mongo_expired_listings(unique_reg)
         
-        df = df[df.dealer_id.apply(lambda x:self.is_clean_dealer(x))]
+        # df = df[df.dealer_id.apply(lambda x:self.is_clean_dealer(x))]
         print("parsing dealers...")
         dealers = self.parse_dealers(df)
         
@@ -452,32 +452,19 @@ class MarketCheck:
                 
                 self.mongodb.listings_collection.insert_one(what)
                 
-                # self.csv_parser_mysql.produce_message({
-                #     "table":"market_check_listings",
-                #     "what":what,
-                #     "where":where
-                # })
             else:
-                
-                for key in what.copy():
-                    if what[key] == None:
-                        del what[key]
                 
                 self.mongodb.listings_collection.update_one(where,{"$set":what})
                 
                 id = result["_id"]
                 what["_id"] = id
-                # self.csv_parser_mysql.produce_message({
-                #     "table":"market_check_listings",
-                #     "what":what,
-                #     "where":where
-                # })
+          
             
-            if dealer_id in active_dealer_ids:
-                tmp.append({
-                    "listing_id":id,
-                    "data":listing
-                })
+            # if dealer_id in active_dealer_ids:
+            #     tmp.append({
+            #         "listing_id":id,
+            #         "data":listing
+            #     })
         
         return tmp
     
