@@ -313,7 +313,7 @@ const AllListings = ({}) => {
                                     </Grid>
 
                                     <Grid item>
-                                    <Chip label={`${item.raw.price}$`} variant='filled' color='secondary' />
+                                    <Chip label={`${item.raw.price} £`} variant='filled' color='secondary' />
                                     </Grid>
                                     
                                 </Grid>

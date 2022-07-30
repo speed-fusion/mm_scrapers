@@ -1,4 +1,4 @@
-import { Autocomplete, Avatar, Button, Card, CardActions, CardContent, CardHeader, CardMedia, Chip, CircularProgress, Grid, Icon, IconButton, ImageList, ImageListItem, LinearProgress, Link, List, ListItem, ListItemAvatar, ListItemText, Modal, Pagination, SpeedDialIcon, Stack, TextField, Typography } from '@mui/material'
+import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Avatar, Button, Card, CardActions, CardContent, CardHeader, CardMedia, Chip, CircularProgress, Grid, Icon, IconButton, ImageList, ImageListItem, LinearProgress, Link, List, ListItem, ListItemAvatar, ListItemText, Modal, Pagination, SpeedDialIcon, Stack, TextField, Typography } from '@mui/material'
 import { Box, height } from '@mui/system';
 import React, { useEffect, useState } from 'react'
 import EvStationIcon from '@mui/icons-material/EvStation';
@@ -9,6 +9,8 @@ import axios from 'axios';
 import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
 import RefreshIcon from '@mui/icons-material/Refresh';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { indigo } from '@mui/material/colors';
 
 TimeAgo.addDefaultLocale(en)
 
@@ -90,7 +92,7 @@ const RecentListings = ({}) => {
                                   
                                   <Grid container justifyContent={"center"} spacing={1}>
                                   <Grid item>
-                                    <Chip label={item.status} variant='filled' color={item.status == "active" ? 'secondary' : 'error'} />
+                                    <Chip label={item.status} variant='filled' color={item.status == "active" ? 'success' : 'error'} />
                                     </Grid>
                                   <Grid item>
                                         <Chip label={`${item.raw.registration}`}  variant='outlined' color='secondary' />
@@ -111,16 +113,17 @@ const RecentListings = ({}) => {
                                 {
                                   <Grid justifyContent={"center"} container spacing={1}>
                                     
+                                    <Grid item>
+                                  <Chip label={`source price : ${item.source_mrp == null ? "NA" : `${item.source_mrp} £` }`}  variant='outlined' color='secondary' />
+                                  </Grid>
+
+
                                   <Grid item>
-                                  <Chip label={`mm price : ${item.mm_price == null ? "NA" : `${item.mm_price}$` }`} variant='filled' color='secondary' />
+                                  <Chip label={`margin : ${item.margin == null ? "NA" : `${item.margin} £` }`}  variant='outlined' color='info' />
                                   </Grid>
 
                                   <Grid item>
-                                  <Chip label={`margin : ${item.margin == null ? "NA" : `${item.margin}$` }`}  variant='filled' color='secondary' />
-                                  </Grid>
-
-                                  <Grid item>
-                                  <Chip label={`source price : ${item.source_mrp == null ? "NA" : `${item.source_mrp}$` }`}  variant='filled' color='secondary' />
+                                  <Chip label={`mm price : ${item.mm_price == null ? "NA" : `${item.mm_price} £` }`} variant='filled' color={'secondary'} />
                                   </Grid>
                               
                               </Grid>
@@ -160,16 +163,51 @@ const RecentListings = ({}) => {
                                         {/* </Stack> */}
 
                                     </Grid>
-                           
+                                    <Stack>
+                                <Accordion  elevation={0}>
+                                    <AccordionSummary
+
+                                    expandIcon={<ExpandMoreIcon />}
+                                    aria-controls="panel1a-content"
+                                    id="panel1a-header"
+                                    >
+                                    <Typography textAlign={"center"}>DEALER INFORMATION</Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                    
+                                    <Grid justifyContent={"center"} spacing={1} container>
+                                       
+                                            <Grid item>
+                                             <Chip variant='outlined' label={`DEALER ID : ${item.raw.dealer_id}`}/>
+                                            </Grid>
+
+                                            <Grid item>
+                                             <Chip variant='outlined' label={`DEALER NAME : ${item.raw.dealer_name}`}/>
+                                            </Grid>
+
+                                            <Grid item>
+                                             <Chip variant='outlined' label={`DEALER PHONE : ${item.raw.dealer_number}`}/>
+                                            </Grid>
+
+                                            <Grid item>
+                                             <Chip variant='outlined' label={`POST CODE : ${item.raw.dealer_location}`}/>
+                                            </Grid>
+                                    </Grid>
+                                
+                                    </AccordionDetails>
+                                </Accordion>
+                                </Stack>
                      
                                 <Stack my={2} spacing={1} justifyContent={"space-evenly"} direction="row" alignItems={"center"}>
                                     
                                             
-                                        <Link sx={{ textDecoration:'none' }} target={"_blank"} href={item.raw.source_url} size="small" variant='outlined' >SOURCE URL</Link>
                                         
+                                        <Button target={"_blank"}  color='primary' href={item.raw.source_url} variant='outlined' >SOURCE URL</Button>
                                 
                                         {item.status == "active" &&
-                                        <Link  target={"_blank"} href={item.mm_url} sx={{ textDecoration:'none' }} variant='outlined'>MM URL</Link>
+                                      
+                                            <Button target={"_blank"}  color='primary' href={item.mm_url} variant='contained' >MM URL</Button>
+                                      
                                         }
 
                                   
