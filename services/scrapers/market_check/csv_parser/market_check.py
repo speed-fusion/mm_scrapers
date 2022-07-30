@@ -139,6 +139,10 @@ class MarketCheck:
                 tmp["transmission"] = self.replace_na_with_none(row_dict["transmission"])
                 tmp["doors"] = self.replace_na_with_none(row_dict["doors"])
                 tmp["registration"] = self.replace_na_with_none(row_dict["vehicle_registration_mark"])
+                
+                if tmp["registration"] != None:
+                    tmp["registration"] = str(tmp["registration"]).replace(" ","").strip().upper()
+                
                 tmp["registration_date"] = self.replace_na_with_none(row_dict["vehicle_registration_date"])
                 tmp["exterior_color"] = self.replace_na_with_none(row_dict["exterior_color"])
                 tmp["dealer_id"] = clean_int(self.replace_na_with_none(row_dict["dealer_id"]))
@@ -295,7 +299,7 @@ class MarketCheck:
             except:
                 pass
             
-    def deactivate_expired_listings(self,registration_numbers):
+    def deactivate_mysql_expired_listings(self,registration_numbers):
         
         if len(registration_numbers) == 0:
             return
@@ -314,7 +318,29 @@ class MarketCheck:
                 self.mysql_db.recUpdate("fl_listings",what,where)
         
         self.mysql_db.disconnect()
+        
     
+    def deactivate_mongo_expired_listings(self,registration_numbers):
+        
+        if len(registration_numbers) == 0:
+            return
+        
+        
+        tmp = self.mongodb.listings_collection.distinct("raw.registration")
+        
+        active_registration = []
+        
+        for item in tmp:
+            if item != None:
+                active_registration.append(str(item).upper().strip())
+        
+        for reg in active_registration:
+            if not reg in registration_numbers:
+                self.mongodb.listings_collection.delete_one({"raw.registration":{"$regex":reg,"$options":"i"}})
+                print(f'registration : {reg} -> deleted')
+            else:
+                print(f'registration : {reg} -> exists')
+
     def parse_csv(self,filepath):
         print("reading csv...")
         df = pd.read_csv(filepath)
@@ -332,7 +358,10 @@ class MarketCheck:
         unique_reg = self.get_unique_registration(df)
         
         print("deactivating expired listings")
-        self.deactivate_expired_listings(unique_reg)
+        self.deactivate_mysql_expired_listings(unique_reg)
+        
+        print("deleting mongo expired listings...")
+        self.deactivate_mongo_expired_listings(unique_reg)
         
         df = df[df.dealer_id.apply(lambda x:self.is_clean_dealer(x))]
         print("parsing dealers...")
