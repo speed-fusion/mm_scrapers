@@ -6,17 +6,19 @@ import AllListings from '../../../../components/market_check/all_listings';
 const MarketCheckAllListings = () => {
 
     const router = useRouter();
+
+
     const tab_items = [
         {
             label:"All Listings",
             status:false,
-            href:"/mc/manual/all"
+            href:`/mc/manual/all`
 
         },
         {
             label:"Recently Added",
             status:false,
-            href:"/mc/manual/recent"
+            href:`/mc/manual/recent`
         }
     ]
 
@@ -62,3 +64,5 @@ const MarketCheckAllListings = () => {
 }
 
 export default MarketCheckAllListings
+
+

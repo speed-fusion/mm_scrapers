@@ -6,17 +6,19 @@ import RecentListings from '../../../../components/market_check/recent_listings'
 const MarketCheckRecentListings = () => {
 
     const router = useRouter();
+
+  
     const tab_items = [
         {
             label:"All Listings",
             status:false,
-            href:"/mc/manual/all"
+            href:`/mc/manual/all`
 
         },
         {
             label:"Recently Added",
             status:false,
-            href:"/mc/manual/recent"
+            href:`/mc/manual/recent`
         }
     ]
 
