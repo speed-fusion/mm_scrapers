@@ -1,7 +1,7 @@
 import { Stack, Tab, Tabs } from '@mui/material'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
-import AllListings from '../../../../components/listings/all_listings';
+import AllListings from '../../../../components/market_check/all_listings';
 
 const MarketCheckAllListings = () => {
 
@@ -10,13 +10,13 @@ const MarketCheckAllListings = () => {
         {
             label:"All Listings",
             status:false,
-            href:"/market-check/manual-entry/all"
+            href:"/mc/manual/all"
 
         },
         {
             label:"Recently Added",
             status:false,
-            href:"/market-check/manual-entry/recent"
+            href:"/mc/manual/recent"
         }
     ]
 

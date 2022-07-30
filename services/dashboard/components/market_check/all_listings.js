@@ -10,9 +10,14 @@ import { useRouter } from "next/router";
 
 const AllListings = ({}) => {
 
-    // let test = JSON.parse(raw)
+    const router = useRouter();
 
-    // console.log(test)
+    let current_page = router.query.page;
+
+    if (current_page == null)
+    {
+        current_page = 1
+    }
 
 
 
@@ -32,7 +37,7 @@ const AllListings = ({}) => {
     const [showProgressBar,setShowProgressBar] = useState(false);
 
     const [totalPage,setTotalPage] = useState(0)
-    const [currentPage,setCurrentPage] = useState(1)
+    const [currentPage,setCurrentPage] = useState(current_page)
     const [totalListings,setTotalListings] = useState(0)
 
     const [showSnackbar,SetShowSnackbar] = useState(false)
@@ -89,9 +94,6 @@ const AllListings = ({}) => {
         })
 
     },[selectedMake])
-
-   
-    const router = useRouter();
 
     useEffect(()=>{
 

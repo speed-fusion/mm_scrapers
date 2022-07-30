@@ -64,8 +64,8 @@ class MarketCheckValidation:
         if images == None:
             return False,"no image available."
         
-        if len(images) == 0:
-            return False,"zero images"
+        if len(images) <= 2:
+            return False,f'{len(images)} images..'
         
         return True,None
     
