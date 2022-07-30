@@ -70,6 +70,8 @@ class MarketCheckFieldMaper:
             {'key':'registration','value':'product_website_id'},
             {'key':'ltv_percentage','value':'ltv_percentage'},
             {'key':'registration','value':'reference_number'},
+            {'key':'car_location','value':'car_location'},
+            {'key':'car_postal_code','value':'car_postal_code'},
             ]
         
     def map(self,data):

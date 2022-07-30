@@ -157,14 +157,33 @@ class MarketCheck:
                 tmp["euro_status"] = self.replace_na_with_none(row_dict["euro_status"])
                 tmp["imported"] = self.replace_na_with_none(row_dict["imported"])
                 tmp["scrapped"] = self.replace_na_with_none(row_dict["scrapped"])
+                # car_street
+                # car_city
+                # car_county
+                # car_postal_code
+                tmp["car_location"] = json.dumps(
+                    {
+                    "car_street":self.replace_na_with_none(row_dict["car_street"]),
+                    "car_city":self.replace_na_with_none(row_dict["car_city"]),
+                    "car_county":self.replace_na_with_none(row_dict["car_county"]),
+                    "car_postal_code":self.replace_na_with_none(row_dict["car_postal_code"]),
+                }
+                )
                 
-                tmp["location"] = {
+                tmp["car_postal_code"] = self.replace_na_with_none(row_dict["car_postal_code"])
+                
+                if tmp["car_postal_code"] != None:
+                    tmp["car_postal_code"] = str(tmp["car_postal_code"]).replace(" ","").strip().upper()
+                
+                tmp["location"] = json.dumps(
+                    {
                     "street":row_dict["street"],
                     "city":row_dict["city"],
                     "county":row_dict["county"],
                     "postal_code":row_dict["postal_code"],
                     "country":row_dict["country"]
                 }
+                )
                 
                 tmp["dealer_location"] = self.replace_na_with_none(row_dict["postal_code"])
                 tmp["images"] = []
