@@ -34,8 +34,6 @@ pm = PulsarManager()
 import json
 
 
-
-
 @Dashboard.route('/dropdown',methods=["POST"])
 def dropdown():
     
@@ -62,6 +60,8 @@ def listings():
     what = body["what"]
     where = body["where"]
     page = body["page"]
+    
+    where["status"] = "inactive"
     
     skip = per_page * page
     
@@ -100,15 +100,7 @@ def recently_added():
         if tmp == None:
             continue
         
-        # created_at:datetime = tmp["created_at"]
-        
-        # current_month_collection_name = f'{created_at.month}-{created_at.year}'
-        
-        # {mongo_listing_id:"a24d06fe-cad3-4229-84be-e284d721605c",car_cutter_downloaded:true}
-        # images = list(mongo_db.car_cutter_logs[current_month_collection_name].find({"mongo_listing_id":item["listing_id"],"status":"added"},{"url":1}).sort("position",pymongo.ASCENDING))
-        
         item.update(tmp)
-        # item["images"] = images
     
     response = Response(
         response=json.dumps({"status":200,"listing_count":listing_count,"page_count":page_count,"per_page":per_page,"data":data},default=str),
@@ -177,14 +169,23 @@ def add_to_mm():
             }
             
             publisher = pm.create_producer(pm.topics.MANUAL_TRANSFORM)
+            
             publisher.produce_message(data)
+            
             message = "listing added in queue."
             
-            mongo_db.recent_listings_collection.insert_one({
+            listing_data = mongo_db.listings_collection.find_one({"_id":id},{"raw":1,"_id":0})
+            
+            recent = {
                 "listing_id":id,
                 "status":"to_parse",
                 "created_at":get_current_datetime()
-            })
+            }
+            
+            if listing_data != None:
+                recent.update(listing_data)
+            
+            mongo_db.recent_listings_collection.insert_one()
             
             return jsonify({"status":True,"data":data,"message":message})
         
