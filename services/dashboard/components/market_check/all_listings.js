@@ -212,7 +212,7 @@ const AllListings = ({}) => {
             </Alert>
         </Snackbar>
                     
-        <Stack id="top" marginY={2}>
+        <Stack id="top" marginY={1}>
                 <Modal
                 open={showProgressBar}
                 onClose={setShowProgressBar}
@@ -226,7 +226,7 @@ const AllListings = ({}) => {
             
         </Stack>
        
-        <Stack direction={{xs:"column",lg:"row"}} marginY={2}>
+        <Stack direction={{xs:"column",lg:"row"}} marginY={0}>
             <Stack margin={1}>
                 <Autocomplete
                     disablePortal
@@ -263,7 +263,7 @@ const AllListings = ({}) => {
             </Stack>
         </Stack>
 
-        <Stack direction={{xs:"column",lg:"row"}} marginY={2}>
+        <Stack direction={{xs:"column",lg:"row"}} marginY={0}>
             <Stack margin={1}>
                 <Autocomplete
                     disablePortal
