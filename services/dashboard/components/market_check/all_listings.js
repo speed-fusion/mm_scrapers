@@ -43,6 +43,8 @@ const AllListings = ({}) => {
     const [maxPrice,setMaxPrice] = useState(null);
 
     const [currentRegistration,setCurrentRegistration] = useState(null);
+    const [registrationSuggestion,setRegistrationSuggestion] = useState([]);
+    // registration_suggestion
 
     let price_options = []
 
@@ -67,6 +69,33 @@ const AllListings = ({}) => {
     for (let i =price_options_min;i<= price_options_max;i++)
     {
         price_options.push(i * 1000)
+    }
+
+
+    async function fetch_registration(chars)
+    {
+        if (chars.length > 0)
+        {
+            axios.post(`${api_endpoint}/suggestion`,{
+                "what":{"raw.registration":1},
+                "where":{"raw.registration":{"$regex":chars,"$options" : "i"}},
+                "limit":5
+            }).then(res => {
+                let data = []
+    
+                for(let item of res.data.data)
+                {
+                    data.push(item.raw.registration)
+                }
+                setRegistrationSuggestion(data)
+            }).catch(err => {
+                setRegistrationSuggestion([])
+            })
+        }
+        else
+        {
+            setRegistrationSuggestion([])
+        }
     }
 
 
@@ -155,6 +184,12 @@ const AllListings = ({}) => {
         let what = {"raw":1}
 
         let where = {}
+
+        if(currentRegistration != null)
+        {
+            where["raw.registration"] = {"$regex":currentRegistration,"$options" : "i"}
+        }
+
         if(selectedMake != null)
         {
             where["raw.make"] = {"$regex":selectedMake,"$options" : "i"}
@@ -185,9 +220,6 @@ const AllListings = ({}) => {
             }
         }
 
-        
-
-
         axios.post(`${api_endpoint}/listings`,{
             "what":what,
             "where":where,
@@ -209,7 +241,7 @@ const AllListings = ({}) => {
 
    
 
-    },[minPrice,maxPrice,currentPage,selectedMake,selectedModel,selectedTrim])
+    },[minPrice,currentRegistration,maxPrice,currentPage,selectedMake,selectedModel,selectedTrim])
 
   return (
     <Stack alignItems="center">
@@ -300,34 +332,36 @@ const AllListings = ({}) => {
                 />
             </Stack>
 
+            <Stack margin={1}>
+                <Autocomplete
+                    disablePortal
+                    id="registration"
+                    size='small'
+                    onChange={(event,value,reason,detail)=>setCurrentRegistration(value)}
+                    options={registrationSuggestion}
+                    filterOptions={(x) => x}
+                    sx={{ width: 300 }}
+                    value={currentRegistration}
+                    renderInput={(params) => <TextField onChange={(e)=>fetch_registration(e.target.value)} {...params} label="Registration" />}
+                />
+            </Stack>
+
         </Stack>
 
         <Stack direction={{xs:"column",lg:"row"}} marginY={0}>
             <Stack margin={1}>
-                <Autocomplete
+                {/* <Autocomplete
                     disablePortal
-                    id="min_price"
+                    id="registration"
                     size='small'
-                    onChange={(event,value,reason,detail)=>setMinPrice(value)}
-                    options={price_options}
+                    onChange={(event,value,reason,detail)=>setCurrentRegistration(value)}
+                    options={registrationSuggestion}
+                    filterOptions={(x) => x}
                     sx={{ width: 300 }}
-                    value={minPrice}
-                    renderInput={(params) => <TextField {...params} label="Min Price" />}
-                />
+                    value={currentRegistration}
+                    renderInput={(params) => <TextField onChange={(e)=>fetch_registration(e.target.value)} {...params} label="Registration" />}
+                /> */}
             </Stack>
-            <Stack margin={1}>
-                <Autocomplete
-                    disablePortal
-                    id="max_price"
-                    size='small'
-                    options={price_options}
-                    onChange={(event,value,reason,detail)=>setMaxPrice(value)}
-                    value={maxPrice}
-                    sx={{ width: 300 }}
-                    renderInput={(params) => <TextField {...params} label="Max Price" />}
-                />
-            </Stack>
-
         </Stack>
 
         <Stack marginY={2}>
