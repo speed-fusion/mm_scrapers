@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react'
 import RecentListings from '../../../../components/market_check/recent_listings';
 
-const MarketCheckRecentListings = () => {
+const MarketCheckRecentListings = ({token}) => {
 
     const router = useRouter();
 
@@ -12,13 +12,13 @@ const MarketCheckRecentListings = () => {
         {
             label:"All Listings",
             status:false,
-            href:`/mc/manual/all`
+            href:`/mc/manual/all?token=${token}`
 
         },
         {
             label:"Recently Added",
             status:false,
-            href:`/mc/manual/recent`
+            href:`/mc/manual/recent?token=${token}`
         }
     ]
 
@@ -59,5 +59,31 @@ const MarketCheckRecentListings = () => {
 </Stack>
   )
 }
+
+export async function getServerSideProps({query}) {
+
+    const token = query.token;
+    console.log(token)
+    const correct_token = process.env.DASHBOARD_TOKEN;
+    // const correct_token = "yug"
+
+    if (token != correct_token)
+    {
+        return {
+            redirect: {
+                permanent: false,
+                destination: "/404"
+              }
+        }
+    }
+
+    return {
+        props: {
+            token : token
+        }, 
+      }
+
+    
+  }
 
 export default MarketCheckRecentListings

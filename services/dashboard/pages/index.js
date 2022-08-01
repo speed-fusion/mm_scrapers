@@ -16,11 +16,11 @@ export default function Index() {
 
 
 export async function getServerSideProps(context) {
- 
+  const token = context.query.token
   return {
     redirect: {
       permanent: false,
-      destination: `/mc/manual/all`,
+      destination: `/mc/manual/all?token=${token}`,
     },
     props:{},
   };
