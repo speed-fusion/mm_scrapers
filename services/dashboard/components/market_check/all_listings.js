@@ -225,7 +225,7 @@ const AllListings = ({}) => {
 
         if(currentRegistration != null)
         {
-            where["raw.registration"] = {"$regex":currentRegistration,"$options" : "i"}
+            where["raw.registration"] = currentRegistration
         }
 
         if(selectedMake != null)
