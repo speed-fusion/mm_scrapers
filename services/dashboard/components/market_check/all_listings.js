@@ -329,7 +329,7 @@ const AllListings = ({}) => {
             
         </Stack>
        
-        <Stack direction={{xs:"column",lg:"row"}} marginY={0}>
+        <Stack direction={{xs:"row",lg:"row"}} marginY={0}>
             <Stack margin={1}>
                 <Autocomplete
                     size='small'
@@ -337,9 +337,9 @@ const AllListings = ({}) => {
                     id="make_list"
                     onChange={(event,value,reason,detail)=>setSelectedMake(value)}
                     options={makeList}
-                    sx={{ width: 300 }}
+                    sx={{ width:{xs:150,md:300} }}
                     value={selectedMake}
-                    renderInput={(params) => <TextField {...params} label="Select Make" />}
+                    renderInput={(params) => <TextField {...params} label="Make" />}
                 />
             </Stack>
             <Stack margin={1}>
@@ -350,11 +350,18 @@ const AllListings = ({}) => {
                     options={modelList}
                     onChange={(event,value,reason,detail)=>setSelectedModel(value)}
                     value={selectedModel}
-                    sx={{ width: 300 }}
-                    renderInput={(params) => <TextField {...params} label="Select Model" />}
+                    sx={{ width:{xs:150,md:300} }}
+                    renderInput={(params) => <TextField {...params} label="Model" />}
                 />
             </Stack>
+            
 
+        </Stack>
+
+
+        
+        
+        <Stack direction={{xs:"row",lg:"row"}} marginY={0}>
             <Stack margin={1}>
                 <Autocomplete
                     disablePortal
@@ -362,15 +369,45 @@ const AllListings = ({}) => {
                     size='small'
                     onChange={(event,value,reason,detail)=>setSelectedTrim(value)}
                     options={trimList}
-                    sx={{ width: 300 }}
+                    sx={{ width:{xs:150,md:300} }}
                     value={selectedTrim}
-                    renderInput={(params) => <TextField {...params} label="Select Trim" />}
+                    renderInput={(params) => <TextField {...params} label="Trim" />}
+                />
+            </Stack>
+
+            <Stack margin={1}>
+                <Autocomplete
+                    disablePortal
+                    id="built"
+                    size='small'
+                    onChange={(event,value,reason,detail)=>setBuilt(value)}
+                    options={built_option}
+                    sx={{ width:{xs:150,md:300} }}
+                    value={built}
+                    renderInput={(params) => <TextField {...params} label="Built" />}
                 />
             </Stack>
         </Stack>
-        
 
         <Stack direction={{xs:"column",lg:"row"}} marginY={0}>
+            <Stack margin={1}>
+                <Autocomplete
+                    disablePortal
+                    id="registration"
+                    size='small'
+                    onChange={(event,value,reason,detail)=>setCurrentRegistration(value)}
+                    options={registrationSuggestion}
+                    filterOptions={(x) => x}
+                    sx={{ width:{xs:315,md:300} }}
+                    value={currentRegistration}
+                    renderInput={(params) => <TextField onChange={(e)=>fetch_registration(e.target.value)} {...params} label="Registration" />}
+                />
+            </Stack>
+
+          </Stack>
+
+
+        <Stack direction={{xs:"row",lg:"row"}} marginY={0}>
             <Stack margin={1}>
                 <Autocomplete
                     disablePortal
@@ -378,7 +415,7 @@ const AllListings = ({}) => {
                     size='small'
                     onChange={(event,value,reason,detail)=>setMinPrice(value)}
                     options={price_options}
-                    sx={{ width: 300 }}
+                    sx={{ width:{xs:150,md:300} }}
                     value={minPrice}
                     renderInput={(params) => <TextField {...params} label="Min Price" />}
                 />
@@ -391,7 +428,7 @@ const AllListings = ({}) => {
                     options={price_options}
                     onChange={(event,value,reason,detail)=>setMaxPrice(value)}
                     value={maxPrice}
-                    sx={{ width: 300 }}
+                    sx={{ width:{xs:150,md:300} }}
                     renderInput={(params) => <TextField {...params} label="Max Price" />}
                 />
             </Stack>
@@ -400,51 +437,8 @@ const AllListings = ({}) => {
 
         </Stack>
 
-        <Stack direction={{xs:"column",lg:"row"}} marginY={0}>
-            <Stack margin={1}>
-                <Autocomplete
-                    disablePortal
-                    id="registration"
-                    size='small'
-                    onChange={(event,value,reason,detail)=>setCurrentRegistration(value)}
-                    options={registrationSuggestion}
-                    filterOptions={(x) => x}
-                    sx={{ width: 300 }}
-                    value={currentRegistration}
-                    renderInput={(params) => <TextField onChange={(e)=>fetch_registration(e.target.value)} {...params} label="Registration" />}
-                />
-            </Stack>
 
-            <Stack margin={1}>
-                <Autocomplete
-                    disablePortal
-                    id="postcode"
-                    size='small'
-                    onChange={(event,value,reason,detail)=>setPostcode(value)}
-                    options={postcodeOptions}
-                    filterOptions={(x) => x}
-                    sx={{ width: 300 }}
-                    value={postcode}
-                    renderInput={(params) => <TextField onChange={(e)=>fetch_postcodes(e.target.value)} {...params} label="Postcode" />}
-                />
-            </Stack>
-
-            <Stack margin={1}>
-                <Autocomplete
-                    disablePortal
-                    id="built"
-                    size='small'
-                    onChange={(event,value,reason,detail)=>setBuilt(value)}
-                    options={built_option}
-                    sx={{ width: 300 }}
-                    value={built}
-                    renderInput={(params) => <TextField {...params} label="Built" />}
-                />
-            </Stack>
-
-        </Stack>
-
-        <Stack direction={{xs:"column",lg:"row"}} marginY={0}>
+        <Stack direction={{xs:"row",lg:"row"}} marginY={0}>
             <Stack margin={1}>
                 <Autocomplete
                     disablePortal
@@ -452,7 +446,7 @@ const AllListings = ({}) => {
                     size='small'
                     onChange={(event,value,reason,detail)=>setMinMileage(value)}
                     options={mileage_options}
-                    sx={{ width: 300 }}
+                    sx={{ width: {xs:150,md:300} }}
                     value={minMileage}
                     renderInput={(params) => <TextField {...params} label="Min Mileage" />}
                 />
@@ -465,11 +459,31 @@ const AllListings = ({}) => {
                     size='small'
                     onChange={(event,value,reason,detail)=>setMaxMileage(value)}
                     options={mileage_options}
-                    sx={{ width: 300 }}
+                    sx={{ width:{xs:150,md:300} }}
                     value={maxMileage}
                     renderInput={(params) => <TextField {...params} label="Max Mileage" />}
                 />
             </Stack>
+
+        </Stack>
+
+        <Stack direction={{xs:"column",lg:"row"}} marginY={0}>
+
+            <Stack margin={1}>
+                <Autocomplete
+                    disablePortal
+                    id="postcode"
+                    size='small'
+                    onChange={(event,value,reason,detail)=>setPostcode(value)}
+                    options={postcodeOptions}
+                    filterOptions={(x) => x}
+                    sx={{ width:{xs:315,md:300} }}
+                    value={postcode}
+                    renderInput={(params) => <TextField onChange={(e)=>fetch_postcodes(e.target.value)} {...params} label="Postcode" />}
+                />
+            </Stack>
+
+            
 
         </Stack>
 
