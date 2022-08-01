@@ -44,12 +44,7 @@ def dropdown():
     
     data = list(mongo_db.dropdown_collection.distinct(what,where))
     
-    response = Response(
-        response=json.dumps({"status":200,"data":data}),
-        status=200,
-        mimetype='application/json'
-    )
-    return response
+    return jsonify({"status":200,"data":data})
 
 @Dashboard.route('/listings',methods=["POST"])
 def listings():
@@ -71,12 +66,7 @@ def listings():
     
     data = list(mongo_db.listings_collection.find(where,what).sort("raw.price").skip(skip).limit(per_page))
     
-    response = Response(
-        response=json.dumps({"status":200,"listing_count":listing_count,"page_count":page_count,"per_page":per_page,"data":data}),
-        status=200,
-        mimetype='application/json'
-    )
-    return response
+    return jsonify({"status":200,"listing_count":listing_count,"page_count":page_count,"per_page":per_page,"data":data})
 
 @Dashboard.route('/suggestion',methods=["POST"])
 def suggestion():
