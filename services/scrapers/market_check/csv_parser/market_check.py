@@ -293,6 +293,7 @@ class MarketCheck:
         return dropdown_data
     
     
+    
     def insert_dropdown_data(self,data):
         for item in data:
             try:
@@ -319,7 +320,7 @@ class MarketCheck:
                 self.mysql_db.recUpdate("fl_listings",what,where)
         
         self.mysql_db.disconnect()
-        
+    
     
     def deactivate_mongo_expired_listings(self,registration_numbers):
         
@@ -395,9 +396,6 @@ class MarketCheck:
             result = self.mongodb.dealers_collection.find_one(where)
             
             what["updated_at"] = get_current_datetime()
-            
-            
-            
             
             if result == None:
                 what["created_at"] = get_current_datetime()

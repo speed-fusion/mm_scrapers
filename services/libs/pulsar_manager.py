@@ -8,6 +8,9 @@ class Producer:
         self.producer_client = producer_client
     
     def produce_message(self,data):
+        
+        
+        
         listing_id = data.get("listing_id",None)
             
         if listing_id != None:

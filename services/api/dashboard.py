@@ -78,6 +78,25 @@ def listings():
     )
     return response
 
+@Dashboard.route('/suggestion',methods=["POST"])
+def suggestion():
+    body = request.get_json()
+    
+    what = body["what"]
+    where = body["where"]
+    limit = body["limit"]
+    
+    where["status"] = "inactive"
+    
+    data = list(mongo_db.listings_collection.find(where,what).limit(limit))
+    
+    response = Response(
+        response=json.dumps({"status":200,"data":data}),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
 @Dashboard.route('/recently-added',methods=["POST"])
 def recently_added():
     per_page = 10

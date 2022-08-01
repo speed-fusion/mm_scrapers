@@ -42,6 +42,8 @@ const AllListings = ({}) => {
     const [minPrice,setMinPrice] = useState(null);
     const [maxPrice,setMaxPrice] = useState(null);
 
+    const [currentRegistration,setCurrentRegistration] = useState(null);
+
     let price_options = []
 
     const price_options_min = 3
@@ -59,7 +61,13 @@ const AllListings = ({}) => {
             behavior: 'smooth',
         });
     };
-  
+
+    const built_option = []
+
+    for (let i =price_options_min;i<= price_options_max;i++)
+    {
+        price_options.push(i * 1000)
+    }
 
 
     useEffect(()=>{
@@ -229,6 +237,7 @@ const AllListings = ({}) => {
         <Stack direction={{xs:"column",lg:"row"}} marginY={0}>
             <Stack margin={1}>
                 <Autocomplete
+                    size='small'
                     disablePortal
                     id="make_list"
                     onChange={(event,value,reason,detail)=>setSelectedMake(value)}
@@ -241,6 +250,7 @@ const AllListings = ({}) => {
             <Stack margin={1}>
                 <Autocomplete
                     disablePortal
+                    size='small'
                     id="model_list"
                     options={modelList}
                     onChange={(event,value,reason,detail)=>setSelectedModel(value)}
@@ -254,6 +264,7 @@ const AllListings = ({}) => {
                 <Autocomplete
                     disablePortal
                     id="trim_list"
+                    size='small'
                     onChange={(event,value,reason,detail)=>setSelectedTrim(value)}
                     options={trimList}
                     sx={{ width: 300 }}
@@ -268,6 +279,7 @@ const AllListings = ({}) => {
                 <Autocomplete
                     disablePortal
                     id="min_price"
+                    size='small'
                     onChange={(event,value,reason,detail)=>setMinPrice(value)}
                     options={price_options}
                     sx={{ width: 300 }}
@@ -279,6 +291,35 @@ const AllListings = ({}) => {
                 <Autocomplete
                     disablePortal
                     id="max_price"
+                    size='small'
+                    options={price_options}
+                    onChange={(event,value,reason,detail)=>setMaxPrice(value)}
+                    value={maxPrice}
+                    sx={{ width: 300 }}
+                    renderInput={(params) => <TextField {...params} label="Max Price" />}
+                />
+            </Stack>
+
+        </Stack>
+
+        <Stack direction={{xs:"column",lg:"row"}} marginY={0}>
+            <Stack margin={1}>
+                <Autocomplete
+                    disablePortal
+                    id="min_price"
+                    size='small'
+                    onChange={(event,value,reason,detail)=>setMinPrice(value)}
+                    options={price_options}
+                    sx={{ width: 300 }}
+                    value={minPrice}
+                    renderInput={(params) => <TextField {...params} label="Min Price" />}
+                />
+            </Stack>
+            <Stack margin={1}>
+                <Autocomplete
+                    disablePortal
+                    id="max_price"
+                    size='small'
                     options={price_options}
                     onChange={(event,value,reason,detail)=>setMaxPrice(value)}
                     value={maxPrice}

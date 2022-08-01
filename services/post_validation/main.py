@@ -83,6 +83,7 @@ class TopicHandler:
                     "total_photos": image_count
                 }})
                 
+            
             self.producer.produce_message(message)
 
 
