@@ -66,6 +66,9 @@ def listings():
     
     data = list(mongo_db.listings_collection.find(where,what).sort("raw.price").skip(skip).limit(per_page))
     
+    for item in data:
+        item["raw"]["images"] = item["raw"]["images"][0:15]
+    
     return jsonify({"status":200,"listing_count":listing_count,"page_count":page_count,"per_page":per_page,"data":data})
 
 @Dashboard.route('/suggestion',methods=["POST"])
