@@ -46,6 +46,14 @@ const AllListings = ({}) => {
     const [registrationSuggestion,setRegistrationSuggestion] = useState([]);
     // registration_suggestion
 
+    const [minMileage,setMinMileage] = useState(null);
+    const [maxMileage,setMaxMileage] = useState(null);
+
+    const [postcode,setPostcode] = useState(null)
+    const [postcodeOptions,setPostcodeOptions] = useState([])
+
+    const [built,setBuilt] = useState(null);
+
     let price_options = []
 
     const price_options_min = 3
@@ -64,11 +72,24 @@ const AllListings = ({}) => {
         });
     };
 
-    const built_option = []
+    let mileage_options = []
 
-    for (let i =price_options_min;i<= price_options_max;i++)
+    const min_mileage = 0
+
+    const max_mileage = 120
+
+    for (let i =min_mileage;i<= max_mileage;i++)
     {
-        price_options.push(i * 1000)
+        mileage_options.push(i * 1000)
+    }
+
+    const built_option = []
+    const min_built = 2011
+    const max_built = new Date().getFullYear();
+
+    for (let i =min_built;i<= max_built;i++)
+    {
+        built_option.push(i)
     }
 
 
@@ -95,6 +116,33 @@ const AllListings = ({}) => {
         else
         {
             setRegistrationSuggestion([])
+        }
+    }
+
+    
+    async function fetch_postcodes(chars)
+    {
+        if (chars.length > 0)
+        {
+            axios.post(`${api_endpoint}/suggestion`,{
+                "what":{"raw.car_postal_code":1},
+                "where":{"raw.car_postal_code":{"$regex":chars,"$options" : "i"}},
+                "limit":5
+            }).then(res => {
+                let data = []
+    
+                for(let item of res.data.data)
+                {
+                    data.push(item.raw.car_postal_code)
+                }
+                setPostcodeOptions(data)
+            }).catch(err => {
+                setPostcodeOptions([])
+            })
+        }
+        else
+        {
+            setPostcodeOptions([])
         }
     }
 
@@ -178,6 +226,8 @@ const AllListings = ({}) => {
 
     }
 
+    
+
     useEffect(()=>{
         setShowProgressBar(true)
 
@@ -205,20 +255,45 @@ const AllListings = ({}) => {
             where["raw.trim"] =  {"$regex":selectedTrim,"$options" : "i"}
         }
         
-        if (maxPrice != null && maxPrice != 0)
+        if (maxPrice != null || minPrice != null)
         {
-                where["raw.price"] = {"$lt":maxPrice};
-        }
+            where["raw.price"] = {}
 
-        if(minPrice != null)
-        {
-            where["raw.price"] = {"$gt":minPrice}
-
-            if (maxPrice != null && maxPrice != 0)
+            if (minPrice != null)
             {
-                where["raw.price"]["$lt"] = maxPrice;
+                where["raw.price"]["$gt"] = minPrice
+            }
+
+            if(maxPrice != null)
+            {
+                where["raw.price"]["$lt"] = maxPrice
             }
         }
+
+        if(minMileage != null || maxMileage != null)
+        {
+            where["raw.mileage"] = {}
+            if (minMileage != null)
+            {
+                where["raw.mileage"]["$gt"] = minMileage
+            }
+
+            if (maxMileage != null)
+            {
+                where["raw.mileage"]["$lt"] = maxMileage
+            }
+        }
+
+        if(built != null)
+        {
+            where["raw.built"] = built
+        }
+
+        if(postcode != null)
+        {
+            where["raw.car_postal_code"] = postcode
+        }
+
 
         axios.post(`${api_endpoint}/listings`,{
             "what":what,
@@ -241,7 +316,7 @@ const AllListings = ({}) => {
 
    
 
-    },[minPrice,currentRegistration,maxPrice,currentPage,selectedMake,selectedModel,selectedTrim])
+    },[minPrice,postcode,minMileage,maxMileage,built,currentRegistration,maxPrice,currentPage,selectedMake,selectedModel,selectedTrim])
 
   return (
     <Stack alignItems="center">
@@ -305,6 +380,7 @@ const AllListings = ({}) => {
                 />
             </Stack>
         </Stack>
+        
 
         <Stack direction={{xs:"column",lg:"row"}} marginY={0}>
             <Stack margin={1}>
@@ -332,6 +408,11 @@ const AllListings = ({}) => {
                 />
             </Stack>
 
+           
+
+        </Stack>
+
+        <Stack direction={{xs:"column",lg:"row"}} marginY={0}>
             <Stack margin={1}>
                 <Autocomplete
                     disablePortal
@@ -346,22 +427,62 @@ const AllListings = ({}) => {
                 />
             </Stack>
 
+            <Stack margin={1}>
+                <Autocomplete
+                    disablePortal
+                    id="postcode"
+                    size='small'
+                    onChange={(event,value,reason,detail)=>setPostcode(value)}
+                    options={postcodeOptions}
+                    filterOptions={(x) => x}
+                    sx={{ width: 300 }}
+                    value={postcode}
+                    renderInput={(params) => <TextField onChange={(e)=>fetch_postcodes(e.target.value)} {...params} label="Postcode" />}
+                />
+            </Stack>
+
+            <Stack margin={1}>
+                <Autocomplete
+                    disablePortal
+                    id="built"
+                    size='small'
+                    onChange={(event,value,reason,detail)=>setBuilt(value)}
+                    options={built_option}
+                    sx={{ width: 300 }}
+                    value={built}
+                    renderInput={(params) => <TextField {...params} label="Built" />}
+                />
+            </Stack>
+
         </Stack>
 
         <Stack direction={{xs:"column",lg:"row"}} marginY={0}>
             <Stack margin={1}>
-                {/* <Autocomplete
+                <Autocomplete
                     disablePortal
-                    id="registration"
+                    id="minMileage"
                     size='small'
-                    onChange={(event,value,reason,detail)=>setCurrentRegistration(value)}
-                    options={registrationSuggestion}
-                    filterOptions={(x) => x}
+                    onChange={(event,value,reason,detail)=>setMinMileage(value)}
+                    options={mileage_options}
                     sx={{ width: 300 }}
-                    value={currentRegistration}
-                    renderInput={(params) => <TextField onChange={(e)=>fetch_registration(e.target.value)} {...params} label="Registration" />}
-                /> */}
+                    value={minMileage}
+                    renderInput={(params) => <TextField {...params} label="Min Mileage" />}
+                />
             </Stack>
+
+            <Stack margin={1}>
+                <Autocomplete
+                    disablePortal
+                    id="maxMileage"
+                    size='small'
+                    onChange={(event,value,reason,detail)=>setMaxMileage(value)}
+                    options={mileage_options}
+                    sx={{ width: 300 }}
+                    value={maxMileage}
+                    renderInput={(params) => <TextField {...params} label="Max Mileage" />}
+                />
+            </Stack>
+
         </Stack>
 
         <Stack marginY={2}>

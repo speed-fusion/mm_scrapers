@@ -88,7 +88,7 @@ def suggestion():
     
     where["status"] = "inactive"
     
-    data = list(mongo_db.listings_collection.find(where,what).limit(limit))
+    data = list(mongo_db.listings_collection.distinct(what,where).limit(limit))
     
     response = Response(
         response=json.dumps({"status":200,"data":data}),
