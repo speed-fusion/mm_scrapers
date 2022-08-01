@@ -481,7 +481,7 @@ const AllListings = ({}) => {
             <Grid container rowSpacing={3} columnSpacing={3} justify = "center">
                 {listingList &&
                     listingList.map((item)=>(
-                        <Grid key={item._id} width={200} minWidth={300} justify = "center" alignItems={"center"} item xs={12} md={6} lg={6}>
+                        <Grid key={item._id} width={200} minWidth={totalListings > 1 ? 300 : 500} justify = "center" alignItems={"center"} item xs={12} md={6} lg={6}>
                             <Card elevation={3}>
                                 <Stack my={1} mx={0} justifyContent="space-evenly" direction={"row"}>
                                     <Stack>
