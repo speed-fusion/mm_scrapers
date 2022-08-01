@@ -102,7 +102,7 @@ const AllListings = ({}) => {
                 "where":{"raw.registration":{"$regex":chars,"$options" : "i"}},
                 "limit":5
             }).then(res => {
-                setRegistrationSuggestion(res.data)
+                setRegistrationSuggestion(res.data.data)
             }).catch(err => {
                 setRegistrationSuggestion([])
             })
@@ -123,7 +123,7 @@ const AllListings = ({}) => {
                 "where":{"raw.car_postal_code":{"$regex":chars,"$options" : "i"}},
                 "limit":5
             }).then(res => {
-                setPostcodeOptions(res.data)
+                setPostcodeOptions(res.data.data)
             }).catch(err => {
                 setPostcodeOptions([])
             })
