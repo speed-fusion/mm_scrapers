@@ -98,17 +98,11 @@ const AllListings = ({}) => {
         if (chars.length > 0)
         {
             axios.post(`${api_endpoint}/suggestion`,{
-                "what":{"raw.registration":1},
+                "what":"raw.registration",
                 "where":{"raw.registration":{"$regex":chars,"$options" : "i"}},
                 "limit":5
             }).then(res => {
-                let data = []
-    
-                for(let item of res.data.data)
-                {
-                    data.push(item.raw.registration)
-                }
-                setRegistrationSuggestion(data)
+                setRegistrationSuggestion(res.data)
             }).catch(err => {
                 setRegistrationSuggestion([])
             })
@@ -125,17 +119,11 @@ const AllListings = ({}) => {
         if (chars.length > 0)
         {
             axios.post(`${api_endpoint}/suggestion`,{
-                "what":{"raw.car_postal_code":1},
+                "what":"raw.car_postal_code",
                 "where":{"raw.car_postal_code":{"$regex":chars,"$options" : "i"}},
                 "limit":5
             }).then(res => {
-                let data = []
-    
-                for(let item of res.data.data)
-                {
-                    data.push(item.raw.car_postal_code)
-                }
-                setPostcodeOptions(data)
+                setPostcodeOptions(res.data)
             }).catch(err => {
                 setPostcodeOptions([])
             })
